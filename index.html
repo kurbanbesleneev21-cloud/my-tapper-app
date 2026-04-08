@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>HASKOIN · 0.05 за тап</title>
+    <title>HASKOIN · Мгновенный тап</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -150,11 +150,11 @@
             background: linear-gradient(90deg, #10b981, #34d399, #fbbf24);
             border-radius: 30px;
             width: 100%;
-            transition: width 0.1s;
+            transition: width 0.05s;
             box-shadow: 0 0 10px #34d399;
         }
 
-        /* МОНЕТА - ПОЛНОСТЬЮ ИСПРАВЛЕННЫЙ КЛИК */
+        /* МОНЕТА - МГНОВЕННЫЙ КЛИК ПО ВСЕЙ ПОВЕРХНОСТИ */
         .coin-section {
             display: flex;
             justify-content: center;
@@ -169,16 +169,22 @@
             outline: none;
             -webkit-tap-highlight-color: transparent;
             border-radius: 50%;
-            transition: transform 0.1s;
+            width: 220px;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.05s;
+            touch-action: manipulation;
         }
 
         .coin-button:active {
-            transform: scale(0.95);
+            transform: scale(0.92);
         }
 
         .coin-image {
-            width: 200px;
-            height: 200px;
+            width: 100%;
+            height: 100%;
             background: radial-gradient(circle at 30% 30%, #fde68a, #d97706);
             border-radius: 50%;
             display: flex;
@@ -187,12 +193,10 @@
             justify-content: center;
             box-shadow: 0 0 0 6px #fbbf2466, 0 18px 30px #000000, inset 0 -6px 8px #92400e, inset 0 6px 14px #fffbeb;
             border: 3px solid #fde68a;
-            transition: all 0.12s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-            pointer-events: none;
+            transition: all 0.05s;
         }
 
         .coin-button:active .coin-image {
-            transform: scale(0.88);
             box-shadow: 0 0 0 10px #fcd34d, 0 15px 30px #000000;
             background: radial-gradient(circle at 30% 30%, #fef3c7, #eab308);
         }
@@ -237,8 +241,9 @@
             font-size: 15px;
             box-shadow: 0 5px 0 #1e40af;
             cursor: pointer;
-            transition: all 0.08s;
+            transition: all 0.05s;
             border-bottom: 2px solid #1e3a8a;
+            touch-action: manipulation;
         }
 
         .btn:active {
@@ -305,6 +310,11 @@
             padding: 8px 16px;
             font-size: 13px;
         }
+
+        /* Убираем все задержки */
+        * {
+            transition-duration: 0.05s !important;
+        }
     </style>
 </head>
 <body>
@@ -345,7 +355,7 @@
                 </div>
             </div>
 
-            <!-- МОНЕТА - ТЕПЕРЬ ТОЧНО РАБОТАЕТ -->
+            <!-- МОНЕТА - МГНОВЕННЫЙ ОТКЛИК, ВСЯ ПОВЕРХНОСТЬ КЛИКАБЕЛЬНА -->
             <div class="coin-section">
                 <button class="coin-button" id="tapButton">
                     <div class="coin-image">
@@ -363,7 +373,7 @@
                 <button class="btn btn-success" id="dailyBonusBtn" style="flex:1">🎁 Daily</button>
             </div>
             <div class="status-message" id="mineStatus">
-                👆 Нажми на монету!
+                👆 Жми по монете!
             </div>
         </div>
     </div>
@@ -391,7 +401,7 @@
                     💸 Вывести HASKOIN в TON
                 </button>
                 <p style="color: #64748b; font-size: 12px; margin-top: 10px; text-align: center;">
-                    Минимальный вывод: 10 000 HASK
+                    Минимальный вывод: 100.00 HASK
                 </p>
             </div>
 
@@ -485,7 +495,7 @@
         tg.enableClosingConfirmation();
 
         // ========== КОНФИГУРАЦИЯ ==========
-        const TAP_REWARD = 0.05;  // НАГРАДА ЗА ТАП
+        const TAP_REWARD = 0.05;
         const MAX_ENERGY_BASE = 500;
         const ENERGY_COST = 1;
         const REGEN_BASE = 5;
@@ -501,7 +511,7 @@
         let totalWithdrawn = 0.00;
         
         const userId = tg.initDataUnsafe?.user?.id?.toString() || 'demo';
-        const STORAGE_KEY = `haskoin_${userId}_v2`;
+        const STORAGE_KEY = `haskoin_${userId}_v3`;
 
         // UI
         const balanceDisplay = document.getElementById('balanceDisplay');
@@ -573,34 +583,67 @@
             totalWithdrawnSpan.textContent = formatNumber(totalWithdrawn);
         }
 
-        // ========== ТАП (0.05 HASK) ==========
-        function handleTap() {
+        // ========== ТАП - МГНОВЕННЫЙ ==========
+        let tapCount = 0;
+        let lastTapTime = 0;
+        
+        function handleTap(e) {
+            // Предотвращаем все дефолтные действия
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            const now = Date.now();
+            
+            // Проверка энергии
             if (currentEnergy >= ENERGY_COST) {
                 currentEnergy -= ENERGY_COST;
                 const earned = TAP_REWARD * tapMultiplier;
                 balance += earned;
                 totalMined += earned;
                 
-                refreshUI();
-                updateStats();
-                saveData();
+                tapCount++;
                 
-                mineStatus.innerHTML = `✅ +${earned.toFixed(2)} HASK!`;
-                setTimeout(() => mineStatus.innerHTML = '👆 Нажми на монету!', 500);
+                // Мгновенное обновление UI
+                balanceDisplay.textContent = formatNumber(balance);
+                const percent = (currentEnergy / maxEnergy) * 100;
+                energyFill.style.width = Math.max(0, percent) + '%';
+                energyText.textContent = `${Math.floor(currentEnergy)}/${maxEnergy}`;
+                updateStats();
+                
+                // Статус
+                mineStatus.innerHTML = `✅ +${earned.toFixed(2)} HASK! (${tapCount})`;
+                
+                // Сохраняем не чаще чем раз в 200мс при активном тапе
+                if (now - lastTapTime > 200) {
+                    saveData();
+                    lastTapTime = now;
+                }
             } else {
                 mineStatus.innerHTML = '❌ Недостаточно энергии!';
-                setTimeout(() => mineStatus.innerHTML = '👆 Нажми на монету!', 800);
-                // Визуальная отдача
                 energyFill.style.boxShadow = '0 0 20px #ef4444';
-                setTimeout(() => energyFill.style.boxShadow = '0 0 10px #34d399', 200);
+                setTimeout(() => energyFill.style.boxShadow = '0 0 10px #34d399', 100);
             }
+            
+            // Сбрасываем счётчик тапов через 500мс бездействия
+            setTimeout(() => {
+                if (Date.now() - lastTapTime > 500) {
+                    tapCount = 0;
+                    if (mineStatus.innerHTML.includes('+')) {
+                        mineStatus.innerHTML = '👆 Жми по монете!';
+                    }
+                }
+            }, 500);
         }
 
         // ========== РЕГЕНЕРАЦИЯ ==========
         function regen() {
             if (currentEnergy < maxEnergy) {
                 currentEnergy = Math.min(currentEnergy + (REGEN_BASE * regenMultiplier / 5), maxEnergy);
-                refreshUI();
+                const percent = (currentEnergy / maxEnergy) * 100;
+                energyFill.style.width = Math.max(0, percent) + '%';
+                energyText.textContent = `${Math.floor(currentEnergy)}/${maxEnergy}`;
             }
         }
 
@@ -628,25 +671,34 @@
         });
 
         // ========== ОБРАБОТЧИКИ ==========
-        document.getElementById('tapButton').addEventListener('click', (e) => {
+        const tapButton = document.getElementById('tapButton');
+        
+        // Убираем задержку через touch-action и немедленный обработчик
+        tapButton.addEventListener('click', (e) => {
+            handleTap(e);
+        });
+        
+        tapButton.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            e.stopPropagation();
-            handleTap();
+            handleTap(e);
+        }, { passive: false });
+        
+        // Предотвращаем контекстное меню
+        tapButton.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
         });
 
-        document.getElementById('tapButton').addEventListener('touchstart', (e) => {
+        document.getElementById('fullRegenBtn').addEventListener('click', (e) => {
             e.preventDefault();
-        }, { passive: false });
-
-        document.getElementById('fullRegenBtn').addEventListener('click', () => {
             currentEnergy = maxEnergy;
             refreshUI();
             saveData();
             mineStatus.innerHTML = '🔋 Энергия восстановлена!';
-            setTimeout(() => mineStatus.innerHTML = '👆 Нажми на монету!', 1000);
+            setTimeout(() => mineStatus.innerHTML = '👆 Жми по монете!', 800);
         });
 
-        document.getElementById('dailyBonusBtn').addEventListener('click', () => {
+        document.getElementById('dailyBonusBtn').addEventListener('click', (e) => {
+            e.preventDefault();
             const lastBonus = localStorage.getItem(`haskoin_bonus_${userId}`);
             const now = Date.now();
             if (!lastBonus || now - parseInt(lastBonus) > 86400000) {
@@ -661,16 +713,18 @@
                 const hoursLeft = 24 - Math.floor((now - parseInt(lastBonus)) / 3600000);
                 mineStatus.innerHTML = `⏰ Бонус через ${hoursLeft} ч.`;
             }
-            setTimeout(() => mineStatus.innerHTML = '👆 Нажми на монету!', 1500);
+            setTimeout(() => mineStatus.innerHTML = '👆 Жми по монете!', 1500);
         });
 
         // Кошелёк
-        document.getElementById('connectWalletBtn').addEventListener('click', () => {
+        document.getElementById('connectWalletBtn').addEventListener('click', (e) => {
+            e.preventDefault();
             tg.openLink('https://ton.org/wallets');
             walletAddressSpan.textContent = 'Нажмите "Подключить"';
         });
 
-        document.getElementById('withdrawBtn').addEventListener('click', () => {
+        document.getElementById('withdrawBtn').addEventListener('click', (e) => {
+            e.preventDefault();
             if (balance >= 100.00) {
                 const amount = balance;
                 totalWithdrawn += balance;
@@ -686,7 +740,8 @@
 
         // Задания
         document.querySelectorAll('.task-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
                 const task = btn.dataset.task;
                 if (task === 'subscribe') {
                     tg.openTelegramLink('https://t.me/haskoin_channel');
@@ -700,7 +755,8 @@
             });
         });
 
-        document.getElementById('claimTasksBtn').addEventListener('click', () => {
+        document.getElementById('claimTasksBtn').addEventListener('click', (e) => {
+            e.preventDefault();
             balance += 5.00;
             totalMined += 5.00;
             refreshUI();
@@ -711,7 +767,8 @@
 
         // Бусты
         document.querySelectorAll('.boost-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
                 const boost = btn.dataset.boost;
                 let cost = 0;
                 let message = '';
@@ -749,7 +806,9 @@
         loadData();
         setInterval(regen, 200);
         setInterval(autoClick, 1000);
-        setInterval(saveData, 5000);
+        setInterval(() => {
+            if (tapCount > 0) saveData();
+        }, 1000);
         window.addEventListener('beforeunload', saveData);
         tg.ready();
     })();
