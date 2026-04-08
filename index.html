@@ -6,50 +6,54 @@
     <title>Kurban Tap</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --yellow: #f3ba2f;
-        }
         body {
-            background: radial-gradient(circle, #1e1e1e 0%, #000 100%);
-            color: #fff;
-            text-align: center;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle, #2c3e50 0%, #000000 100%);
+            color: white;
+            font-family: 'Arial', sans-serif;
             margin: 0;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
-            user-select: none;
-        }
-        .header { margin-top: 40px; }
-        .score-container { font-size: 48px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
-        .score-container img { width: 40px; }
-
-        .coin-container {
-            position: relative;
-            margin-top: 50px;
-            display: flex;
             justify-content: center;
-            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
-        #coin {
-            width: 280px;
-            height: 280px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.05s ease-in-out;
-            filter: drop-shadow(0 0 15px rgba(243, 186, 47, 0.4));
-        }
-        #coin:active { transform: scale(0.92); }
 
-        /* Анимация вылетающих цифр */
+        .score-container {
+            font-size: 50px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Золотая монета на чистом CSS */
+        .coin {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, #f39c12, #f1c40f);
+            border-radius: 50%;
+            border: 8px solid #e67e22;
+            box-shadow: 0 0 30px rgba(243, 156, 18, 0.6), inset 0 0 20px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            cursor: pointer;
+            transition: transform 0.05s;
+        }
+
+        .coin:active {
+            transform: scale(0.9);
+        }
+
         .plus-one {
             position: absolute;
-            color: var(--yellow);
-            font-size: 24px;
+            color: #f1c40f;
+            font-size: 30px;
             font-weight: bold;
-            animation: moveUp 0.8s ease-out forwards;
+            animation: moveUp 0.6s linear forwards;
             pointer-events: none;
         }
 
@@ -61,52 +65,41 @@
 </head>
 <body>
 
-    <div class="header">
-        <div class="score-container">
-            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" alt="coin">
-            <span id="score">0</span>
-        </div>
-    </div>
-
-    <div class="coin-container" id="coin-area">
-        <img id="coin" src="https://cryptologos.cc/logos/toncoin-ton-logo.png" alt="TAP">
-    </div>
+    <div class="score-container" id="score">0</div>
+    
+    <div class="coin" id="coin">💰</div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        
-        const scoreDisplay = document.getElementById('score');
-        const coinArea = document.getElementById('coin-area');
-        const coinImg = document.getElementById('coin');
-        
-        let count = parseInt(localStorage.getItem('clicks')) || 0;
-        scoreDisplay.innerText = count.toLocaleString();
 
-        coinImg.addEventListener('touchstart', (e) => {
+        let score = parseInt(localStorage.getItem('score')) || 0;
+        const scoreEl = document.getElementById('score');
+        const coinEl = document.getElementById('coin');
+
+        scoreEl.innerText = score;
+
+        coinEl.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            
-            // Логика счета
-            count++;
-            scoreDisplay.innerText = count.toLocaleString();
-            localStorage.setItem('clicks', count);
+            score++;
+            scoreEl.innerText = score;
+            localStorage.setItem('score', score);
 
             // Вибрация
-            tg.HapticFeedback.impactOccurred('medium');
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('medium');
+            }
 
-            // Создание анимации +1
+            // Анимация +1
             const touch = e.touches[0];
-            const plusOne = document.createElement('div');
-            plusOne.classList.add('plus-one');
-            plusOne.innerText = '+1';
-            plusOne.style.left = touch.clientX - 10 + 'px';
-            plusOne.style.top = touch.clientY - 40 + 'px';
-            
-            document.body.appendChild(plusOne);
+            const plus = document.createElement('div');
+            plus.classList.add('plus-one');
+            plus.innerText = '+1';
+            plus.style.left = touch.clientX + 'px';
+            plus.style.top = touch.clientY + 'px';
+            document.body.appendChild(plus);
 
-            setTimeout(() => {
-                plusOne.remove();
-            }, 800);
+            setTimeout(() => plus.remove(), 600);
         });
     </script>
 </body>
