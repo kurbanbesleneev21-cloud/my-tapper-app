@@ -6,30 +6,107 @@
     <title>Kurban Tap</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background: #000; color: #fff; text-align: center; font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        #coin { width: 60vw; max-width: 250px; cursor: pointer; transition: transform 0.1s; user-select: none; }
-        #coin:active { transform: scale(0.9); }
-        .score { font-size: 3rem; font-weight: bold; margin-bottom: 20px; color: #f3ba2f; }
+        :root {
+            --yellow: #f3ba2f;
+        }
+        body {
+            background: radial-gradient(circle, #1e1e1e 0%, #000 100%);
+            color: #fff;
+            text-align: center;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            user-select: none;
+        }
+        .header { margin-top: 40px; }
+        .score-container { font-size: 48px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .score-container img { width: 40px; }
+
+        .coin-container {
+            position: relative;
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #coin {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.05s ease-in-out;
+            filter: drop-shadow(0 0 15px rgba(243, 186, 47, 0.4));
+        }
+        #coin:active { transform: scale(0.92); }
+
+        /* Анимация вылетающих цифр */
+        .plus-one {
+            position: absolute;
+            color: var(--yellow);
+            font-size: 24px;
+            font-weight: bold;
+            animation: moveUp 0.8s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes moveUp {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-100px); }
+        }
     </style>
 </head>
 <body>
-    <div class="score" id="score">0</div>
-    <img id="coin" src="https://cryptologos.cc/logos/toncoin-ton-logo.png" alt="TAP">
+
+    <div class="header">
+        <div class="score-container">
+            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" alt="coin">
+            <span id="score">0</span>
+        </div>
+    </div>
+
+    <div class="coin-container" id="coin-area">
+        <img id="coin" src="https://cryptologos.cc/logos/toncoin-ton-logo.png" alt="TAP">
+    </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
         
-        let count = localStorage.getItem('clicks') || 0;
         const scoreDisplay = document.getElementById('score');
-        scoreDisplay.innerText = count;
+        const coinArea = document.getElementById('coin-area');
+        const coinImg = document.getElementById('coin');
+        
+        let count = parseInt(localStorage.getItem('clicks')) || 0;
+        scoreDisplay.innerText = count.toLocaleString();
 
-        document.getElementById('coin').addEventListener('touchstart', (e) => {
+        coinImg.addEventListener('touchstart', (e) => {
             e.preventDefault();
+            
+            // Логика счета
             count++;
-            scoreDisplay.innerText = count;
+            scoreDisplay.innerText = count.toLocaleString();
             localStorage.setItem('clicks', count);
+
+            // Вибрация
             tg.HapticFeedback.impactOccurred('medium');
+
+            // Создание анимации +1
+            const touch = e.touches[0];
+            const plusOne = document.createElement('div');
+            plusOne.classList.add('plus-one');
+            plusOne.innerText = '+1';
+            plusOne.style.left = touch.clientX - 10 + 'px';
+            plusOne.style.top = touch.clientY - 40 + 'px';
+            
+            document.body.appendChild(plusOne);
+
+            setTimeout(() => {
+                plusOne.remove();
+            }, 800);
         });
     </script>
 </body>
