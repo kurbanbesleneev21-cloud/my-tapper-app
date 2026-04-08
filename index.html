@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Kurban Tap</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { background: #000; color: #fff; text-align: center; font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        #coin { width: 60vw; max-width: 250px; cursor: pointer; transition: transform 0.1s; user-select: none; }
+        #coin:active { transform: scale(0.9); }
+        .score { font-size: 3rem; font-weight: bold; margin-bottom: 20px; color: #f3ba2f; }
+    </style>
+</head>
+<body>
+    <div class="score" id="score">0</div>
+    <img id="coin" src="https://cryptologos.cc/logos/toncoin-ton-logo.png" alt="TAP">
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        
+        let count = localStorage.getItem('clicks') || 0;
+        const scoreDisplay = document.getElementById('score');
+        scoreDisplay.innerText = count;
+
+        document.getElementById('coin').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            count++;
+            scoreDisplay.innerText = count;
+            localStorage.setItem('clicks', count);
+            tg.HapticFeedback.impactOccurred('medium');
+        });
+    </script>
+</body>
+</html>
