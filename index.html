@@ -2,331 +2,331 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>HASKOIN • Тапалка с регенерацией</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>HASKOIN · Telegram Tapper</title>
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
             box-sizing: border-box;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
-            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
+            background: var(--tg-theme-bg-color, #0f172a);
+            color: var(--tg-theme-text-color, #e2e8f0);
             min-height: 100vh;
-            background: linear-gradient(145deg, #0b0e14 0%, #1a1f2a 100%);
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 16px;
+            justify-content: center;
+            padding: 12px;
+            transition: background 0.2s;
         }
 
-        .game-container {
-            max-width: 420px;
+        .app-card {
+            max-width: 400px;
             width: 100%;
-            background: rgba(18, 25, 36, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(100, 210, 255, 0.2);
-            border-radius: 48px;
-            padding: 28px 20px 32px;
-            box-shadow: 0 25px 40px -8px rgba(0,0,0,0.6), 0 0 0 1px rgba(0, 255, 255, 0.1) inset;
+            background: var(--tg-theme-secondary-bg-color, #1e293b);
+            border-radius: 36px;
+            padding: 24px 18px 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,215,0,0.2) inset;
+            border: 1px solid rgba(255,215,0,0.15);
+            backdrop-filter: blur(4px);
         }
 
-        /* Заголовок и баланс */
-        .balance-section {
-            text-align: center;
-            margin-bottom: 20px;
+        /* Профиль пользователя */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px;
+            background: var(--tg-theme-bg-color, #0f172a);
+            padding: 10px 16px;
+            border-radius: 60px;
+            border: 1px solid var(--tg-theme-hint-color, #334155);
         }
 
-        .coin-label {
+        .avatar-placeholder {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #fbbf24, #d97706);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #0f172a;
+            box-shadow: 0 4px 8px #00000055;
         }
 
-        .coin-icon {
-            font-size: 32px;
-            filter: drop-shadow(0 4px 8px #00b8ff80);
+        .user-info {
+            flex: 1;
         }
 
-        .coin-name {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #b0f0ff, #6ec8ff);
+        .user-name {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--tg-theme-text-color, #f1f5f9);
+        }
+
+        .user-id-badge {
+            font-size: 12px;
+            opacity: 0.7;
+            color: var(--tg-theme-hint-color, #94a3b8);
+        }
+
+        /* Баланс монет */
+        .coin-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .coin-icon-large {
+            font-size: 38px;
+            filter: drop-shadow(0 4px 6px #fbbf24);
+        }
+
+        .coin-title {
+            font-size: 34px;
+            font-weight: 900;
+            background: linear-gradient(to right, #fcd34d, #fbbf24, #f59e0b);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 2px 5px #005b8f;
+            letter-spacing: 2px;
         }
 
-        .balance-box {
-            background: #0f1a24;
+        .balance-container {
+            background: #0b1120cc;
             border-radius: 60px;
-            padding: 14px 18px;
-            margin: 12px 0 8px;
-            border: 1px solid #2c536e;
-            box-shadow: 0 8px 0 #0a121c, 0 4px 12px #00000055;
+            padding: 18px 18px;
+            margin: 8px 0 16px;
+            border: 1px solid #fbbf2450;
+            box-shadow: 0 8px 0 #020617, inset 0 2px 6px #fbbf2430;
+            text-align: center;
         }
 
-        .balance-amount {
-            font-size: 52px;
+        .balance-value {
+            font-size: 54px;
             font-weight: 900;
-            color: #d6f0ff;
-            text-shadow: 0 3px 0 #003355, 0 0 20px #00c8ffaa;
-            line-height: 1.2;
+            color: #fef9c3;
+            text-shadow: 0 3px 0 #b45309, 0 0 20px #fbbf24;
             word-break: break-word;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
 
-        .balance-amount span {
-            font-size: 26px;
-            color: #aad0ff;
-            font-weight: 600;
+        .balance-label {
+            font-size: 18px;
+            color: #fcd34d;
+            letter-spacing: 2px;
         }
 
-        /* Полоса энергии (регенерация) */
-        .energy-panel {
-            margin: 12px 0 22px;
+        /* Энергия */
+        .energy-section {
+            margin: 18px 0 12px;
         }
 
         .energy-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 6px;
-            color: #bbdef5;
             font-weight: 600;
-            font-size: 15px;
-            letter-spacing: 0.3px;
-        }
-
-        .regen-indicator {
-            color: #6ef0b0;
-            text-shadow: 0 0 6px #00d68f;
+            margin-bottom: 6px;
         }
 
         .energy-bar-bg {
-            background: #1c2c3c;
-            height: 20px;
-            border-radius: 40px;
+            height: 22px;
+            background: #1e293b;
+            border-radius: 30px;
             padding: 2px;
-            box-shadow: inset 0 3px 8px #00000080, 0 2px 0 #2d4b62;
-            border: 1px solid #2e5570;
+            box-shadow: inset 0 3px 8px #000000;
+            border: 1px solid #475569;
         }
 
         .energy-bar-fill {
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, #1dd1a1, #00e6ff, #2ecc71);
-            border-radius: 40px;
-            box-shadow: 0 0 14px #00ffe0, inset 0 1px 3px #ffffffaa;
-            transition: width 0.08s linear;
-            border: 1px solid #a0f5ff;
+            background: linear-gradient(90deg, #10b981, #34d399, #fbbf24);
+            border-radius: 30px;
+            box-shadow: 0 0 12px #fbbf24, inset 0 1px 4px white;
+            transition: width 0.1s ease;
         }
 
-        /* Монета — тап-зона */
-        .coin-tap-area {
+        .regen-text {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #6ee7b7;
+            font-weight: 500;
+        }
+
+        /* Монета — ТАП */
+        .tap-area {
             display: flex;
             justify-content: center;
-            margin: 16px 0 10px;
+            margin: 20px 0 10px;
         }
 
         .coin-button {
             background: none;
             border: none;
-            padding: 0;
             cursor: pointer;
             outline: none;
-            -webkit-tap-highlight-color: transparent;
-            transition: filter 0.1s;
+            padding: 0;
             border-radius: 50%;
-            box-shadow: 0 18px 28px -5px #000000dd, 0 0 0 2px #4ea6c7 inset, 0 0 0 4px #1e3b4e inset;
-            border-radius: 999px;
-        }
-
-        .coin-button:active {
-            filter: brightness(1.2);
+            -webkit-tap-highlight-color: transparent;
         }
 
         .coin-graphic {
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle at 30% 30%, #f9e074, #d4a017);
+            width: 210px;
+            height: 210px;
+            background: radial-gradient(circle at 30% 30%, #fde68a, #d97706);
             border-radius: 50%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 0 6px #ffd96680, 0 10px 30px #000000cc, inset 0 -6px 8px #7f5e00, inset 0 6px 12px #fff3c9;
-            border: 2px solid #ffecb3;
-            transition: all 0.12s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            box-shadow: 0 0 0 5px #fbbf2480, 0 15px 35px black, inset 0 -6px 8px #92400e, inset 0 6px 14px #fffbeb;
+            border: 3px solid #fde68a;
+            transition: all 0.15s cubic-bezier(0.2, 0.9, 0.4, 1);
             transform: scale(1);
         }
 
-        /* Класс анимации нажатия */
-        .coin-graphic.tap-effect {
-            transform: scale(0.88);
-            box-shadow: 0 0 0 8px #ffdd55cc, 0 12px 30px #000, inset 0 -2px 8px #b37b00;
-            background: radial-gradient(circle at 30% 30%, #ffe694, #e6b422);
+        .coin-graphic.tap-animation {
+            transform: scale(0.86);
+            box-shadow: 0 0 0 8px #fcd34d, 0 15px 35px black;
+            background: radial-gradient(circle at 30% 30%, #fef3c7, #eab308);
         }
 
-        .coin-inner-text {
-            font-size: 40px;
+        .coin-letter {
+            font-size: 58px;
             font-weight: 900;
-            color: #a15800;
-            text-shadow: 0 2px 3px #ffe69b, 2px 4px 0 #623f00;
-            letter-spacing: 3px;
+            color: #78350f;
+            text-shadow: 2px 4px 0 #fde68a;
         }
 
-        .coin-sub {
-            font-size: 16px;
-            font-weight: bold;
-            color: #784e00;
-            background: #ffeaac80;
-            padding: 2px 14px;
-            border-radius: 30px;
+        .coin-tap-label {
+            background: #b4530980;
             backdrop-filter: blur(4px);
-            margin-top: 4px;
-            box-shadow: inset 0 1px 4px #fffaee;
-        }
-
-        /* Счетчик за клик */
-        .per-tap-info {
-            display: flex;
-            justify-content: center;
-            gap: 28px;
-            margin: 18px 0 10px;
-            color: #bed9f0;
-        }
-
-        .per-tap-badge {
-            background: #1f3241;
-            padding: 8px 20px;
+            padding: 4px 16px;
             border-radius: 40px;
-            border: 1px solid #3f7890;
-            font-weight: 700;
-            font-size: 18px;
-            box-shadow: inset 0 2px 3px #0e1a22, 0 4px 0 #0c151e;
+            font-weight: bold;
+            color: #fffbeb;
+            margin-top: 4px;
         }
 
-        /* Кнопка регенерации (не нужна, реген автоматическая, но добавим сброс для демо) */
+        /* Кнопки */
         .action-row {
             display: flex;
-            gap: 12px;
-            margin-top: 12px;
+            gap: 10px;
+            margin: 18px 0 8px;
         }
 
-        .regen-button {
-            background: #1d3b4d;
+        .tg-button {
+            background: var(--tg-theme-button-color, #3b82f6);
+            color: var(--tg-theme-button-text-color, white);
             border: none;
-            border-bottom: 4px solid #0b1e28;
-            color: #d9f2ff;
+            border-radius: 40px;
+            padding: 14px 16px;
             font-weight: bold;
             font-size: 16px;
-            padding: 12px 18px;
-            border-radius: 36px;
-            flex: 2;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 6px 0 #0b171f, 0 2px 10px #00000055;
+            box-shadow: 0 5px 0 #1e40af, 0 2px 10px black;
             cursor: pointer;
-            transition: all 0.05s;
-            border: 1px solid #3192b3;
+            transition: all 0.08s;
+            border-bottom: 2px solid #1e3a8a;
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
         }
 
-        .regen-button:active {
+        .tg-button:active {
             transform: translateY(4px);
-            box-shadow: 0 2px 0 #0b171f, 0 2px 8px #000;
-            border-bottom-width: 2px;
+            box-shadow: 0 1px 0 #1e40af, 0 2px 8px black;
         }
 
-        .boost-indicator {
-            flex: 1;
-            background: #10232e;
-            border-radius: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: #8ec9ff;
-            border: 1px solid #2e7a9e;
-            box-shadow: inset 0 2px 5px #00000077;
-        }
-
-        .hint-text {
-            color: #98bcd9;
+        .save-badge {
+            background: #1e293b;
+            border-radius: 30px;
+            padding: 10px 14px;
             font-size: 13px;
+            color: #a5f3fc;
+            border: 1px solid #38bdf8;
+        }
+
+        .hint {
             text-align: center;
-            margin-top: 18px;
-            opacity: 0.9;
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 16px;
         }
     </style>
 </head>
 <body>
-<div class="game-container">
-    <!-- Заголовок с монетой HASKOIN -->
-    <div class="balance-section">
-        <div class="coin-label">
-            <span class="coin-icon">🪙</span>
-            <span class="coin-name">HASKOIN</span>
-            <span class="coin-icon">🪙</span>
+<div class="app-card">
+    <!-- Профиль из Telegram -->
+    <div class="user-profile">
+        <div class="avatar-placeholder" id="userAvatar">👤</div>
+        <div class="user-info">
+            <div class="user-name" id="userName">Загрузка...</div>
+            <div class="user-id-badge" id="userIdBadge">ID: —</div>
         </div>
-        <div class="balance-box">
-            <div class="balance-amount" id="balanceDisplay">0 <span>HASK</span></div>
-        </div>
+        <div style="font-size: 20px;">🪙</div>
     </div>
 
-    <!-- Энергия и регенерация -->
-    <div class="energy-panel">
+    <!-- HASKOIN баланс -->
+    <div class="coin-header">
+        <span class="coin-icon-large">🪙</span>
+        <span class="coin-title">HASKOIN</span>
+        <span class="coin-icon-large">🪙</span>
+    </div>
+    <div class="balance-container">
+        <div class="balance-value" id="balanceDisplay">0</div>
+        <div class="balance-label">HASK</div>
+    </div>
+
+    <!-- Энергия + реген -->
+    <div class="energy-section">
         <div class="energy-header">
             <span>⚡ Энергия</span>
-            <span id="energyText">500 / 500</span>
+            <span id="energyText">500/500</span>
         </div>
         <div class="energy-bar-bg">
-            <div class="energy-bar-fill" id="energyFill" style="width: 100%"></div>
+            <div class="energy-bar-fill" id="energyFill"></div>
         </div>
-        <div class="energy-header" style="margin-top: 6px;">
-            <span>🔄 Регенерация</span>
-            <span class="regen-indicator" id="regenRateDisplay">+5/сек</span>
-        </div>
+        <div class="regen-text" id="regenDisplay">🔄 +5/сек · автосохранение</div>
     </div>
 
-    <!-- Монета тап-зона -->
-    <div class="coin-tap-area">
+    <!-- ТАП МОНЕТА -->
+    <div class="tap-area">
         <button class="coin-button" id="tapButton">
             <div class="coin-graphic" id="coinGraphic">
-                <div class="coin-inner-text">H</div>
-                <div class="coin-sub">TAP</div>
+                <div class="coin-letter">H</div>
+                <div class="coin-tap-label">TAP</div>
             </div>
         </button>
     </div>
 
-    <!-- Инфо о клике -->
-    <div class="per-tap-info">
-        <div class="per-tap-badge">💰 +1 за тап</div>
-        <div class="per-tap-badge">⚡ -1 энергии</div>
-    </div>
-
-    <!-- Доп. управление (полная регенерация по кнопке, но и так авто) -->
+    <!-- Управление -->
     <div class="action-row">
-        <button class="regen-button" id="fullRegenBtn">
-            <span>🔋</span> Восстановить энергию
+        <button class="tg-button" id="fullRegenButton">
+            <span>🔋</span> Восстановить
         </button>
-        <div class="boost-indicator" id="autoRegenBadge">
-            ⏳ авто
-        </div>
+        <button class="tg-button" id="saveForceButton">
+            <span>💾</span> Сохранить
+        </button>
     </div>
-    <div class="hint-text">
-        Кликай по монете — тратится 1 энергия. Энергия восстанавливается сама.
+    <div class="save-badge" id="saveStatus">
+        ☁️ Данные в облаке Telegram
+    </div>
+    <div class="hint">
+        Нажми на монету — энергия тратится, монеты копятся. Прогресс сохраняется.
     </div>
 </div>
 
@@ -334,160 +334,280 @@
     (function(){
         "use strict";
 
-        // ---------- КОНФИГУРАЦИЯ HASKOIN ----------
+        // ---------- ИНИЦИАЛИЗАЦИЯ Telegram Web App ----------
+        const tg = window.Telegram.WebApp;
+        tg.expand();       // на весь экран
+        tg.enableClosingConfirmation(); // предупреждение при закрытии
+
+        // Подстраиваем тему
+        document.body.style.backgroundColor = tg.backgroundColor || '#0f172a';
+        
+        // Данные пользователя
+        const user = tg.initDataUnsafe?.user;
+        const userNameEl = document.getElementById('userName');
+        const userAvatarEl = document.getElementById('userAvatar');
+        const userIdBadge = document.getElementById('userIdBadge');
+
+        let userId = 'guest';
+        if (user) {
+            userId = user.id.toString();
+            const firstName = user.first_name || '';
+            const lastName = user.last_name || '';
+            const displayName = firstName || (user.username ? '@'+user.username : 'Hasker');
+            userNameEl.textContent = displayName + (lastName ? ' ' + lastName.charAt(0)+'.' : '');
+            userIdBadge.textContent = `ID: ${userId}`;
+            // первая буква для аватарки
+            userAvatarEl.textContent = firstName ? firstName.charAt(0).toUpperCase() : 'H';
+        } else {
+            userNameEl.textContent = 'HASKOIN Miner';
+            userIdBadge.textContent = 'ID: demo';
+            userAvatarEl.textContent = 'H';
+            console.warn('Запуск вне Telegram или нет данных пользователя');
+        }
+
+        // ---------- КОНФИГУРАЦИЯ ----------
         const MAX_ENERGY = 500;
-        const TAP_COST = 1;            // энергия за тап
-        const COIN_PER_TAP = 1;        // сколько монет даётся
-        const REGEN_PER_SECOND = 5;     // восстановление энергии в секунду
-        const REGEN_INTERVAL_MS = 200;  // обновление каждые 200 мс (плавно)
+        const TAP_ENERGY_COST = 1;
+        const COINS_PER_TAP = 1;
+        const REGEN_PER_SEC = 5;
+        const SAVE_DEBOUNCE_MS = 800;      // сохранять не чаще раза в 0.8 сек
+        const CLOUD_KEY_PREFIX = 'haskoin_';
+
+        // Ключи для облачного хранилища Telegram
+        const STORAGE_KEY_BALANCE = CLOUD_KEY_PREFIX + userId + '_balance';
+        const STORAGE_KEY_ENERGY = CLOUD_KEY_PREFIX + userId + '_energy';
+        const STORAGE_KEY_LAST_UPDATE = CLOUD_KEY_PREFIX + userId + '_lastUpdate';
 
         // ---------- СОСТОЯНИЕ ----------
-        let balance = 0;                     // всего монет HASKOIN
-        let currentEnergy = MAX_ENERGY;      // текущая энергия
-
+        let balance = 0;
+        let currentEnergy = MAX_ENERGY;
+        
         // UI элементы
         const balanceDisplay = document.getElementById('balanceDisplay');
         const energyText = document.getElementById('energyText');
         const energyFill = document.getElementById('energyFill');
-        const regenRateDisplay = document.getElementById('regenRateDisplay');
         const coinGraphic = document.getElementById('coinGraphic');
         const tapButton = document.getElementById('tapButton');
-        const fullRegenBtn = document.getElementById('fullRegenBtn');
+        const fullRegenBtn = document.getElementById('fullRegenButton');
+        const saveForceBtn = document.getElementById('saveForceButton');
+        const saveStatus = document.getElementById('saveStatus');
 
-        // Вспомогательные переменные для анимации
-        let tapAnimationTimer = null;
+        let tapAnimTimer = null;
+        let pendingSaveTimer = null;
+        let lastSavedBalance = 0;
+        let lastSavedEnergy = MAX_ENERGY;
 
-        // ---------- ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ----------
-        function updateUI() {
-            // Обновить баланс
-            balanceDisplay.innerHTML = `${balance.toLocaleString()} <span>HASK</span>`;
-
-            // Энергия
-            const percent = (currentEnergy / MAX_ENERGY) * 100;
-            energyFill.style.width = Math.max(0, percent) + '%';
-            energyText.textContent = `${Math.floor(currentEnergy)} / ${MAX_ENERGY}`;
-
-            // Цвет полосы в зависимости от уровня
-            if (percent < 20) {
-                energyFill.style.background = 'linear-gradient(90deg, #ff9f43, #ff6b6b)';
-            } else if (percent < 50) {
-                energyFill.style.background = 'linear-gradient(90deg, #feca57, #1dd1a1)';
-            } else {
-                energyFill.style.background = 'linear-gradient(90deg, #1dd1a1, #00e6ff, #2ecc71)';
-            }
-
-            regenRateDisplay.textContent = `+${REGEN_PER_SECOND}/сек`;
+        // ---------- ОБНОВЛЕНИЕ UI ----------
+        function refreshUI() {
+            balanceDisplay.textContent = balance.toLocaleString();
+            const percent = Math.max(0, (currentEnergy / MAX_ENERGY) * 100);
+            energyFill.style.width = percent + '%';
+            energyText.textContent = `${Math.floor(currentEnergy)}/${MAX_ENERGY}`;
         }
 
-        // ---------- АНИМАЦИЯ ТАПА (хорошая анимация) ----------
-        function playTapAnimation() {
-            if (tapAnimationTimer) {
-                clearTimeout(tapAnimationTimer);
+        // ---------- АНИМАЦИЯ ТАПА ----------
+        function playTapFeedback(success = true) {
+            if (tapAnimTimer) clearTimeout(tapAnimTimer);
+            coinGraphic.classList.add('tap-animation');
+            tapAnimTimer = setTimeout(() => {
+                coinGraphic.classList.remove('tap-animation');
+                tapAnimTimer = null;
+            }, 130);
+            
+            if (!success) {
+                coinGraphic.style.transition = 'transform 0.1s';
+                coinGraphic.style.transform = 'translateX(4px)';
+                setTimeout(() => coinGraphic.style.transform = 'translateX(-4px)', 40);
+                setTimeout(() => coinGraphic.style.transform = 'translateX(2px)', 80);
+                setTimeout(() => { 
+                    coinGraphic.style.transform = ''; 
+                    coinGraphic.style.transition = '';
+                }, 130);
             }
-            coinGraphic.classList.add('tap-effect');
-            tapAnimationTimer = setTimeout(() => {
-                coinGraphic.classList.remove('tap-effect');
-                tapAnimationTimer = null;
-            }, 120);
-        }
-
-        // Визуальный фидбек при нехватке энергии
-        function shakeEnergyLack() {
-            coinGraphic.style.transition = 'transform 0.05s';
-            coinGraphic.style.transform = 'translateX(3px)';
-            setTimeout(() => coinGraphic.style.transform = 'translateX(-3px)', 40);
-            setTimeout(() => coinGraphic.style.transform = 'translateX(2px)', 80);
-            setTimeout(() => coinGraphic.style.transform = 'translateX(0)', 120);
-            setTimeout(() => coinGraphic.style.transition = '', 150);
         }
 
         // ---------- ЛОГИКА ТАПА ----------
-        function handleTap() {
-            if (currentEnergy >= TAP_COST) {
-                // Тратим энергию
-                currentEnergy -= TAP_COST;
-                // Начисляем монеты HASKOIN
-                balance += COIN_PER_TAP;
-
-                // Анимация успешного тапа
-                playTapAnimation();
-
-                // Обновить UI
-                updateUI();
+        function performTap() {
+            if (currentEnergy >= TAP_ENERGY_COST) {
+                currentEnergy -= TAP_ENERGY_COST;
+                balance += COINS_PER_TAP;
+                playTapFeedback(true);
+                refreshUI();
+                scheduleSave();
             } else {
-                // Нет энергии — визуальный отклик
-                shakeEnergyLack();
-                // мигнуть полоской энергии
-                energyFill.style.transition = 'box-shadow 0.1s';
-                energyFill.style.boxShadow = '0 0 20px #ff4d4d, inset 0 1px 3px #fff';
+                playTapFeedback(false);
+                // Визуально подсветить нехватку
+                energyFill.style.transition = 'box-shadow 0.15s';
+                energyFill.style.boxShadow = '0 0 20px #ef4444';
                 setTimeout(() => {
-                    energyFill.style.boxShadow = '0 0 14px #00ffe0, inset 0 1px 3px #ffffffaa';
+                    energyFill.style.boxShadow = '0 0 12px #fbbf24, inset 0 1px 4px white';
                     energyFill.style.transition = '';
                 }, 200);
             }
         }
 
-        // ---------- РЕГЕНЕРАЦИЯ (автоматическая) ----------
-        function regenerateEnergy() {
+        // ---------- РЕГЕНЕРАЦИЯ ----------
+        function applyRegen() {
             if (currentEnergy < MAX_ENERGY) {
-                // Восстановление пропорционально интервалу
-                const regenAmount = (REGEN_PER_SECOND * REGEN_INTERVAL_MS) / 1000;
-                currentEnergy = Math.min(currentEnergy + regenAmount, MAX_ENERGY);
-                updateUI();
+                currentEnergy = Math.min(currentEnergy + 1, MAX_ENERGY); // +1 каждый вызов (каждые 200мс = 5/сек)
+                refreshUI();
+                scheduleSave();
             }
         }
 
-        // Полное восстановление (кнопка, но и так авто, однако пусть будет как приятный бонус)
-        function fullRegen() {
-            currentEnergy = MAX_ENERGY;
-            updateUI();
-            // лёгкая анимация радости
-            coinGraphic.style.transition = 'transform 0.2s';
-            coinGraphic.style.transform = 'scale(1.05)';
-            setTimeout(() => coinGraphic.style.transform = 'scale(1)', 150);
-            setTimeout(() => coinGraphic.style.transition = '', 250);
+        // ---------- СОХРАНЕНИЕ В ОБЛАКО TELEGRAM ----------
+        function saveToCloud() {
+            if (!tg.isVersionAtLeast('6.9')) {
+                saveStatus.textContent = '⚠️ Облако не поддерживается';
+                return;
+            }
+
+            const cloudData = {
+                balance: balance,
+                energy: currentEnergy,
+                lastUpdate: Date.now()
+            };
+
+            // Сохраняем в CloudStorage Telegram
+            tg.CloudStorage.setItem(STORAGE_KEY_BALANCE, String(balance), (err, success) => {
+                if (err) console.warn('Ошибка сохранения баланса', err);
+            });
+            tg.CloudStorage.setItem(STORAGE_KEY_ENERGY, String(currentEnergy), (err, success) => {});
+            tg.CloudStorage.setItem(STORAGE_KEY_LAST_UPDATE, String(Date.now()), (err, success) => {
+                if (!err) {
+                    lastSavedBalance = balance;
+                    lastSavedEnergy = currentEnergy;
+                    saveStatus.innerHTML = '☁️ Сохранено в облаке Telegram';
+                    setTimeout(() => {
+                        if (saveStatus) saveStatus.innerHTML = '☁️ Данные в облаке Telegram';
+                    }, 1500);
+                } else {
+                    saveStatus.innerHTML = '⚠️ Ошибка синхронизации';
+                }
+            });
         }
 
-        // ---------- ИНИЦИАЛИЗАЦИЯ СОБЫТИЙ ----------
-        function init() {
-            // Установка начальных значений
-            currentEnergy = MAX_ENERGY;
-            balance = 0;
-            updateUI();
+        function scheduleSave() {
+            if (pendingSaveTimer) clearTimeout(pendingSaveTimer);
+            pendingSaveTimer = setTimeout(() => {
+                // Не сохраняем слишком часто без изменений
+                if (balance !== lastSavedBalance || Math.abs(currentEnergy - lastSavedEnergy) > 0.5) {
+                    saveToCloud();
+                }
+                pendingSaveTimer = null;
+            }, SAVE_DEBOUNCE_MS);
+        }
 
-            // Слушатель тапов
+        // Загрузка данных из облака при старте
+        function loadFromCloud() {
+            if (!tg.isVersionAtLeast('6.9')) {
+                saveStatus.textContent = '☁️ Облако недоступно (используйте Telegram)';
+                balance = 0;
+                currentEnergy = MAX_ENERGY;
+                refreshUI();
+                return;
+            }
+
+            tg.CloudStorage.getItems([STORAGE_KEY_BALANCE, STORAGE_KEY_ENERGY, STORAGE_KEY_LAST_UPDATE], (err, values) => {
+                if (err) {
+                    console.warn('Ошибка загрузки', err);
+                    balance = 0;
+                    currentEnergy = MAX_ENERGY;
+                } else {
+                    const savedBalance = values[STORAGE_KEY_BALANCE];
+                    const savedEnergy = values[STORAGE_KEY_ENERGY];
+                    const lastUpdateStr = values[STORAGE_KEY_LAST_UPDATE];
+
+                    if (savedBalance !== undefined) {
+                        balance = parseInt(savedBalance, 10) || 0;
+                    } else {
+                        balance = 0;
+                    }
+
+                    if (savedEnergy !== undefined) {
+                        currentEnergy = parseFloat(savedEnergy) || MAX_ENERGY;
+                    } else {
+                        currentEnergy = MAX_ENERGY;
+                    }
+
+                    // Офлайн-регенерация (если прошло время)
+                    if (lastUpdateStr) {
+                        const lastUpdate = parseInt(lastUpdateStr, 10);
+                        if (!isNaN(lastUpdate)) {
+                            const now = Date.now();
+                            const secondsPassed = (now - lastUpdate) / 1000;
+                            if (secondsPassed > 0 && currentEnergy < MAX_ENERGY) {
+                                const regenAmount = secondsPassed * REGEN_PER_SEC;
+                                currentEnergy = Math.min(currentEnergy + regenAmount, MAX_ENERGY);
+                            }
+                        }
+                    }
+
+                    lastSavedBalance = balance;
+                    lastSavedEnergy = currentEnergy;
+                }
+                refreshUI();
+                saveStatus.innerHTML = '☁️ Данные загружены';
+                setTimeout(() => saveStatus.innerHTML = '☁️ Данные в облаке Telegram', 1200);
+            });
+        }
+
+        // Полное восстановление
+        function fullRegen() {
+            currentEnergy = MAX_ENERGY;
+            refreshUI();
+            scheduleSave();
+            coinGraphic.style.transform = 'scale(1.05)';
+            setTimeout(() => coinGraphic.style.transform = '', 150);
+            saveStatus.innerHTML = '🔋 Энергия восстановлена';
+        }
+
+        // Принудительное сохранение
+        function forceSave() {
+            saveToCloud();
+            saveStatus.innerHTML = '💾 Сохраняю...';
+        }
+
+        // ---------- ИНИЦИАЛИЗАЦИЯ ----------
+        function init() {
+            loadFromCloud();
+            
+            // Регенерация каждые 200 мс (5 в сек)
+            setInterval(() => {
+                applyRegen();
+            }, 200);
+
+            // Обработчики
             tapButton.addEventListener('click', (e) => {
                 e.preventDefault();
-                handleTap();
+                performTap();
             });
 
-            // Для тач-устройств предотвращаем двойное масштабирование и т.п.
             tapButton.addEventListener('touchstart', (e) => {
                 e.preventDefault();
             }, { passive: false });
 
-            // Кнопка полного восстановления (дополнительно)
             fullRegenBtn.addEventListener('click', (e) => {
                 fullRegen();
             });
 
-            // Автоматическая регенерация (каждые REGEN_INTERVAL_MS)
-            setInterval(() => {
-                regenerateEnergy();
-            }, REGEN_INTERVAL_MS);
+            saveForceBtn.addEventListener('click', (e) => {
+                forceSave();
+            });
 
-            // Отображение регенерации в бейдже
-            regenRateDisplay.textContent = `+${REGEN_PER_SECOND}/сек`;
-
-            // Дополнительно: при загрузке маленький приветственный блеск
-            setTimeout(() => {
-                coinGraphic.style.transition = 'transform 0.3s';
-                coinGraphic.style.transform = 'scale(1.02)';
-                setTimeout(() => coinGraphic.style.transform = 'scale(1)', 200);
-            }, 50);
+            // Готовность приложения
+            tg.ready();
+            tg.MainButton?.hide();
+            
+            // Автосохранение перед закрытием
+            window.addEventListener('beforeunload', () => {
+                if (pendingSaveTimer) {
+                    clearTimeout(pendingSaveTimer);
+                    saveToCloud();
+                }
+            });
         }
 
-        // Старт
         init();
     })();
 </script>
