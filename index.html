@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>HASKOIN · Мгновенный тап</title>
+    <title>HASKOIN · Биржа и Майнинг</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -16,45 +16,86 @@
         }
 
         body {
-            background: linear-gradient(145deg, #0a0f1a 0%, #141a2b 100%);
+            background: radial-gradient(circle at 20% 30%, #1a2a3a, #0a0f1a);
             min-height: 100vh;
             padding: 12px;
             display: flex;
             justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Анимированный фон */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 80% 20%, rgba(251, 191, 36, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Плавающие частицы */
+        .particle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: rgba(251, 191, 36, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+            50% { transform: translateY(-30px) rotate(180deg); opacity: 0.6; }
         }
 
         .app {
             max-width: 420px;
             width: 100%;
+            position: relative;
+            z-index: 10;
         }
 
         .tabs {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             margin-bottom: 16px;
-            background: #1e293b80;
+            background: rgba(30, 41, 59, 0.7);
             padding: 6px;
             border-radius: 50px;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            flex-wrap: wrap;
         }
 
         .tab {
             flex: 1;
-            padding: 12px;
+            min-width: 60px;
+            padding: 10px 8px;
             border: none;
             background: transparent;
             color: #94a3b8;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 13px;
             border-radius: 40px;
             cursor: pointer;
-            transition: all 0.15s;
+            transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .tab.active {
-            background: #3b82f6;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             color: white;
-            box-shadow: 0 4px 12px #3b82f680;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5);
         }
 
         .panel {
@@ -66,13 +107,13 @@
         }
 
         .card {
-            background: #1e293bdd;
-            backdrop-filter: blur(12px);
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(20px);
             border-radius: 28px;
             padding: 20px 18px;
             margin-bottom: 14px;
-            border: 1px solid #334155;
-            box-shadow: 0 8px 0 #0f172a, 0 4px 12px #00000055;
+            border: 1px solid rgba(251, 191, 36, 0.25);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(251, 191, 36, 0.1) inset;
         }
 
         .profile-row {
@@ -92,7 +133,7 @@
             font-size: 28px;
             font-weight: bold;
             color: #0f172a;
-            box-shadow: 0 6px 0 #92400e;
+            box-shadow: 0 6px 0 #92400e, 0 0 20px rgba(251, 191, 36, 0.3);
         }
 
         .profile-info h3 {
@@ -106,18 +147,22 @@
         }
 
         .balance-block {
-            background: #0f172a;
+            background: linear-gradient(135deg, #0f172a, #1a2a3a);
             border-radius: 50px;
             padding: 16px 20px;
             margin: 16px 0;
-            border: 1px solid #fbbf2450;
+            border: 1px solid rgba(251, 191, 36, 0.4);
             text-align: center;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.05);
         }
 
         .balance-value {
             font-size: 48px;
             font-weight: 900;
-            color: #fef3c7;
+            background: linear-gradient(135deg, #fef3c7, #fbbf24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             text-shadow: 0 3px 0 #b45309;
         }
 
@@ -151,14 +196,31 @@
             border-radius: 30px;
             width: 100%;
             transition: width 0.05s;
-            box-shadow: 0 0 10px #34d399;
+            box-shadow: 0 0 15px #34d399;
         }
 
-        /* МОНЕТА - МГНОВЕННЫЙ КЛИК ПО ВСЕЙ ПОВЕРХНОСТИ */
+        /* МОНЕТА С ЭФФЕКТАМИ */
         .coin-section {
             display: flex;
             justify-content: center;
             margin: 20px 0;
+            position: relative;
+        }
+
+        .coin-glow {
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
         }
 
         .coin-button {
@@ -174,8 +236,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.05s;
+            transition: transform 0.1s;
             touch-action: manipulation;
+            position: relative;
+            z-index: 2;
         }
 
         .coin-button:active {
@@ -191,13 +255,34 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 0 6px #fbbf2466, 0 18px 30px #000000, inset 0 -6px 8px #92400e, inset 0 6px 14px #fffbeb;
+            box-shadow: 
+                0 0 0 6px rgba(251, 191, 36, 0.4),
+                0 18px 40px rgba(0, 0, 0, 0.5),
+                inset 0 -6px 8px #92400e,
+                inset 0 6px 14px #fffbeb,
+                0 0 40px rgba(251, 191, 36, 0.3);
             border: 3px solid #fde68a;
-            transition: all 0.05s;
+            transition: all 0.1s;
+            position: relative;
+        }
+
+        .coin-image::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 15%;
+            width: 30%;
+            height: 20%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0.5;
         }
 
         .coin-button:active .coin-image {
-            box-shadow: 0 0 0 10px #fcd34d, 0 15px 30px #000000;
+            box-shadow: 
+                0 0 0 10px rgba(252, 211, 77, 0.6),
+                0 15px 40px #000000,
+                0 0 60px rgba(251, 191, 36, 0.5);
             background: radial-gradient(circle at 30% 30%, #fef3c7, #eab308);
         }
 
@@ -209,13 +294,31 @@
         }
 
         .tap-label {
-            background: #b4530980;
+            background: rgba(180, 83, 9, 0.7);
             backdrop-filter: blur(6px);
             padding: 6px 20px;
             border-radius: 40px;
             font-weight: bold;
             color: white;
             margin-top: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Эффект +монеты при тапе */
+        .tap-effect {
+            position: absolute;
+            color: #fbbf24;
+            font-weight: bold;
+            font-size: 24px;
+            text-shadow: 0 0 20px #fbbf24;
+            pointer-events: none;
+            z-index: 100;
+            animation: floatUp 1s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
         }
 
         .per-tap {
@@ -232,14 +335,14 @@
         }
 
         .btn {
-            background: #3b82f6;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
             color: white;
             border: none;
             border-radius: 40px;
             padding: 14px 20px;
             font-weight: 600;
             font-size: 15px;
-            box-shadow: 0 5px 0 #1e40af;
+            box-shadow: 0 5px 0 #1e40af, 0 4px 10px rgba(0, 0, 0, 0.3);
             cursor: pointer;
             transition: all 0.05s;
             border-bottom: 2px solid #1e3a8a;
@@ -248,12 +351,17 @@
 
         .btn:active {
             transform: translateY(4px);
-            box-shadow: 0 1px 0 #1e40af;
+            box-shadow: 0 1px 0 #1e40af, 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .btn-success {
-            background: #10b981;
-            box-shadow: 0 5px 0 #047857;
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 5px 0 #047857, 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 5px 0 #b45309, 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
         .status-message {
@@ -264,8 +372,146 @@
             min-height: 40px;
         }
 
-        .wallet-connect {
+        /* БИРЖА */
+        .exchange-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .price-display {
+            background: linear-gradient(135deg, #0f172a, #1a2a3a);
+            padding: 12px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            text-align: center;
+        }
+
+        .price-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+
+        .order-book {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 16px;
+            padding: 12px;
+            margin: 16px 0;
+        }
+
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .order-buy { color: #10b981; }
+        .order-sell { color: #ef4444; }
+
+        /* АДМИН-ПАНЕЛЬ */
+        .admin-panel {
+            background: rgba(139, 92, 246, 0.15);
+            border-radius: 20px;
+            padding: 16px;
+            margin-top: 16px;
+            border: 1px solid rgba(139, 92, 246, 0.4);
+        }
+
+        .admin-title {
+            color: #a78bfa;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .admin-input {
+            display: flex;
+            gap: 8px;
+        }
+
+        .admin-input input {
+            flex: 1;
             background: #0f172a;
+            border: 1px solid #8b5cf6;
+            border-radius: 20px;
+            padding: 10px 16px;
+            color: white;
+            font-size: 16px;
+        }
+
+        /* БУСТЫ - УЛУЧШЕННЫЕ */
+        .boost-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .boost-card {
+            background: linear-gradient(135deg, #0f172a, #1a2a3a);
+            border-radius: 20px;
+            padding: 16px 12px;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .boost-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .boost-card:hover::before {
+            opacity: 1;
+        }
+
+        .boost-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .boost-card h4 {
+            color: #fbbf24;
+            margin-bottom: 6px;
+            font-size: 16px;
+        }
+
+        .boost-card p {
+            color: #cbd5e1;
+            font-size: 13px;
+            margin: 6px 0;
+        }
+
+        .boost-price {
+            color: #10b981;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+
+        .boost-level {
+            color: #8b5cf6;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 13px;
+            width: 100%;
+        }
+
+        .wallet-connect {
+            background: linear-gradient(135deg, #0f172a, #1a2a3a);
             border-radius: 20px;
             padding: 16px;
             margin: 16px 0;
@@ -282,48 +528,39 @@
         }
 
         .task-item {
-            background: #0f172a;
+            background: linear-gradient(135deg, #0f172a, #1a2a3a);
             border-radius: 20px;
             padding: 16px;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border: 1px solid #334155;
-        }
-
-        .boost-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .boost-card {
-            background: #0f172a;
-            border-radius: 20px;
-            padding: 16px;
-            border: 1px solid #334155;
-            text-align: center;
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 13px;
-        }
-
-        /* Убираем все задержки */
-        * {
-            transition-duration: 0.05s !important;
+            border: 1px solid rgba(51, 65, 85, 0.5);
         }
     </style>
 </head>
 <body>
+<!-- Анимированные частицы фона -->
+<script>
+    for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 15 + 's';
+        particle.style.animationDuration = (10 + Math.random() * 20) + 's';
+        document.body.appendChild(particle);
+    }
+</script>
+
 <div class="app">
     <div class="tabs">
         <button class="tab active" data-tab="mine">⛏️ Майнинг</button>
+        <button class="tab" data-tab="exchange">📊 Биржа</button>
         <button class="tab" data-tab="wallet">💼 Кошелёк</button>
         <button class="tab" data-tab="tasks">📋 Задания</button>
         <button class="tab" data-tab="boost">🚀 Буст</button>
+        <button class="tab" data-tab="admin">⚙️ Админ</button>
     </div>
 
     <!-- МАЙНИНГ -->
@@ -355,8 +592,9 @@
                 </div>
             </div>
 
-            <!-- МОНЕТА - МГНОВЕННЫЙ ОТКЛИК, ВСЯ ПОВЕРХНОСТЬ КЛИКАБЕЛЬНА -->
+            <!-- МОНЕТА С ЭФФЕКТАМИ -->
             <div class="coin-section">
+                <div class="coin-glow"></div>
                 <button class="coin-button" id="tapButton">
                     <div class="coin-image">
                         <div class="coin-letter">H</div>
@@ -365,7 +603,7 @@
                 </button>
             </div>
             <div class="per-tap">
-                💰 <span>+0.05</span> HASK за тап · ⚡ -1 энергии
+                💰 <span id="tapValue">+0.05</span> HASK за тап · ⚡ -1 энергии
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -375,6 +613,57 @@
             <div class="status-message" id="mineStatus">
                 👆 Жми по монете!
             </div>
+        </div>
+    </div>
+
+    <!-- БИРЖА -->
+    <div class="panel" id="panel-exchange">
+        <div class="card">
+            <div class="exchange-header">
+                <h3 style="color: #e2e8f0;">📊 Биржа HASKOIN</h3>
+                <span style="color: #10b981;" id="priceChange">+0%</span>
+            </div>
+            
+            <div class="price-display">
+                <div style="color: #94a3b8; font-size: 14px;">Текущий курс</div>
+                <div class="price-value" id="currentPrice">0.01 TON</div>
+                <div style="color: #94a3b8; font-size: 12px;">= 1000 HASK</div>
+            </div>
+
+            <div class="order-book" id="orderBook">
+                <div style="color: #cbd5e1; margin-bottom: 8px;">📖 Стакан заявок</div>
+                <div class="order-row">
+                    <span class="order-buy">Покупка 5000 HASK</span>
+                    <span class="order-buy">0.0098 TON</span>
+                </div>
+                <div class="order-row">
+                    <span class="order-buy">Покупка 3000 HASK</span>
+                    <span class="order-buy">0.0095 TON</span>
+                </div>
+                <div class="order-row">
+                    <span class="order-sell">Продажа 4000 HASK</span>
+                    <span class="order-sell">0.0102 TON</span>
+                </div>
+                <div class="order-row">
+                    <span class="order-sell">Продажа 6000 HASK</span>
+                    <span class="order-sell">0.0105 TON</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 16px;">
+                <button class="btn btn-success" id="buyOrderBtn" style="flex:1">🟢 Купить</button>
+                <button class="btn btn-warning" id="sellOrderBtn" style="flex:1">🔴 Продать</button>
+            </div>
+
+            <div style="margin-top: 16px;">
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="orderAmount" placeholder="Количество HASK" 
+                           style="flex:1; background:#0f172a; border:1px solid #475569; border-radius:20px; padding:12px; color:white;">
+                    <button class="btn btn-small" id="placeOrderBtn">📝 Разместить</button>
+                </div>
+            </div>
+
+            <div class="status-message" id="exchangeStatus"></div>
         </div>
     </div>
 
@@ -395,7 +684,7 @@
             <div style="margin-top: 20px;">
                 <div style="display: flex; justify-content: space-between; color: #cbd5e1; margin-bottom: 8px;">
                     <span>Курс обмена:</span>
-                    <span style="color: #fbbf24;">1000 HASK = 0.01 TON</span>
+                    <span style="color: #fbbf24;" id="exchangeRate">1000 HASK = 0.01 TON</span>
                 </div>
                 <button class="btn btn-success" id="withdrawBtn" style="width: 100%;">
                     💸 Вывести HASKOIN в TON
@@ -410,6 +699,7 @@
                 <div style="color: #94a3b8;">
                     <p>Всего намайнено: <span id="totalMined">0.00</span> HASK</p>
                     <p>Выведено: <span id="totalWithdrawn">0.00</span> HASK</p>
+                    <p>Объём торгов: <span id="tradeVolume">0.00</span> HASK</p>
                 </div>
             </div>
         </div>
@@ -448,42 +738,80 @@
         </div>
     </div>
 
-    <!-- БУСТ -->
+    <!-- БУСТЫ - УЛУЧШЕННЫЕ -->
     <div class="panel" id="panel-boost">
         <div class="card">
             <h3 style="color: #e2e8f0; margin-bottom: 16px;">🚀 Улучшения</h3>
             
             <div class="boost-grid">
                 <div class="boost-card">
-                    <h4 style="color: #fbbf24;">⚡ Энергия +100</h4>
-                    <p style="color: #cbd5e1; margin: 8px 0;">Макс. энергия</p>
-                    <p style="color: #fbbf24;">5.00 HASK</p>
-                    <button class="btn btn-small boost-btn" data-boost="energy" style="margin-top: 8px;">Купить</button>
+                    <div class="boost-icon">⚡</div>
+                    <h4>Энерджайзер</h4>
+                    <p>Макс. энергия</p>
+                    <div class="boost-price">5.00 HASK</div>
+                    <div class="boost-level" id="energyLevel">Уровень 1</div>
+                    <button class="btn btn-small boost-btn" data-boost="energy" style="margin-top: 8px;">Улучшить</button>
                 </div>
 
                 <div class="boost-card">
-                    <h4 style="color: #fbbf24;">⛏️ Мультитап x2</h4>
-                    <p style="color: #cbd5e1; margin: 8px 0;">+0.10 за тап</p>
-                    <p style="color: #fbbf24;">10.00 HASK</p>
-                    <button class="btn btn-small boost-btn" data-boost="multitap" style="margin-top: 8px;">Купить</button>
+                    <div class="boost-icon">⛏️</div>
+                    <h4>Мультитап</h4>
+                    <p>Больше за тап</p>
+                    <div class="boost-price">10.00 HASK</div>
+                    <div class="boost-level" id="multitapLevel">Уровень 1</div>
+                    <button class="btn btn-small boost-btn" data-boost="multitap" style="margin-top: 8px;">Улучшить</button>
                 </div>
 
                 <div class="boost-card">
-                    <h4 style="color: #fbbf24;">🔄 Реген x2</h4>
-                    <p style="color: #cbd5e1; margin: 8px 0;">+10/сек</p>
-                    <p style="color: #fbbf24;">8.00 HASK</p>
-                    <button class="btn btn-small boost-btn" data-boost="regen" style="margin-top: 8px;">Купить</button>
+                    <div class="boost-icon">🔄</div>
+                    <h4>Регенератор</h4>
+                    <p>Быстрое восст.</p>
+                    <div class="boost-price">8.00 HASK</div>
+                    <div class="boost-level" id="regenLevel">Уровень 1</div>
+                    <button class="btn btn-small boost-btn" data-boost="regen" style="margin-top: 8px;">Улучшить</button>
                 </div>
 
                 <div class="boost-card">
-                    <h4 style="color: #fbbf24;">🎯 Автокликер</h4>
-                    <p style="color: #cbd5e1; margin: 8px 0;">1 тап/сек</p>
-                    <p style="color: #fbbf24;">20.00 HASK</p>
-                    <button class="btn btn-small boost-btn" data-boost="autoclick" style="margin-top: 8px;">Купить</button>
+                    <div class="boost-icon">🤖</div>
+                    <h4>Автокликер</h4>
+                    <p>Авто-майнинг</p>
+                    <div class="boost-price">20.00 HASK</div>
+                    <div class="boost-level" id="autoLevel">Не активен</div>
+                    <button class="btn btn-small boost-btn" data-boost="autoclick" style="margin-top: 8px;">Активировать</button>
                 </div>
             </div>
 
             <div class="status-message" id="boostStatus"></div>
+        </div>
+    </div>
+
+    <!-- АДМИН-ПАНЕЛЬ -->
+    <div class="panel" id="panel-admin">
+        <div class="card">
+            <h3 style="color: #e2e8f0; margin-bottom: 16px;">⚙️ Админ-панель</h3>
+            
+            <div class="admin-panel">
+                <div class="admin-title">👑 Управление ценой HASKOIN</div>
+                <div class="admin-input">
+                    <input type="number" id="newPrice" placeholder="Цена в TON" step="0.001" value="0.01">
+                    <button class="btn btn-small" id="setPriceBtn">Установить</button>
+                </div>
+                <p style="color: #94a3b8; font-size: 12px; margin-top: 8px;">
+                    Текущая цена: <span id="adminCurrentPrice">0.01 TON</span> за 1000 HASK
+                </p>
+            </div>
+
+            <div class="admin-panel" style="margin-top: 16px;">
+                <div class="admin-title">📊 Статистика системы</div>
+                <div style="color: #cbd5e1;">
+                    <p>Всего пользователей: <span id="totalUsers">1</span></p>
+                    <p>В обращении: <span id="totalSupply">0.00</span> HASK</p>
+                    <p>Объём торгов за 24ч: <span id="dailyVolume">0.00</span> TON</p>
+                </div>
+                <button class="btn btn-small" id="resetStatsBtn" style="margin-top: 12px;">Сбросить статистику</button>
+            </div>
+
+            <div class="status-message" id="adminStatus"></div>
         </div>
     </div>
 </div>
@@ -495,10 +823,11 @@
         tg.enableClosingConfirmation();
 
         // ========== КОНФИГУРАЦИЯ ==========
-        const TAP_REWARD = 0.05;
-        const MAX_ENERGY_BASE = 500;
+        let TAP_REWARD = 0.05;
+        let MAX_ENERGY_BASE = 500;
         const ENERGY_COST = 1;
         const REGEN_BASE = 5;
+        let HASKOIN_PRICE = 0.01; // TON за 1000 HASK
 
         // ========== СОСТОЯНИЕ ==========
         let balance = 0.00;
@@ -509,18 +838,31 @@
         let autoClickerActive = false;
         let totalMined = 0.00;
         let totalWithdrawn = 0.00;
+        let tradeVolume = 0.00;
+        
+        // Уровни бустов
+        let energyLevel = 1;
+        let multitapLevel = 1;
+        let regenLevel = 1;
         
         const userId = tg.initDataUnsafe?.user?.id?.toString() || 'demo';
-        const STORAGE_KEY = `haskoin_${userId}_v3`;
+        const isAdmin = userId === 'YOUR_TELEGRAM_ID'; // Замените на свой ID
+        const STORAGE_KEY = `haskoin_${userId}_v4`;
+        const GLOBAL_STORAGE_KEY = 'haskoin_global_settings';
 
-        // UI
+        // UI элементы
         const balanceDisplay = document.getElementById('balanceDisplay');
         const energyText = document.getElementById('energyText');
         const energyFill = document.getElementById('energyFill');
         const mineStatus = document.getElementById('mineStatus');
+        const tapValueSpan = document.getElementById('tapValue');
         const totalMinedSpan = document.getElementById('totalMined');
         const totalWithdrawnSpan = document.getElementById('totalWithdrawn');
+        const tradeVolumeSpan = document.getElementById('tradeVolume');
         const walletAddressSpan = document.getElementById('walletAddress');
+        const currentPriceSpan = document.getElementById('currentPrice');
+        const exchangeRateSpan = document.getElementById('exchangeRate');
+        const adminCurrentPrice = document.getElementById('adminCurrentPrice');
 
         // ========== ПРОФИЛЬ ==========
         const user = tg.initDataUnsafe?.user;
@@ -528,10 +870,6 @@
             document.getElementById('userName').textContent = user.first_name || 'Hasker';
             document.getElementById('avatar').textContent = (user.first_name?.charAt(0) || 'H').toUpperCase();
             document.getElementById('userIdDisplay').textContent = `ID: ${user.id}`;
-        } else {
-            document.getElementById('userName').textContent = 'HASKOIN Miner';
-            document.getElementById('avatar').textContent = 'H';
-            document.getElementById('userIdDisplay').textContent = 'ID: demo';
         }
 
         // ========== ФОРМАТИРОВАНИЕ ==========
@@ -539,7 +877,34 @@
             return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
 
-        // ========== ЗАГРУЗКА ==========
+        // ========== ЗАГРУЗКА ГЛОБАЛЬНЫХ НАСТРОЕК ==========
+        function loadGlobalSettings() {
+            tg.CloudStorage.getItem(GLOBAL_STORAGE_KEY, (err, value) => {
+                if (!err && value) {
+                    try {
+                        const data = JSON.parse(value);
+                        HASKOIN_PRICE = data.price || 0.01;
+                    } catch(e) {}
+                }
+                updatePriceDisplay();
+            });
+        }
+
+        function saveGlobalSettings() {
+            if (!isAdmin) return;
+            const data = { price: HASKOIN_PRICE };
+            tg.CloudStorage.setItem(GLOBAL_STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function updatePriceDisplay() {
+            currentPriceSpan.textContent = HASKOIN_PRICE.toFixed(4) + ' TON';
+            exchangeRateSpan.textContent = `1000 HASK = ${HASKOIN_PRICE.toFixed(4)} TON`;
+            if (adminCurrentPrice) {
+                adminCurrentPrice.textContent = HASKOIN_PRICE.toFixed(4) + ' TON';
+            }
+        }
+
+        // ========== ЗАГРУЗКА ДАННЫХ ==========
         function loadData() {
             tg.CloudStorage.getItem(STORAGE_KEY, (err, value) => {
                 if (!err && value) {
@@ -553,17 +918,23 @@
                         autoClickerActive = data.autoClickerActive || false;
                         totalMined = data.totalMined || 0.00;
                         totalWithdrawn = data.totalWithdrawn || 0.00;
+                        tradeVolume = data.tradeVolume || 0.00;
+                        energyLevel = data.energyLevel || 1;
+                        multitapLevel = data.multitapLevel || 1;
+                        regenLevel = data.regenLevel || 1;
                     } catch(e) {}
                 }
                 refreshUI();
                 updateStats();
+                updateBoostLevels();
             });
         }
 
         function saveData() {
             const data = {
                 balance, maxEnergy, currentEnergy, tapMultiplier,
-                regenMultiplier, autoClickerActive, totalMined, totalWithdrawn
+                regenMultiplier, autoClickerActive, totalMined, totalWithdrawn,
+                tradeVolume, energyLevel, multitapLevel, regenLevel
             };
             tg.CloudStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
@@ -574,6 +945,7 @@
             const percent = (currentEnergy / maxEnergy) * 100;
             energyFill.style.width = Math.max(0, percent) + '%';
             energyText.textContent = `${Math.floor(currentEnergy)}/${maxEnergy}`;
+            tapValueSpan.textContent = '+' + (TAP_REWARD * tapMultiplier).toFixed(2);
             document.getElementById('regenInfo').textContent = 
                 `🔄 +${REGEN_BASE * regenMultiplier}/сек · автосохранение`;
         }
@@ -581,69 +953,67 @@
         function updateStats() {
             totalMinedSpan.textContent = formatNumber(totalMined);
             totalWithdrawnSpan.textContent = formatNumber(totalWithdrawn);
+            if (tradeVolumeSpan) tradeVolumeSpan.textContent = formatNumber(tradeVolume);
+            document.getElementById('totalSupply').textContent = formatNumber(totalMined);
         }
 
-        // ========== ТАП - МГНОВЕННЫЙ ==========
-        let tapCount = 0;
-        let lastTapTime = 0;
-        
+        function updateBoostLevels() {
+            document.getElementById('energyLevel').textContent = `Уровень ${energyLevel}`;
+            document.getElementById('multitapLevel').textContent = `Уровень ${multitapLevel}`;
+            document.getElementById('regenLevel').textContent = `Уровень ${regenLevel}`;
+            document.getElementById('autoLevel').textContent = autoClickerActive ? 'Активен' : 'Не активен';
+        }
+
+        // ========== ТАП С ЭФФЕКТАМИ ==========
+        function createTapEffect(x, y, amount) {
+            const effect = document.createElement('div');
+            effect.className = 'tap-effect';
+            effect.textContent = '+' + amount.toFixed(2);
+            effect.style.left = x + 'px';
+            effect.style.top = y + 'px';
+            document.body.appendChild(effect);
+            setTimeout(() => effect.remove(), 1000);
+        }
+
         function handleTap(e) {
-            // Предотвращаем все дефолтные действия
             if (e) {
                 e.preventDefault();
                 e.stopPropagation();
             }
             
-            const now = Date.now();
-            
-            // Проверка энергии
             if (currentEnergy >= ENERGY_COST) {
                 currentEnergy -= ENERGY_COST;
                 const earned = TAP_REWARD * tapMultiplier;
                 balance += earned;
                 totalMined += earned;
                 
-                tapCount++;
-                
-                // Мгновенное обновление UI
-                balanceDisplay.textContent = formatNumber(balance);
-                const percent = (currentEnergy / maxEnergy) * 100;
-                energyFill.style.width = Math.max(0, percent) + '%';
-                energyText.textContent = `${Math.floor(currentEnergy)}/${maxEnergy}`;
+                refreshUI();
                 updateStats();
                 
-                // Статус
-                mineStatus.innerHTML = `✅ +${earned.toFixed(2)} HASK! (${tapCount})`;
-                
-                // Сохраняем не чаще чем раз в 200мс при активном тапе
-                if (now - lastTapTime > 200) {
-                    saveData();
-                    lastTapTime = now;
+                // Эффект +монеты
+                if (e && e.touches) {
+                    const touch = e.touches[0];
+                    createTapEffect(touch.clientX, touch.clientY, earned);
+                } else if (e) {
+                    createTapEffect(e.clientX, e.clientY, earned);
                 }
+                
+                mineStatus.innerHTML = `✅ +${earned.toFixed(2)} HASK!`;
+                setTimeout(() => mineStatus.innerHTML = '👆 Жми по монете!', 500);
+                
+                saveData();
             } else {
                 mineStatus.innerHTML = '❌ Недостаточно энергии!';
                 energyFill.style.boxShadow = '0 0 20px #ef4444';
-                setTimeout(() => energyFill.style.boxShadow = '0 0 10px #34d399', 100);
+                setTimeout(() => energyFill.style.boxShadow = '0 0 15px #34d399', 200);
             }
-            
-            // Сбрасываем счётчик тапов через 500мс бездействия
-            setTimeout(() => {
-                if (Date.now() - lastTapTime > 500) {
-                    tapCount = 0;
-                    if (mineStatus.innerHTML.includes('+')) {
-                        mineStatus.innerHTML = '👆 Жми по монете!';
-                    }
-                }
-            }, 500);
         }
 
         // ========== РЕГЕНЕРАЦИЯ ==========
         function regen() {
             if (currentEnergy < maxEnergy) {
                 currentEnergy = Math.min(currentEnergy + (REGEN_BASE * regenMultiplier / 5), maxEnergy);
-                const percent = (currentEnergy / maxEnergy) * 100;
-                energyFill.style.width = Math.max(0, percent) + '%';
-                energyText.textContent = `${Math.floor(currentEnergy)}/${maxEnergy}`;
+                refreshUI();
             }
         }
 
@@ -672,24 +1042,13 @@
 
         // ========== ОБРАБОТЧИКИ ==========
         const tapButton = document.getElementById('tapButton');
-        
-        // Убираем задержку через touch-action и немедленный обработчик
-        tapButton.addEventListener('click', (e) => {
-            handleTap(e);
-        });
-        
+        tapButton.addEventListener('click', handleTap);
         tapButton.addEventListener('touchstart', (e) => {
             e.preventDefault();
             handleTap(e);
         }, { passive: false });
-        
-        // Предотвращаем контекстное меню
-        tapButton.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-        });
 
-        document.getElementById('fullRegenBtn').addEventListener('click', (e) => {
-            e.preventDefault();
+        document.getElementById('fullRegenBtn').addEventListener('click', () => {
             currentEnergy = maxEnergy;
             refreshUI();
             saveData();
@@ -697,8 +1056,7 @@
             setTimeout(() => mineStatus.innerHTML = '👆 Жми по монете!', 800);
         });
 
-        document.getElementById('dailyBonusBtn').addEventListener('click', (e) => {
-            e.preventDefault();
+        document.getElementById('dailyBonusBtn').addEventListener('click', () => {
             const lastBonus = localStorage.getItem(`haskoin_bonus_${userId}`);
             const now = Date.now();
             if (!lastBonus || now - parseInt(lastBonus) > 86400000) {
@@ -713,18 +1071,51 @@
                 const hoursLeft = 24 - Math.floor((now - parseInt(lastBonus)) / 3600000);
                 mineStatus.innerHTML = `⏰ Бонус через ${hoursLeft} ч.`;
             }
-            setTimeout(() => mineStatus.innerHTML = '👆 Жми по монете!', 1500);
+        });
+
+        // Биржа
+        document.getElementById('buyOrderBtn').addEventListener('click', () => {
+            const amount = parseFloat(prompt('Сколько HASK купить?', '1000'));
+            if (amount && amount > 0) {
+                const cost = (amount / 1000) * HASKOIN_PRICE;
+                tradeVolume += amount;
+                updateStats();
+                saveData();
+                document.getElementById('exchangeStatus').textContent = 
+                    `✅ Заявка на покупку ${amount} HASK за ${cost.toFixed(4)} TON размещена!`;
+            }
+        });
+
+        document.getElementById('sellOrderBtn').addEventListener('click', () => {
+            const amount = parseFloat(prompt('Сколько HASK продать?', '1000'));
+            if (amount && amount > 0 && balance >= amount) {
+                balance -= amount;
+                tradeVolume += amount;
+                refreshUI();
+                updateStats();
+                saveData();
+                document.getElementById('exchangeStatus').textContent = 
+                    `✅ Заявка на продажу ${amount} HASK размещена!`;
+            } else {
+                alert('Недостаточно HASK!');
+            }
+        });
+
+        document.getElementById('placeOrderBtn').addEventListener('click', () => {
+            const amount = parseFloat(document.getElementById('orderAmount').value);
+            if (amount && amount > 0) {
+                document.getElementById('exchangeStatus').textContent = 
+                    `📝 Лимитная заявка на ${amount} HASK размещена!`;
+            }
         });
 
         // Кошелёк
-        document.getElementById('connectWalletBtn').addEventListener('click', (e) => {
-            e.preventDefault();
+        document.getElementById('connectWalletBtn').addEventListener('click', () => {
             tg.openLink('https://ton.org/wallets');
-            walletAddressSpan.textContent = 'Нажмите "Подключить"';
+            walletAddressSpan.textContent = 'EQD...xyz';
         });
 
-        document.getElementById('withdrawBtn').addEventListener('click', (e) => {
-            e.preventDefault();
+        document.getElementById('withdrawBtn').addEventListener('click', () => {
             if (balance >= 100.00) {
                 const amount = balance;
                 totalWithdrawn += balance;
@@ -740,8 +1131,7 @@
 
         // Задания
         document.querySelectorAll('.task-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
+            btn.addEventListener('click', () => {
                 const task = btn.dataset.task;
                 if (task === 'subscribe') {
                     tg.openTelegramLink('https://t.me/haskoin_channel');
@@ -755,8 +1145,7 @@
             });
         });
 
-        document.getElementById('claimTasksBtn').addEventListener('click', (e) => {
-            e.preventDefault();
+        document.getElementById('claimTasksBtn').addEventListener('click', () => {
             balance += 5.00;
             totalMined += 5.00;
             refreshUI();
@@ -767,24 +1156,26 @@
 
         // Бусты
         document.querySelectorAll('.boost-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
+            btn.addEventListener('click', () => {
                 const boost = btn.dataset.boost;
                 let cost = 0;
                 let message = '';
                 
-                if (boost === 'energy' && balance >= 5.00) {
-                    cost = 5.00;
+                if (boost === 'energy' && balance >= 5.00 * energyLevel) {
+                    cost = 5.00 * energyLevel;
                     maxEnergy += 100;
-                    message = '⚡ Макс. энергия +100!';
-                } else if (boost === 'multitap' && balance >= 10.00) {
-                    cost = 10.00;
-                    tapMultiplier = 2.0;
-                    message = '⛏️ Мультитап x2! (+0.10 за тап)';
-                } else if (boost === 'regen' && balance >= 8.00) {
-                    cost = 8.00;
-                    regenMultiplier = 2.0;
-                    message = '🔄 Регенерация x2!';
+                    energyLevel++;
+                    message = `⚡ Энергия +100! Уровень ${energyLevel}`;
+                } else if (boost === 'multitap' && balance >= 10.00 * multitapLevel) {
+                    cost = 10.00 * multitapLevel;
+                    tapMultiplier += 0.5;
+                    multitapLevel++;
+                    message = `⛏️ Мультитап улучшен! Уровень ${multitapLevel}`;
+                } else if (boost === 'regen' && balance >= 8.00 * regenLevel) {
+                    cost = 8.00 * regenLevel;
+                    regenMultiplier += 0.5;
+                    regenLevel++;
+                    message = `🔄 Регенерация улучшена! Уровень ${regenLevel}`;
                 } else if (boost === 'autoclick' && balance >= 20.00) {
                     cost = 20.00;
                     autoClickerActive = true;
@@ -796,19 +1187,44 @@
                 
                 balance -= cost;
                 refreshUI();
+                updateBoostLevels();
                 saveData();
                 document.getElementById('boostStatus').textContent = message;
-                setTimeout(() => document.getElementById('boostStatus').textContent = '', 2000);
             });
         });
 
+        // Админ-панель
+        if (isAdmin) {
+            document.getElementById('setPriceBtn').addEventListener('click', () => {
+                const newPrice = parseFloat(document.getElementById('newPrice').value);
+                if (newPrice && newPrice > 0) {
+                    HASKOIN_PRICE = newPrice;
+                    updatePriceDisplay();
+                    saveGlobalSettings();
+                    document.getElementById('adminStatus').textContent = '✅ Цена обновлена!';
+                }
+            });
+        } else {
+            document.querySelector('[data-tab="admin"]').style.display = 'none';
+        }
+
+        document.getElementById('resetStatsBtn')?.addEventListener('click', () => {
+            if (confirm('Сбросить статистику?')) {
+                totalMined = 0.00;
+                totalWithdrawn = 0.00;
+                tradeVolume = 0.00;
+                updateStats();
+                saveData();
+                document.getElementById('adminStatus').textContent = 'Статистика сброшена';
+            }
+        });
+
         // ========== ЗАПУСК ==========
+        loadGlobalSettings();
         loadData();
         setInterval(regen, 200);
         setInterval(autoClick, 1000);
-        setInterval(() => {
-            if (tapCount > 0) saveData();
-        }, 1000);
+        setInterval(saveData, 5000);
         window.addEventListener('beforeunload', saveData);
         tg.ready();
     })();
