@@ -420,33 +420,6 @@
             margin-top: 8px;
         }
 
-        /* Кошелёк */
-        .wallet-section {
-            background: #0f172a;
-            border-radius: 16px;
-            padding: 16px;
-            margin: 16px 0;
-            border: 1px solid #3b82f6;
-        }
-
-        .wallet-address {
-            font-family: monospace;
-            background: #1e293b;
-            padding: 8px 12px;
-            border-radius: 20px;
-            color: #60a5fa;
-            font-size: 13px;
-            word-break: break-all;
-        }
-
-        .status-msg {
-            text-align: center;
-            color: #94a3b8;
-            font-size: 13px;
-            margin-top: 12px;
-            min-height: 20px;
-        }
-
         /* Форма вывода */
         .withdraw-form {
             margin-top: 20px;
@@ -477,6 +450,73 @@
         .form-group input:focus {
             outline: none;
             border-color: #3b82f6;
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 16px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .info-box p {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .info-box .highlight {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .status-msg {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 12px;
+            min-height: 20px;
+        }
+
+        /* История */
+        .history-item {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .history-amount {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .history-status {
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .history-details {
+            color: #94a3b8;
+            font-size: 12px;
         }
 
         /* Админ-панель */
@@ -544,8 +584,8 @@
         <div class="tabs-container">
             <button class="tab-btn active" data-tab="mine"><span class="icon">⛏️</span>Майнинг</button>
             <button class="tab-btn" data-tab="boost"><span class="icon">🚀</span>Бусты</button>
-            <button class="tab-btn" data-tab="wallet"><span class="icon">💼</span>Кошелёк</button>
-            <button class="tab-btn" data-tab="admin"><span class="icon">🔔</span>Уведомления</button>
+            <button class="tab-btn" data-tab="wallet"><span class="icon">💳</span>Вывод</button>
+            <button class="tab-btn" data-tab="admin"><span class="icon">🔔</span>Админ</button>
         </div>
 
         <!-- МАЙНИНГ -->
@@ -561,7 +601,7 @@
 
                 <div class="balance-block">
                     <div class="balance-label">Баланс HASKOIN</div>
-                    <div class="balance-amount" id="balanceDisplay">0</div>
+                    <div class="balance-amount" id="balanceDisplay">0.00</div>
                     <div class="balance-rub" id="rubValue">≈ 0 ₽</div>
                 </div>
 
@@ -574,7 +614,7 @@
                         <div class="energy-fill" id="energyFill"></div>
                     </div>
                     <div style="color: #34d399; font-size: 13px; margin-top: 4px;" id="regenInfo">
-                        +5/сек
+                        +1 / 5 сек
                     </div>
                 </div>
 
@@ -589,7 +629,7 @@
                 </div>
 
                 <div style="text-align: center; margin: 16px 0; color: #94a3b8;">
-                    💰 <span id="tapValue" style="color: #fbbf24; font-size: 20px; font-weight: bold;">+1</span> HASK за тап
+                    💰 <span id="tapValue" style="color: #fbbf24; font-size: 20px; font-weight: bold;">+0.05</span> HASK за тап
                 </div>
 
                 <div style="display: flex; gap: 10px;">
@@ -611,7 +651,7 @@
                         <div style="font-size: 28px;">⚡</div>
                         <h4>Энерджайзер</h4>
                         <p>+100 макс. энергии</p>
-                        <div class="boost-price" id="energyCost">500 HASK</div>
+                        <div class="boost-price" id="energyCost">5.00 HASK</div>
                         <div class="boost-level" id="energyLevel">Уровень 1</div>
                         <button class="btn btn-small boost-btn" data-boost="energy">Улучшить</button>
                     </div>
@@ -619,8 +659,8 @@
                     <div class="boost-card">
                         <div style="font-size: 28px;">⛏️</div>
                         <h4>Мультитап</h4>
-                        <p>+1 HASK за тап</p>
-                        <div class="boost-price" id="multitapCost">1000 HASK</div>
+                        <p>+0.05 за тап</p>
+                        <div class="boost-price" id="multitapCost">10.00 HASK</div>
                         <div class="boost-level" id="multitapLevel">Уровень 1</div>
                         <button class="btn btn-small boost-btn" data-boost="multitap">Улучшить</button>
                     </div>
@@ -628,8 +668,8 @@
                     <div class="boost-card">
                         <div style="font-size: 28px;">🔄</div>
                         <h4>Регенератор</h4>
-                        <p>+5 энергии/сек</p>
-                        <div class="boost-price" id="regenCost">800 HASK</div>
+                        <p>+1 энергия / 5 сек</p>
+                        <div class="boost-price" id="regenCost">8.00 HASK</div>
                         <div class="boost-level" id="regenLevel">Уровень 1</div>
                         <button class="btn btn-small boost-btn" data-boost="regen">Улучшить</button>
                     </div>
@@ -638,7 +678,7 @@
                         <div style="font-size: 28px;">🤖</div>
                         <h4>Автокликер</h4>
                         <p>Авто-тап раз в сек</p>
-                        <div class="boost-price">2000 HASK</div>
+                        <div class="boost-price">20.00 HASK</div>
                         <div class="boost-level" id="autoLevel">Не активен</div>
                         <button class="btn btn-small boost-btn" data-boost="autoclick">Активировать</button>
                     </div>
@@ -648,10 +688,10 @@
             </div>
         </div>
 
-        <!-- КОШЕЛЁК -->
+        <!-- ВЫВОД НА КАРТУ -->
         <div class="panel" id="panel-wallet">
             <div class="card">
-                <h3 style="color: #e2e8f0; margin-bottom: 16px;">💼 Вывод средств</h3>
+                <h3 style="color: #e2e8f0; margin-bottom: 16px;">💳 Вывод на карту</h3>
                 
                 <div style="text-align: center; margin-bottom: 20px;">
                     <div style="color: #94a3b8; font-size: 14px;">Курс обмена</div>
@@ -659,41 +699,54 @@
                     <div style="color: #64748b; font-size: 13px;">1 HASK ≈ 0.083 ₽</div>
                 </div>
 
-                <div class="wallet-section">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                        <span style="color: #cbd5e1;">Статус:</span>
-                        <span style="color: #10b981;" id="walletStatus">Не подключён</span>
-                    </div>
-                    <div class="wallet-address" id="walletAddress">Нажмите "Подключить"</div>
-                    <button class="btn btn-small" id="connectWalletBtn" style="margin-top: 16px; width: 100%;">
-                        🔗 Подключить TON Wallet
-                    </button>
+                <div class="info-box">
+                    <p>📱 <span class="highlight">Вывод на банковскую карту</span></p>
+                    <p>⏰ Обработка заявки: <span class="highlight">до 24 часов</span></p>
+                    <p>💰 Минимальная сумма: <span class="highlight">3000 HASK (250 ₽)</span></p>
                 </div>
 
                 <div class="withdraw-form">
                     <div class="form-group">
-                        <label>Сумма вывода (HASK)</label>
-                        <input type="number" id="withdrawAmount" placeholder="Минимум 3000 HASK" min="3000">
+                        <label>📞 Номер телефона (для зачисления)</label>
+                        <input type="tel" id="phoneNumber" placeholder="+7 (999) 123-45-67">
                     </div>
 
                     <div class="form-group">
-                        <label>Способ получения</label>
-                        <select id="paymentMethod">
-                            <option value="ton">TON Wallet</option>
-                            <option value="card">Банковская карта</option>
-                            <option value="sbp">СБП</option>
+                        <label>🏦 Банк</label>
+                        <select id="bankSelect">
+                            <option value="">Выберите банк</option>
+                            <option value="sber">Сбербанк</option>
+                            <option value="tbank">Т-Банк (Тинькофф)</option>
+                            <option value="vtb">ВТБ</option>
+                            <option value="alfa">Альфа-Банк</option>
+                            <option value="gazprom">Газпромбанк</option>
+                            <option value="raiffeisen">Райффайзенбанк</option>
+                            <option value="other">Другой банк</option>
                         </select>
                     </div>
 
-                    <div class="form-group" id="cardDetailsGroup" style="display: none;">
-                        <label>Номер карты или телефон</label>
-                        <input type="text" id="paymentDetails" placeholder="Введите реквизиты">
+                    <div class="form-group" id="otherBankGroup" style="display: none;">
+                        <label>Название банка</label>
+                        <input type="text" id="otherBankName" placeholder="Введите название">
+                    </div>
+
+                    <div class="form-group">
+                        <label>💳 Номер карты (опционально)</label>
+                        <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000">
+                    </div>
+
+                    <div class="form-group">
+                        <label>💰 Сумма вывода (HASK)</label>
+                        <input type="number" id="withdrawAmount" placeholder="Минимум 3000 HASK" min="3000">
                     </div>
 
                     <div style="margin: 16px 0; padding: 12px; background: #0f172a; border-radius: 12px;">
                         <div style="display: flex; justify-content: space-between; color: #cbd5e1;">
                             <span>К получению:</span>
                             <span id="rubAmount" style="color: #10b981; font-weight: bold;">0 ₽</span>
+                        </div>
+                        <div style="color: #64748b; font-size: 11px; margin-top: 8px;">
+                            ⏰ Деньги поступят в течение 24 часов
                         </div>
                     </div>
 
@@ -703,9 +756,9 @@
                 </div>
 
                 <div style="margin-top: 24px;">
-                    <h4 style="color: #e2e8f0; margin-bottom: 12px;">📊 История выводов</h4>
-                    <div id="withdrawHistory" style="color: #94a3b8; font-size: 13px;">
-                        <p>Нет истории выводов</p>
+                    <h4 style="color: #e2e8f0; margin-bottom: 12px;">📋 История выводов</h4>
+                    <div id="withdrawHistory">
+                        <p style="color: #64748b; text-align: center;">Нет истории выводов</p>
                     </div>
                 </div>
 
@@ -713,36 +766,26 @@
             </div>
         </div>
 
-        <!-- УВЕДОМЛЕНИЯ (АДМИН) -->
+        <!-- АДМИН-ПАНЕЛЬ -->
         <div class="panel" id="panel-admin">
             <div class="card">
-                <h3 style="color: #e2e8f0; margin-bottom: 16px;">🔔 Уведомления о выводах</h3>
+                <h3 style="color: #e2e8f0; margin-bottom: 16px;">🔔 Заявки на вывод</h3>
                 
                 <div class="admin-panel">
-                    <div class="admin-title">📋 Заявки на вывод</div>
+                    <div class="admin-title">📋 Ожидают обработки</div>
                     <div id="notificationsList">
                         <p style="color: #64748b; text-align: center;">Нет новых заявок</p>
                     </div>
                 </div>
 
                 <div class="admin-panel" style="margin-top: 16px;">
-                    <div class="admin-title">⚙️ Настройки админа</div>
+                    <div class="admin-title">⚙️ Настройки</div>
                     <div style="margin-bottom: 12px;">
                         <label style="color: #cbd5e1; display: block; margin-bottom: 8px;">Ваш Telegram ID</label>
                         <input type="text" id="adminTelegramId" placeholder="Например: 123456789" 
                                style="width: 100%; background: #0f172a; border: 1px solid #475569; border-radius: 20px; padding: 12px; color: white;">
                     </div>
                     <button class="btn btn-small" id="saveAdminIdBtn" style="width: 100%;">Сохранить ID</button>
-                    <p style="color: #64748b; font-size: 12px; margin-top: 8px;">
-                        Уведомления будут приходить в этот Telegram
-                    </p>
-                </div>
-
-                <div class="admin-panel" style="margin-top: 16px;">
-                    <div class="admin-title">🧪 Тестовое уведомление</div>
-                    <button class="btn btn-warning btn-small" id="testNotificationBtn" style="width: 100%;">
-                        Отправить тест
-                    </button>
                 </div>
 
                 <div class="status-msg" id="adminStatus"></div>
@@ -757,29 +800,29 @@
             tg.enableClosingConfirmation();
             tg.ready();
 
-            // ========== КОНФИГУРАЦИЯ (РУБЛИ) ==========
-            const BASE_TAP_REWARD = 1; // HASK за тап
+            // ========== КОНФИГУРАЦИЯ ==========
+            const BASE_TAP_REWARD = 0.05; // HASK за тап
             const BASE_MAX_ENERGY = 500;
             const ENERGY_COST = 1;
-            const BASE_REGEN_RATE = 5;
+            const BASE_REGEN_RATE = 1; // 1 энергия
+            const REGEN_INTERVAL = 5000; // каждые 5 секунд (5000 мс)
             const RECOVERY_COOLDOWN = 3600000; // 1 час
             
             // Курс: 3000 HASK = 250 RUB
-            const HASK_PER_RUB = 3000 / 250; // 12 HASK за 1 рубль
-            const RUB_PER_HASK = 250 / 3000; // 0.0833... рубля за 1 HASK
-            const MIN_WITHDRAW = 3000; // Минимальный вывод 3000 HASK
+            const RUB_PER_HASK = 250 / 3000;
+            const MIN_WITHDRAW = 3000;
             
-            const DAILY_BONUS = 100; // HASK
+            const DAILY_BONUS = 5.00;
 
             // ========== СОСТОЯНИЕ ==========
-            let balance = 0;
+            let balance = 0.00;
             let maxEnergy = BASE_MAX_ENERGY;
             let currentEnergy = maxEnergy;
-            let tapMultiplier = 1;
-            let regenMultiplier = 1;
+            let tapMultiplier = 1.0;
+            let regenMultiplier = 1.0;
             let autoClickerActive = false;
-            let totalMined = 0;
-            let totalWithdrawn = 0;
+            let totalMined = 0.00;
+            let totalWithdrawn = 0.00;
             
             let energyLevel = 1;
             let multitapLevel = 1;
@@ -793,11 +836,11 @@
             let adminTelegramId = '';
             
             const userId = tg.initDataUnsafe?.user?.id?.toString() || 'demo';
-            const STORAGE_KEY = `haskoin_rub_${userId}`;
-            const NOTIFICATIONS_KEY = 'haskoin_notifications';
-            const ADMIN_ID_KEY = 'haskoin_admin_id';
+            const STORAGE_KEY = `haskoin_v7_${userId}`;
+            const NOTIFICATIONS_KEY = 'haskoin_notifications_v7';
+            const ADMIN_ID_KEY = 'haskoin_admin_id_v7';
 
-            // UI элементы
+            // UI
             const balanceDisplay = document.getElementById('balanceDisplay');
             const rubValue = document.getElementById('rubValue');
             const energyText = document.getElementById('energyText');
@@ -813,18 +856,17 @@
                 document.getElementById('avatar').textContent = (user.first_name?.charAt(0) || 'H').toUpperCase();
             }
 
-            // ========== КОНВЕРТАЦИЯ ==========
+            // ========== ФОРМАТИРОВАНИЕ ==========
+            function formatNumber(num) {
+                return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+
             function haskToRub(hask) {
-                return hask * RUB_PER_HASK;
+                return Math.round(hask * RUB_PER_HASK);
             }
 
-            function formatRub(hask) {
-                return Math.round(haskToRub(hask));
-            }
-
-            // ========== ЗАГРУЗКА ДАННЫХ ==========
+            // ========== ЗАГРУЗКА ==========
             function loadData() {
-                // Загрузка ID админа
                 tg.CloudStorage.getItem(ADMIN_ID_KEY, (err, value) => {
                     if (!err && value) {
                         adminTelegramId = value;
@@ -832,7 +874,6 @@
                     }
                 });
 
-                // Загрузка уведомлений
                 tg.CloudStorage.getItem(NOTIFICATIONS_KEY, (err, value) => {
                     if (!err && value) {
                         try {
@@ -842,19 +883,18 @@
                     updateNotificationsList();
                 });
 
-                // Загрузка данных пользователя
                 tg.CloudStorage.getItem(STORAGE_KEY, (err, value) => {
                     if (!err && value) {
                         try {
                             const data = JSON.parse(value);
-                            balance = data.balance || 0;
+                            balance = data.balance || 0.00;
                             maxEnergy = data.maxEnergy || BASE_MAX_ENERGY;
                             currentEnergy = data.currentEnergy ?? maxEnergy;
-                            tapMultiplier = data.tapMultiplier || 1;
-                            regenMultiplier = data.regenMultiplier || 1;
+                            tapMultiplier = data.tapMultiplier || 1.0;
+                            regenMultiplier = data.regenMultiplier || 1.0;
                             autoClickerActive = data.autoClickerActive || false;
-                            totalMined = data.totalMined || 0;
-                            totalWithdrawn = data.totalWithdrawn || 0;
+                            totalMined = data.totalMined || 0.00;
+                            totalWithdrawn = data.totalWithdrawn || 0.00;
                             energyLevel = data.energyLevel || 1;
                             multitapLevel = data.multitapLevel || 1;
                             regenLevel = data.regenLevel || 1;
@@ -885,16 +925,16 @@
 
             // ========== ОБНОВЛЕНИЕ UI ==========
             function refreshUI() {
-                balanceDisplay.textContent = Math.floor(balance).toLocaleString();
-                rubValue.textContent = `≈ ${formatRub(balance)} ₽`;
+                balanceDisplay.textContent = formatNumber(balance);
+                rubValue.textContent = `≈ ${haskToRub(balance)} ₽`;
                 
                 const percent = (currentEnergy / maxEnergy) * 100;
                 energyFill.style.width = Math.max(0, percent) + '%';
                 energyText.textContent = `${Math.floor(currentEnergy)}/${maxEnergy}`;
                 
                 const reward = BASE_TAP_REWARD * tapMultiplier;
-                tapValue.textContent = `+${reward}`;
-                regenInfo.textContent = `+${BASE_REGEN_RATE * regenMultiplier}/сек`;
+                tapValue.textContent = `+${reward.toFixed(2)}`;
+                regenInfo.textContent = `+${BASE_REGEN_RATE * regenMultiplier} / 5 сек`;
             }
 
             function updateBoostLevels() {
@@ -903,63 +943,73 @@
                 document.getElementById('regenLevel').textContent = `Уровень ${regenLevel}`;
                 document.getElementById('autoLevel').textContent = autoClickerActive ? 'Активен' : 'Не активен';
                 
-                document.getElementById('energyCost').textContent = `${500 * energyLevel} HASK`;
-                document.getElementById('multitapCost').textContent = `${1000 * multitapLevel} HASK`;
-                document.getElementById('regenCost').textContent = `${800 * regenLevel} HASK`;
+                document.getElementById('energyCost').textContent = `${(5.00 * energyLevel).toFixed(2)} HASK`;
+                document.getElementById('multitapCost').textContent = `${(10.00 * multitapLevel).toFixed(2)} HASK`;
+                document.getElementById('regenCost').textContent = `${(8.00 * regenLevel).toFixed(2)} HASK`;
             }
 
             function updateWithdrawHistory() {
                 const container = document.getElementById('withdrawHistory');
                 if (withdrawHistory.length === 0) {
-                    container.innerHTML = '<p>Нет истории выводов</p>';
+                    container.innerHTML = '<p style="color: #64748b; text-align: center;">Нет истории выводов</p>';
                     return;
                 }
                 
-                container.innerHTML = withdrawHistory.slice(-3).reverse().map(item => 
-                    `<div style="background: #0f172a; border-radius: 8px; padding: 8px; margin-bottom: 8px;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>${item.amount} HASK</span>
-                            <span style="color: #10b981;">${item.rub} ₽</span>
+                container.innerHTML = withdrawHistory.slice(-5).reverse().map(item => `
+                    <div class="history-item">
+                        <div class="history-header">
+                            <span class="history-amount">${formatNumber(item.amount)} HASK = ${item.rub} ₽</span>
+                            <span class="history-status ${item.status === 'completed' ? 'status-completed' : 'status-pending'}">
+                                ${item.status === 'completed' ? '✅ Выполнено' : '⏳ В обработке'}
+                            </span>
                         </div>
-                        <div style="color: #64748b; font-size: 11px;">${item.date}</div>
-                        <div style="color: #fbbf24; font-size: 11px;">${item.status}</div>
-                    </div>`
-                ).join('');
+                        <div class="history-details">
+                            📞 ${item.phone} · 🏦 ${item.bank}<br>
+                            📅 ${item.date}<br>
+                            ${item.status === 'pending' ? '⏰ Обработка до 24 часов' : '✅ Средства отправлены'}
+                        </div>
+                    </div>
+                `).join('');
             }
 
             function updateNotificationsList() {
                 const container = document.getElementById('notificationsList');
-                if (notifications.length === 0) {
+                const pendingNotifications = notifications.filter(n => n.status === 'pending');
+                
+                if (pendingNotifications.length === 0) {
                     container.innerHTML = '<p style="color: #64748b; text-align: center;">Нет новых заявок</p>';
                     return;
                 }
                 
-                container.innerHTML = notifications.slice(-5).reverse().map(n => 
-                    `<div class="notification-item">
+                container.innerHTML = pendingNotifications.reverse().map(n => `
+                    <div class="notification-item">
                         <div class="notification-time">${n.date}</div>
                         <div class="notification-text">
                             👤 ${n.userName} (ID: ${n.userId})<br>
-                            💰 Заявка на вывод: <span class="notification-amount">${n.amount} HASK = ${n.rub} ₽</span><br>
-                            💳 Способ: ${n.method}<br>
-                            📝 Реквизиты: ${n.details}
+                            💰 <span class="notification-amount">${formatNumber(n.amount)} HASK = ${n.rub} ₽</span><br>
+                            📞 Телефон: ${n.phone}<br>
+                            🏦 Банк: ${n.bank}<br>
+                            💳 Карта: ${n.card || 'Не указана'}
                         </div>
-                        <div style="margin-top: 8px;">
-                            <button class="btn btn-small btn-success" onclick="markAsProcessed('${n.id}')" style="width: auto; padding: 6px 12px;">✅ Обработано</button>
+                        <div style="margin-top: 8px; display: flex; gap: 8px;">
+                            <button class="btn btn-small btn-success" onclick="markAsCompleted('${n.id}')" style="flex:1;">✅ Выполнено</button>
+                            <button class="btn btn-small btn-warning" onclick="rejectWithdraw('${n.id}')" style="flex:1;">❌ Отклонить</button>
                         </div>
-                    </div>`
-                ).join('');
+                    </div>
+                `).join('');
             }
 
             // ========== ОТПРАВКА УВЕДОМЛЕНИЯ ==========
-            function sendNotificationToAdmin(withdrawData) {
+            function sendNotification(withdrawData) {
                 const notification = {
                     id: Date.now().toString(),
                     userId: userId,
                     userName: user?.first_name || 'Пользователь',
                     amount: withdrawData.amount,
                     rub: withdrawData.rub,
-                    method: withdrawData.method,
-                    details: withdrawData.details,
+                    phone: withdrawData.phone,
+                    bank: withdrawData.bank,
+                    card: withdrawData.card,
                     date: new Date().toLocaleString('ru-RU'),
                     status: 'pending'
                 };
@@ -968,41 +1018,75 @@
                 saveNotifications();
                 updateNotificationsList();
                 
-                // Отправка через Telegram
                 if (adminTelegramId) {
                     const message = `🔔 *НОВАЯ ЗАЯВКА НА ВЫВОД*\n\n` +
                         `👤 *Пользователь:* ${notification.userName}\n` +
                         `🆔 *ID:* ${notification.userId}\n` +
-                        `💰 *Сумма:* ${notification.amount} HASK = ${notification.rub} ₽\n` +
-                        `💳 *Способ:* ${notification.method}\n` +
-                        `📝 *Реквизиты:* ${notification.details}\n` +
+                        `💰 *Сумма:* ${formatNumber(notification.amount)} HASK = ${notification.rub} ₽\n` +
+                        `📞 *Телефон:* ${notification.phone}\n` +
+                        `🏦 *Банк:* ${notification.bank}\n` +
+                        `💳 *Карта:* ${notification.card || 'Не указана'}\n` +
                         `📅 *Время:* ${notification.date}`;
                     
                     tg.sendData(JSON.stringify({
                         action: 'withdraw_notification',
-                        adminId: adminTelegramId,
                         message: message
                     }));
                 }
-                
-                // Попытка открыть чат с админом
-                if (adminTelegramId) {
-                    tg.openTelegramLink(`https://t.me/${adminTelegramId}`);
-                }
             }
 
-            window.markAsProcessed = function(notificationId) {
-                notifications = notifications.filter(n => n.id !== notificationId);
-                saveNotifications();
-                updateNotificationsList();
-                document.getElementById('adminStatus').textContent = '✅ Заявка отмечена как обработанная';
+            window.markAsCompleted = function(notificationId) {
+                const notification = notifications.find(n => n.id === notificationId);
+                if (notification) {
+                    notification.status = 'completed';
+                    
+                    const historyItem = withdrawHistory.find(h => 
+                        h.amount === notification.amount && 
+                        h.phone === notification.phone &&
+                        h.status === 'pending'
+                    );
+                    if (historyItem) {
+                        historyItem.status = 'completed';
+                    }
+                    
+                    saveNotifications();
+                    saveData();
+                    updateNotificationsList();
+                    updateWithdrawHistory();
+                    document.getElementById('adminStatus').textContent = '✅ Заявка отмечена как выполненная';
+                }
+            };
+
+            window.rejectWithdraw = function(notificationId) {
+                if (confirm('Отклонить заявку? Средства будут возвращены пользователю.')) {
+                    const notification = notifications.find(n => n.id === notificationId);
+                    if (notification) {
+                        const historyItem = withdrawHistory.find(h => 
+                            h.amount === notification.amount && 
+                            h.phone === notification.phone
+                        );
+                        if (historyItem && historyItem.status === 'pending') {
+                            balance += notification.amount;
+                            totalWithdrawn -= notification.amount;
+                            withdrawHistory = withdrawHistory.filter(h => h !== historyItem);
+                        }
+                        
+                        notifications = notifications.filter(n => n.id !== notificationId);
+                        saveNotifications();
+                        refreshUI();
+                        updateWithdrawHistory();
+                        saveData();
+                        updateNotificationsList();
+                        document.getElementById('adminStatus').textContent = '❌ Заявка отклонена, средства возвращены';
+                    }
+                }
             };
 
             // ========== ЭФФЕКТЫ ==========
             function createFloatEffect(x, y, amount) {
                 const effect = document.createElement('div');
                 effect.className = 'float-score';
-                effect.textContent = '+' + amount;
+                effect.textContent = '+' + amount.toFixed(2);
                 effect.style.left = x + 'px';
                 effect.style.top = y + 'px';
                 document.body.appendChild(effect);
@@ -1030,7 +1114,7 @@
                         createFloatEffect(x, y, earned);
                     }
                     
-                    mineStatus.innerHTML = `✅ +${earned} HASK!`;
+                    mineStatus.innerHTML = `✅ +${earned.toFixed(2)} HASK!`;
                     setTimeout(() => mineStatus.innerHTML = '👆 Нажми на монету!', 500);
                     
                     saveData();
@@ -1040,10 +1124,10 @@
                 }
             }
 
-            // ========== РЕГЕНЕРАЦИЯ ==========
+            // ========== РЕГЕНЕРАЦИЯ (1 энергия каждые 5 секунд) ==========
             function regen() {
                 if (currentEnergy < maxEnergy) {
-                    currentEnergy = Math.min(currentEnergy + (BASE_REGEN_RATE * regenMultiplier / 5), maxEnergy);
+                    currentEnergy = Math.min(currentEnergy + (BASE_REGEN_RATE * regenMultiplier), maxEnergy);
                     refreshUI();
                 }
             }
@@ -1078,7 +1162,6 @@
                 handleTap(e);
             }, { passive: false });
 
-            // Восстановление энергии
             document.getElementById('regenOnceBtn').addEventListener('click', () => {
                 const now = Date.now();
                 if (now - lastRecoveryTime >= RECOVERY_COOLDOWN) {
@@ -1094,7 +1177,6 @@
                 setTimeout(() => mineStatus.innerHTML = '👆 Нажми на монету!', 1500);
             });
 
-            // Ежедневный бонус
             document.getElementById('dailyBonusBtn').addEventListener('click', () => {
                 const now = Date.now();
                 if (now - lastDailyBonus >= 86400000) {
@@ -1103,7 +1185,7 @@
                     lastDailyBonus = now;
                     refreshUI();
                     saveData();
-                    mineStatus.innerHTML = `🎁 +${DAILY_BONUS} HASK (Daily Bonus)!`;
+                    mineStatus.innerHTML = `🎁 +${DAILY_BONUS.toFixed(2)} HASK (Daily Bonus)!`;
                 } else {
                     const hoursLeft = 24 - Math.floor((now - lastDailyBonus) / 3600000);
                     mineStatus.innerHTML = `⏰ Следующий бонус через ${hoursLeft} ч.`;
@@ -1118,23 +1200,23 @@
                     let cost = 0;
                     let message = '';
                     
-                    if (boost === 'energy' && balance >= 500 * energyLevel) {
-                        cost = 500 * energyLevel;
+                    if (boost === 'energy' && balance >= 5.00 * energyLevel) {
+                        cost = 5.00 * energyLevel;
                         maxEnergy += 100;
                         energyLevel++;
                         message = `⚡ Макс. энергия +100! Уровень ${energyLevel}`;
-                    } else if (boost === 'multitap' && balance >= 1000 * multitapLevel) {
-                        cost = 1000 * multitapLevel;
-                        tapMultiplier++;
+                    } else if (boost === 'multitap' && balance >= 10.00 * multitapLevel) {
+                        cost = 10.00 * multitapLevel;
+                        tapMultiplier += 0.5;
                         multitapLevel++;
-                        message = `⛏️ +1 HASK за тап! Уровень ${multitapLevel}`;
-                    } else if (boost === 'regen' && balance >= 800 * regenLevel) {
-                        cost = 800 * regenLevel;
-                        regenMultiplier++;
+                        message = `⛏️ +0.5 HASK за тап! Уровень ${multitapLevel}`;
+                    } else if (boost === 'regen' && balance >= 8.00 * regenLevel) {
+                        cost = 8.00 * regenLevel;
+                        regenMultiplier += 0.5;
                         regenLevel++;
-                        message = `🔄 +5 энергии/сек! Уровень ${regenLevel}`;
-                    } else if (boost === 'autoclick' && balance >= 2000) {
-                        cost = 2000;
+                        message = `🔄 +${(BASE_REGEN_RATE * regenMultiplier).toFixed(1)} энергии / 5 сек! Уровень ${regenLevel}`;
+                    } else if (boost === 'autoclick' && balance >= 20.00) {
+                        cost = 20.00;
                         autoClickerActive = true;
                         message = '🤖 Автокликер активирован!';
                     } else {
@@ -1151,38 +1233,38 @@
                 });
             });
 
-            // Кошелёк
-            document.getElementById('connectWalletBtn').addEventListener('click', () => {
-                tg.openLink('https://ton.org/wallets');
-                document.getElementById('walletAddress').textContent = 'EQD...xyz (демо)';
-                document.getElementById('walletStatus').textContent = 'Подключён';
-            });
-
-            // Способ оплаты
-            document.getElementById('paymentMethod').addEventListener('change', (e) => {
-                const cardGroup = document.getElementById('cardDetailsGroup');
-                if (e.target.value === 'card' || e.target.value === 'sbp') {
-                    cardGroup.style.display = 'block';
-                    document.getElementById('paymentDetails').placeholder = 
-                        e.target.value === 'card' ? 'Номер карты' : 'Номер телефона';
-                } else {
-                    cardGroup.style.display = 'none';
-                }
+            // Банк select
+            document.getElementById('bankSelect').addEventListener('change', (e) => {
+                document.getElementById('otherBankGroup').style.display = 
+                    e.target.value === 'other' ? 'block' : 'none';
             });
 
             // Расчёт рублей
             document.getElementById('withdrawAmount').addEventListener('input', (e) => {
-                const amount = parseInt(e.target.value) || 0;
-                document.getElementById('rubAmount').textContent = `${formatRub(amount)} ₽`;
+                const amount = parseFloat(e.target.value) || 0;
+                document.getElementById('rubAmount').textContent = `${haskToRub(amount)} ₽`;
             });
 
             // Вывод средств
             document.getElementById('withdrawBtn').addEventListener('click', () => {
-                const amount = parseInt(document.getElementById('withdrawAmount').value);
-                const method = document.getElementById('paymentMethod').value;
-                const details = method === 'ton' ? document.getElementById('walletAddress').textContent : 
-                               document.getElementById('paymentDetails').value;
+                const phone = document.getElementById('phoneNumber').value.trim();
+                const bankSelect = document.getElementById('bankSelect');
+                const bank = bankSelect.value === 'other' ? 
+                    document.getElementById('otherBankName').value.trim() : 
+                    bankSelect.options[bankSelect.selectedIndex]?.text || '';
+                const card = document.getElementById('cardNumber').value.trim();
+                const amount = parseFloat(document.getElementById('withdrawAmount').value);
                 const walletMsg = document.getElementById('walletStatusMsg');
+                
+                if (!phone) {
+                    walletMsg.textContent = '❌ Укажите номер телефона!';
+                    return;
+                }
+                
+                if (!bank) {
+                    walletMsg.textContent = '❌ Выберите банк!';
+                    return;
+                }
                 
                 if (!amount || amount < MIN_WITHDRAW) {
                     walletMsg.textContent = `❌ Минимальная сумма: ${MIN_WITHDRAW} HASK`;
@@ -1194,24 +1276,19 @@
                     return;
                 }
                 
-                if (method !== 'ton' && !details) {
-                    walletMsg.textContent = '❌ Укажите реквизиты!';
-                    return;
-                }
+                const rubAmount = haskToRub(amount);
                 
-                const rubAmount = formatRub(amount);
-                
-                // Списываем средства
                 balance -= amount;
                 totalWithdrawn += amount;
                 
-                // Добавляем в историю
                 const withdrawRecord = {
                     amount: amount,
                     rub: rubAmount,
-                    method: method,
+                    phone: phone,
+                    bank: bank,
+                    card: card,
                     date: new Date().toLocaleString('ru-RU'),
-                    status: 'В обработке'
+                    status: 'pending'
                 };
                 withdrawHistory.push(withdrawRecord);
                 
@@ -1219,17 +1296,23 @@
                 updateWithdrawHistory();
                 saveData();
                 
-                // Отправляем уведомление админу
-                sendNotificationToAdmin({
+                sendNotification({
                     amount: amount,
                     rub: rubAmount,
-                    method: method,
-                    details: details
+                    phone: phone,
+                    bank: bank,
+                    card: card
                 });
                 
-                walletMsg.innerHTML = `✅ Заявка на вывод ${amount} HASK (${rubAmount} ₽) создана!<br>📱 Ожидайте уведомление от администратора.`;
+                walletMsg.innerHTML = `✅ Заявка №${withdrawHistory.length} создана!<br>💰 ${formatNumber(amount)} HASK (${rubAmount} ₽)<br>⏰ Обработка до 24 часов`;
+                
+                document.getElementById('phoneNumber').value = '';
+                document.getElementById('bankSelect').value = '';
+                document.getElementById('otherBankName').value = '';
+                document.getElementById('cardNumber').value = '';
                 document.getElementById('withdrawAmount').value = '';
                 document.getElementById('rubAmount').textContent = '0 ₽';
+                document.getElementById('otherBankGroup').style.display = 'none';
             });
 
             // Сохранение ID админа
@@ -1242,22 +1325,11 @@
                 }
             });
 
-            // Тестовое уведомление
-            document.getElementById('testNotificationBtn').addEventListener('click', () => {
-                sendNotificationToAdmin({
-                    amount: 3000,
-                    rub: 250,
-                    method: 'Тест',
-                    details: 'Тестовое уведомление'
-                });
-                document.getElementById('adminStatus').textContent = '📨 Тестовое уведомление отправлено!';
-            });
-
             // ========== ЗАПУСК ==========
             loadData();
-            setInterval(regen, 200);
+            setInterval(regen, REGEN_INTERVAL); // Регенерация каждые 5 секунд
             setInterval(autoClick, 1000);
-            setInterval(saveData, 5000);
+            setInterval(saveData, 10000);
             window.addEventListener('beforeunload', saveData);
         })();
     </script>
