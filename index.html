@@ -187,7 +187,7 @@
             background: transparent;
             color: #94a3b8;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 13px;
             border-radius: 30px;
             cursor: pointer;
             transition: all 0.2s;
@@ -519,43 +519,27 @@
             font-size: 12px;
         }
 
-        /* Админ-панель */
-        .admin-panel {
-            background: rgba(139, 92, 246, 0.15);
-            border-radius: 16px;
-            padding: 16px;
-            margin-top: 16px;
-            border: 1px solid rgba(139, 92, 246, 0.4);
+        /* Индикатор сохранения */
+        .save-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
-        .admin-title {
-            color: #a78bfa;
-            margin-bottom: 12px;
-            font-size: 14px;
-        }
-
-        .notification-item {
-            background: #0f172a;
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-left: 3px solid #fbbf24;
-        }
-
-        .notification-time {
-            color: #64748b;
-            font-size: 11px;
-        }
-
-        .notification-text {
-            color: #e2e8f0;
-            font-size: 13px;
-            margin: 4px 0;
-        }
-
-        .notification-amount {
-            color: #fbbf24;
-            font-weight: bold;
+        .save-indicator.show {
+            opacity: 1;
         }
     </style>
 </head>
@@ -565,6 +549,9 @@
         <div class="glow-orb glow-orb-2"></div>
         <div class="glow-orb glow-orb-3"></div>
     </div>
+
+    <!-- Индикатор сохранения -->
+    <div class="save-indicator" id="saveIndicator">💾 Сохранено</div>
 
     <!-- Стартовый экран -->
     <div class="splash-screen">
@@ -585,7 +572,6 @@
             <button class="tab-btn active" data-tab="mine"><span class="icon">⛏️</span>Майнинг</button>
             <button class="tab-btn" data-tab="boost"><span class="icon">🚀</span>Бусты</button>
             <button class="tab-btn" data-tab="wallet"><span class="icon">💳</span>Вывод</button>
-            <button class="tab-btn" data-tab="admin"><span class="icon">🔔</span>Админ</button>
         </div>
 
         <!-- МАЙНИНГ -->
@@ -633,7 +619,9 @@
                 </div>
 
                 <div style="display: flex; gap: 10px;">
-                    <button class="btn" id="regenOnceBtn" style="flex:1">🔋 Восстановить</button>
+                    <button class="btn btn-warning" id="regenForTokensBtn" style="flex:1">
+                        ⚡ 20 HASK = энергия
+                    </button>
                     <button class="btn btn-success" id="dailyBonusBtn" style="flex:1">🎁 Бонус</button>
                 </div>
 
@@ -765,32 +753,6 @@
                 <div class="status-msg" id="walletStatusMsg"></div>
             </div>
         </div>
-
-        <!-- АДМИН-ПАНЕЛЬ -->
-        <div class="panel" id="panel-admin">
-            <div class="card">
-                <h3 style="color: #e2e8f0; margin-bottom: 16px;">🔔 Заявки на вывод</h3>
-                
-                <div class="admin-panel">
-                    <div class="admin-title">📋 Ожидают обработки</div>
-                    <div id="notificationsList">
-                        <p style="color: #64748b; text-align: center;">Нет новых заявок</p>
-                    </div>
-                </div>
-
-                <div class="admin-panel" style="margin-top: 16px;">
-                    <div class="admin-title">⚙️ Настройки</div>
-                    <div style="margin-bottom: 12px;">
-                        <label style="color: #cbd5e1; display: block; margin-bottom: 8px;">Ваш Telegram ID</label>
-                        <input type="text" id="adminTelegramId" placeholder="Например: 123456789" 
-                               style="width: 100%; background: #0f172a; border: 1px solid #475569; border-radius: 20px; padding: 12px; color: white;">
-                    </div>
-                    <button class="btn btn-small" id="saveAdminIdBtn" style="width: 100%;">Сохранить ID</button>
-                </div>
-
-                <div class="status-msg" id="adminStatus"></div>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -801,17 +763,15 @@
             tg.ready();
 
             // ========== КОНФИГУРАЦИЯ ==========
-            const BASE_TAP_REWARD = 0.05; // HASK за тап
+            const BASE_TAP_REWARD = 0.05;
             const BASE_MAX_ENERGY = 500;
             const ENERGY_COST = 1;
-            const BASE_REGEN_RATE = 1; // 1 энергия
-            const REGEN_INTERVAL = 5000; // каждые 5 секунд (5000 мс)
-            const RECOVERY_COOLDOWN = 3600000; // 1 час
+            const BASE_REGEN_RATE = 1;
+            const REGEN_INTERVAL = 5000;
+            const ENERGY_REGEN_COST = 20;
             
-            // Курс: 3000 HASK = 250 RUB
             const RUB_PER_HASK = 250 / 3000;
             const MIN_WITHDRAW = 3000;
-            
             const DAILY_BONUS = 5.00;
 
             // ========== СОСТОЯНИЕ ==========
@@ -828,17 +788,11 @@
             let multitapLevel = 1;
             let regenLevel = 1;
             
-            let lastRecoveryTime = 0;
             let lastDailyBonus = 0;
-            
             let withdrawHistory = [];
-            let notifications = [];
-            let adminTelegramId = '';
             
             const userId = tg.initDataUnsafe?.user?.id?.toString() || 'demo';
-            const STORAGE_KEY = `haskoin_v7_${userId}`;
-            const NOTIFICATIONS_KEY = 'haskoin_notifications_v7';
-            const ADMIN_ID_KEY = 'haskoin_admin_id_v7';
+            const STORAGE_KEY = `haskoin_v9_${userId}`;
 
             // UI
             const balanceDisplay = document.getElementById('balanceDisplay');
@@ -848,6 +802,7 @@
             const tapValue = document.getElementById('tapValue');
             const mineStatus = document.getElementById('mineStatus');
             const regenInfo = document.getElementById('regenInfo');
+            const saveIndicator = document.getElementById('saveIndicator');
 
             // ========== ПРОФИЛЬ ==========
             const user = tg.initDataUnsafe?.user;
@@ -865,24 +820,32 @@
                 return Math.round(hask * RUB_PER_HASK);
             }
 
+            // ========== ИНДИКАТОР СОХРАНЕНИЯ ==========
+            function showSaveIndicator() {
+                saveIndicator.classList.add('show');
+                setTimeout(() => {
+                    saveIndicator.classList.remove('show');
+                }, 1000);
+            }
+
+            // ========== МОМЕНТАЛЬНОЕ СОХРАНЕНИЕ ==========
+            function saveData() {
+                const data = {
+                    balance, maxEnergy, currentEnergy, tapMultiplier,
+                    regenMultiplier, autoClickerActive, totalMined, totalWithdrawn,
+                    energyLevel, multitapLevel, regenLevel,
+                    lastDailyBonus, withdrawHistory
+                };
+                
+                tg.CloudStorage.setItem(STORAGE_KEY, JSON.stringify(data), (err, success) => {
+                    if (success) {
+                        showSaveIndicator();
+                    }
+                });
+            }
+
             // ========== ЗАГРУЗКА ==========
             function loadData() {
-                tg.CloudStorage.getItem(ADMIN_ID_KEY, (err, value) => {
-                    if (!err && value) {
-                        adminTelegramId = value;
-                        document.getElementById('adminTelegramId').value = value;
-                    }
-                });
-
-                tg.CloudStorage.getItem(NOTIFICATIONS_KEY, (err, value) => {
-                    if (!err && value) {
-                        try {
-                            notifications = JSON.parse(value);
-                        } catch(e) {}
-                    }
-                    updateNotificationsList();
-                });
-
                 tg.CloudStorage.getItem(STORAGE_KEY, (err, value) => {
                     if (!err && value) {
                         try {
@@ -898,7 +861,6 @@
                             energyLevel = data.energyLevel || 1;
                             multitapLevel = data.multitapLevel || 1;
                             regenLevel = data.regenLevel || 1;
-                            lastRecoveryTime = data.lastRecoveryTime || 0;
                             lastDailyBonus = data.lastDailyBonus || 0;
                             withdrawHistory = data.withdrawHistory || [];
                         } catch(e) {}
@@ -907,20 +869,6 @@
                     updateBoostLevels();
                     updateWithdrawHistory();
                 });
-            }
-
-            function saveData() {
-                const data = {
-                    balance, maxEnergy, currentEnergy, tapMultiplier,
-                    regenMultiplier, autoClickerActive, totalMined, totalWithdrawn,
-                    energyLevel, multitapLevel, regenLevel,
-                    lastRecoveryTime, lastDailyBonus, withdrawHistory
-                };
-                tg.CloudStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            }
-
-            function saveNotifications() {
-                tg.CloudStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(notifications));
             }
 
             // ========== ОБНОВЛЕНИЕ UI ==========
@@ -934,7 +882,7 @@
                 
                 const reward = BASE_TAP_REWARD * tapMultiplier;
                 tapValue.textContent = `+${reward.toFixed(2)}`;
-                regenInfo.textContent = `+${BASE_REGEN_RATE * regenMultiplier} / 5 сек`;
+                regenInfo.textContent = `+${(BASE_REGEN_RATE * regenMultiplier).toFixed(1)} / 5 сек`;
             }
 
             function updateBoostLevels() {
@@ -972,116 +920,6 @@
                 `).join('');
             }
 
-            function updateNotificationsList() {
-                const container = document.getElementById('notificationsList');
-                const pendingNotifications = notifications.filter(n => n.status === 'pending');
-                
-                if (pendingNotifications.length === 0) {
-                    container.innerHTML = '<p style="color: #64748b; text-align: center;">Нет новых заявок</p>';
-                    return;
-                }
-                
-                container.innerHTML = pendingNotifications.reverse().map(n => `
-                    <div class="notification-item">
-                        <div class="notification-time">${n.date}</div>
-                        <div class="notification-text">
-                            👤 ${n.userName} (ID: ${n.userId})<br>
-                            💰 <span class="notification-amount">${formatNumber(n.amount)} HASK = ${n.rub} ₽</span><br>
-                            📞 Телефон: ${n.phone}<br>
-                            🏦 Банк: ${n.bank}<br>
-                            💳 Карта: ${n.card || 'Не указана'}
-                        </div>
-                        <div style="margin-top: 8px; display: flex; gap: 8px;">
-                            <button class="btn btn-small btn-success" onclick="markAsCompleted('${n.id}')" style="flex:1;">✅ Выполнено</button>
-                            <button class="btn btn-small btn-warning" onclick="rejectWithdraw('${n.id}')" style="flex:1;">❌ Отклонить</button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            // ========== ОТПРАВКА УВЕДОМЛЕНИЯ ==========
-            function sendNotification(withdrawData) {
-                const notification = {
-                    id: Date.now().toString(),
-                    userId: userId,
-                    userName: user?.first_name || 'Пользователь',
-                    amount: withdrawData.amount,
-                    rub: withdrawData.rub,
-                    phone: withdrawData.phone,
-                    bank: withdrawData.bank,
-                    card: withdrawData.card,
-                    date: new Date().toLocaleString('ru-RU'),
-                    status: 'pending'
-                };
-                
-                notifications.push(notification);
-                saveNotifications();
-                updateNotificationsList();
-                
-                if (adminTelegramId) {
-                    const message = `🔔 *НОВАЯ ЗАЯВКА НА ВЫВОД*\n\n` +
-                        `👤 *Пользователь:* ${notification.userName}\n` +
-                        `🆔 *ID:* ${notification.userId}\n` +
-                        `💰 *Сумма:* ${formatNumber(notification.amount)} HASK = ${notification.rub} ₽\n` +
-                        `📞 *Телефон:* ${notification.phone}\n` +
-                        `🏦 *Банк:* ${notification.bank}\n` +
-                        `💳 *Карта:* ${notification.card || 'Не указана'}\n` +
-                        `📅 *Время:* ${notification.date}`;
-                    
-                    tg.sendData(JSON.stringify({
-                        action: 'withdraw_notification',
-                        message: message
-                    }));
-                }
-            }
-
-            window.markAsCompleted = function(notificationId) {
-                const notification = notifications.find(n => n.id === notificationId);
-                if (notification) {
-                    notification.status = 'completed';
-                    
-                    const historyItem = withdrawHistory.find(h => 
-                        h.amount === notification.amount && 
-                        h.phone === notification.phone &&
-                        h.status === 'pending'
-                    );
-                    if (historyItem) {
-                        historyItem.status = 'completed';
-                    }
-                    
-                    saveNotifications();
-                    saveData();
-                    updateNotificationsList();
-                    updateWithdrawHistory();
-                    document.getElementById('adminStatus').textContent = '✅ Заявка отмечена как выполненная';
-                }
-            };
-
-            window.rejectWithdraw = function(notificationId) {
-                if (confirm('Отклонить заявку? Средства будут возвращены пользователю.')) {
-                    const notification = notifications.find(n => n.id === notificationId);
-                    if (notification) {
-                        const historyItem = withdrawHistory.find(h => 
-                            h.amount === notification.amount && 
-                            h.phone === notification.phone
-                        );
-                        if (historyItem && historyItem.status === 'pending') {
-                            balance += notification.amount;
-                            totalWithdrawn -= notification.amount;
-                            withdrawHistory = withdrawHistory.filter(h => h !== historyItem);
-                        }
-                        
-                        notifications = notifications.filter(n => n.id !== notificationId);
-                        saveNotifications();
-                        refreshUI();
-                        updateWithdrawHistory();
-                        saveData();
-                        updateNotificationsList();
-                        document.getElementById('adminStatus').textContent = '❌ Заявка отклонена, средства возвращены';
-                    }
-                }
-            };
-
             // ========== ЭФФЕКТЫ ==========
             function createFloatEffect(x, y, amount) {
                 const effect = document.createElement('div');
@@ -1117,6 +955,7 @@
                     mineStatus.innerHTML = `✅ +${earned.toFixed(2)} HASK!`;
                     setTimeout(() => mineStatus.innerHTML = '👆 Нажми на монету!', 500);
                     
+                    // Моментальное сохранение после тапа
                     saveData();
                 } else {
                     mineStatus.innerHTML = '❌ Недостаточно энергии!';
@@ -1124,11 +963,29 @@
                 }
             }
 
-            // ========== РЕГЕНЕРАЦИЯ (1 энергия каждые 5 секунд) ==========
+            // ========== РЕГЕНЕРАЦИЯ ==========
             function regen() {
                 if (currentEnergy < maxEnergy) {
                     currentEnergy = Math.min(currentEnergy + (BASE_REGEN_RATE * regenMultiplier), maxEnergy);
                     refreshUI();
+                    // Сохраняем после регенерации
+                    saveData();
+                }
+            }
+
+            // ========== ВОССТАНОВЛЕНИЕ ЭНЕРГИИ ЗА ТОКЕНЫ ==========
+            function regenForTokens() {
+                if (balance >= ENERGY_REGEN_COST) {
+                    balance -= ENERGY_REGEN_COST;
+                    currentEnergy = maxEnergy;
+                    refreshUI();
+                    mineStatus.innerHTML = `🔋 Энергия восстановлена за ${ENERGY_REGEN_COST} HASK!`;
+                    setTimeout(() => mineStatus.innerHTML = '👆 Нажми на монету!', 1500);
+                    // Моментальное сохранение
+                    saveData();
+                } else {
+                    mineStatus.innerHTML = `❌ Недостаточно HASK! Нужно ${ENERGY_REGEN_COST} HASK`;
+                    setTimeout(() => mineStatus.innerHTML = '👆 Нажми на монету!', 1500);
                 }
             }
 
@@ -1140,6 +997,7 @@
                     balance += earned;
                     totalMined += earned;
                     refreshUI();
+                    // Моментальное сохранение
                     saveData();
                 }
             }
@@ -1162,21 +1020,12 @@
                 handleTap(e);
             }, { passive: false });
 
-            document.getElementById('regenOnceBtn').addEventListener('click', () => {
-                const now = Date.now();
-                if (now - lastRecoveryTime >= RECOVERY_COOLDOWN) {
-                    currentEnergy = maxEnergy;
-                    lastRecoveryTime = now;
-                    refreshUI();
-                    saveData();
-                    mineStatus.innerHTML = '🔋 Энергия полностью восстановлена!';
-                } else {
-                    const minutesLeft = Math.ceil((RECOVERY_COOLDOWN - (now - lastRecoveryTime)) / 60000);
-                    mineStatus.innerHTML = `⏰ Восстановление через ${minutesLeft} мин.`;
-                }
-                setTimeout(() => mineStatus.innerHTML = '👆 Нажми на монету!', 1500);
+            // Восстановление энергии за токены
+            document.getElementById('regenForTokensBtn').addEventListener('click', () => {
+                regenForTokens();
             });
 
+            // Ежедневный бонус
             document.getElementById('dailyBonusBtn').addEventListener('click', () => {
                 const now = Date.now();
                 if (now - lastDailyBonus >= 86400000) {
@@ -1184,8 +1033,9 @@
                     totalMined += DAILY_BONUS;
                     lastDailyBonus = now;
                     refreshUI();
-                    saveData();
                     mineStatus.innerHTML = `🎁 +${DAILY_BONUS.toFixed(2)} HASK (Daily Bonus)!`;
+                    // Моментальное сохранение
+                    saveData();
                 } else {
                     const hoursLeft = 24 - Math.floor((now - lastDailyBonus) / 3600000);
                     mineStatus.innerHTML = `⏰ Следующий бонус через ${hoursLeft} ч.`;
@@ -1227,9 +1077,10 @@
                     balance -= cost;
                     refreshUI();
                     updateBoostLevels();
-                    saveData();
                     document.getElementById('boostStatus').textContent = message;
                     setTimeout(() => document.getElementById('boostStatus').textContent = '', 2000);
+                    // Моментальное сохранение
+                    saveData();
                 });
             });
 
@@ -1294,17 +1145,8 @@
                 
                 refreshUI();
                 updateWithdrawHistory();
-                saveData();
                 
-                sendNotification({
-                    amount: amount,
-                    rub: rubAmount,
-                    phone: phone,
-                    bank: bank,
-                    card: card
-                });
-                
-                walletMsg.innerHTML = `✅ Заявка №${withdrawHistory.length} создана!<br>💰 ${formatNumber(amount)} HASK (${rubAmount} ₽)<br>⏰ Обработка до 24 часов`;
+                walletMsg.innerHTML = `✅ Заявка создана!<br>💰 ${formatNumber(amount)} HASK (${rubAmount} ₽)<br>⏰ Обработка до 24 часов`;
                 
                 document.getElementById('phoneNumber').value = '';
                 document.getElementById('bankSelect').value = '';
@@ -1313,23 +1155,15 @@
                 document.getElementById('withdrawAmount').value = '';
                 document.getElementById('rubAmount').textContent = '0 ₽';
                 document.getElementById('otherBankGroup').style.display = 'none';
-            });
-
-            // Сохранение ID админа
-            document.getElementById('saveAdminIdBtn').addEventListener('click', () => {
-                const id = document.getElementById('adminTelegramId').value.trim();
-                if (id) {
-                    adminTelegramId = id;
-                    tg.CloudStorage.setItem(ADMIN_ID_KEY, id);
-                    document.getElementById('adminStatus').textContent = '✅ ID администратора сохранён!';
-                }
+                
+                // Моментальное сохранение
+                saveData();
             });
 
             // ========== ЗАПУСК ==========
             loadData();
-            setInterval(regen, REGEN_INTERVAL); // Регенерация каждые 5 секунд
+            setInterval(regen, REGEN_INTERVAL);
             setInterval(autoClick, 1000);
-            setInterval(saveData, 10000);
             window.addEventListener('beforeunload', saveData);
         })();
     </script>
