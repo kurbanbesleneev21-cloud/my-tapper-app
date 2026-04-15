@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>HASKOIN · Премиум Тапалка</title>
+    <title>HASKOIN · Скины монет</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -131,7 +131,7 @@
             background: rgba(10, 10, 20, 0.8);
             backdrop-filter: blur(15px);
             border-radius: 28px;
-            padding: 20px 18px;
+            padding: 16px 18px;
             margin-bottom: 16px;
             border: 1px solid #00ffff40;
             box-shadow: 0 0 40px #00ffff1a, inset 0 0 20px #00ffff08;
@@ -154,7 +154,7 @@
         }
 
         .balance-number {
-            font-size: 54px;
+            font-size: 48px;
             font-weight: 900;
             background: linear-gradient(135deg, #ffffff, #ffd700);
             -webkit-background-clip: text;
@@ -165,7 +165,7 @@
 
         .balance-currency {
             color: #ffd700;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
         }
 
@@ -173,7 +173,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 12px;
+            margin-top: 10px;
         }
 
         .passive-income {
@@ -181,12 +181,12 @@
             align-items: center;
             gap: 6px;
             color: #00ffaa;
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .tap-badge {
             background: rgba(255, 215, 0, 0.12);
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 30px;
             border: 1px solid #ffd70040;
         }
@@ -198,13 +198,13 @@
 
         /* Энергия */
         .energy-section {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .energy-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .energy-label {
@@ -212,16 +212,17 @@
             align-items: center;
             gap: 6px;
             color: #00ffff;
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .energy-value {
             color: #e0e0e0;
             font-weight: 600;
+            font-size: 13px;
         }
 
         .energy-bar {
-            height: 10px;
+            height: 8px;
             background: #0a0a14;
             border-radius: 20px;
             padding: 2px;
@@ -239,24 +240,24 @@
 
         .regen-hint {
             color: #00ffaa;
-            font-size: 11px;
-            margin-top: 6px;
+            font-size: 10px;
+            margin-top: 4px;
             text-align: right;
         }
 
-        /* ПРЕМИУМ МОНЕТА */
+        /* МОНЕТА */
         .coin-container {
             display: flex;
             justify-content: center;
-            margin: 15px 0 20px;
+            margin: 10px 0 15px;
             position: relative;
             perspective: 1000px;
         }
 
         .coin-glow-aura {
             position: absolute;
-            width: 300px;
-            height: 300px;
+            width: 260px;
+            height: 260px;
             background: radial-gradient(circle, #00ffff30 0%, #ffd70020 50%, transparent 70%);
             border-radius: 50%;
             animation: pulseAura 3s infinite;
@@ -265,12 +266,12 @@
 
         @keyframes pulseAura {
             0%, 100% { opacity: 0.4; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.12); }
+            50% { opacity: 0.8; transform: scale(1.1); }
         }
 
         .coin-3d {
-            width: 230px;
-            height: 230px;
+            width: 200px;
+            height: 200px;
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -290,18 +291,18 @@
             align-items: center;
             justify-content: center;
             backface-visibility: hidden;
-            background: radial-gradient(circle at 30% 35%, #ffe680, #d4a017, #8b6914);
             box-shadow: 
                 0 0 0 4px #ffd70080,
                 0 0 0 8px #00ffff30,
-                0 25px 50px #000000cc,
-                inset 0 -10px 15px #8b6914,
-                inset 0 10px 20px #fff8dc,
-                0 0 60px #00ffff40;
+                0 20px 40px #000000cc,
+                inset 0 -8px 12px rgba(0,0,0,0.3),
+                inset 0 8px 15px rgba(255,255,255,0.3),
+                0 0 50px #00ffff40;
             border: 3px solid #ffd700;
             pointer-events: none;
             position: relative;
             overflow: hidden;
+            transition: background 0.3s, box-shadow 0.3s;
         }
 
         .coin-face::before {
@@ -319,21 +320,21 @@
         .coin-face::after {
             content: '';
             position: absolute;
-            top: -5px;
-            left: -5px;
-            right: -5px;
-            bottom: -5px;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
             border-radius: 50%;
             border: 2px solid #00ffff;
-            box-shadow: 0 0 30px #00ffff, inset 0 0 15px #00ffff80;
+            box-shadow: 0 0 25px #00ffff, inset 0 0 12px #00ffff80;
             opacity: 0.9;
             pointer-events: none;
             animation: neonPulse 2s infinite;
         }
 
         @keyframes neonPulse {
-            0%, 100% { opacity: 0.7; box-shadow: 0 0 20px #00ffff, inset 0 0 10px #00ffff80; }
-            50% { opacity: 1; box-shadow: 0 0 40px #00ffff, inset 0 0 20px #00ffff; }
+            0%, 100% { opacity: 0.7; box-shadow: 0 0 15px #00ffff, inset 0 0 8px #00ffff80; }
+            50% { opacity: 1; box-shadow: 0 0 35px #00ffff, inset 0 0 18px #00ffff; }
         }
 
         .coin-shine {
@@ -348,18 +349,13 @@
             filter: blur(2px);
         }
 
-        .coin-letter-h {
-            font-size: 90px;
+        .coin-letter {
+            font-size: 75px;
             font-weight: 900;
-            background: linear-gradient(135deg, #fff8dc, #ffd700, #ffaa00);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 
-                5px 8px 0 #8b6914,
-                0 0 40px #ffd700,
-                0 0 80px #00ffff40;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             pointer-events: none;
             letter-spacing: 2px;
             transform: translateZ(10px);
@@ -368,14 +364,14 @@
         .coin-label {
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(8px);
-            padding: 8px 24px;
+            padding: 6px 20px;
             border-radius: 50px;
             font-weight: 800;
-            font-size: 16px;
+            font-size: 14px;
             color: #00ffff;
             text-shadow: 0 0 15px #00ffff;
             border: 1.5px solid #00ffff80;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             pointer-events: none;
             box-shadow: 0 0 20px #00ffff40, inset 0 0 10px #00ffff20;
         }
@@ -383,7 +379,7 @@
         /* Эффект +монеты */
         .float-score {
             position: absolute;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 900;
             color: #ffd700;
             text-shadow: 0 0 40px #ffd700, 0 0 20px #00ffff;
@@ -394,20 +390,20 @@
 
         .float-score.crit {
             color: #00ffff;
-            font-size: 40px;
+            font-size: 36px;
             text-shadow: 0 0 50px #00ffff;
         }
 
         @keyframes flyUp {
             0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-120px) scale(1.8); }
+            100% { opacity: 0; transform: translateY(-100px) scale(1.6); }
         }
 
         /* Кнопки */
         .action-row {
             display: flex;
-            gap: 10px;
-            margin-bottom: 16px;
+            gap: 8px;
+            margin-bottom: 12px;
         }
 
         .cyber-btn {
@@ -415,17 +411,17 @@
             background: linear-gradient(135deg, #1a1a2e, #0d0d1a);
             color: #00ffff;
             border: 1px solid #00ffff80;
-            border-radius: 18px;
-            padding: 14px 12px;
+            border-radius: 16px;
+            padding: 12px 10px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 13px;
             box-shadow: 0 0 20px #00ffff40, inset 0 0 10px #00ffff20;
             cursor: pointer;
             transition: all 0.08s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 5px;
             text-shadow: 0 0 10px #00ffff;
             touch-action: manipulation;
         }
@@ -433,7 +429,6 @@
         .cyber-btn:active {
             transform: translateY(3px);
             box-shadow: 0 0 30px #00ffff80;
-            background: #1a1a3e;
         }
 
         .cyber-btn.gold {
@@ -443,102 +438,264 @@
             text-shadow: 0 0 10px #ffd700;
         }
 
-        /* Прокачка */
-        .upgrade-grid {
+        /* МАГАЗИН СКИНОВ */
+        .skin-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
+            margin-top: 10px;
         }
 
-        .upgrade-card {
+        .skin-card {
             background: rgba(10, 10, 20, 0.9);
             backdrop-filter: blur(10px);
-            border-radius: 22px;
-            padding: 20px 12px;
+            border-radius: 18px;
+            padding: 14px 10px;
             border: 1px solid #00ffff40;
             text-align: center;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
         }
 
-        .upgrade-icon { font-size: 36px; margin-bottom: 10px; }
-        .upgrade-card h4 { color: #ffd700; font-size: 16px; margin-bottom: 6px; }
-        .upgrade-desc { color: #00ffff; font-size: 12px; margin-bottom: 10px; }
-        .upgrade-price { color: #00ffaa; font-weight: 700; margin-bottom: 8px; }
-        .upgrade-level { color: #aaaacc; font-size: 12px; margin-bottom: 10px; }
+        .skin-card.owned {
+            border-color: #ffd70080;
+            box-shadow: 0 0 15px #ffd70030;
+        }
 
-        .btn-upgrade {
-            background: linear-gradient(135deg, #1a1a2e, #0d0d1a);
-            color: #00ffff;
-            border: 1px solid #00ffff80;
-            border-radius: 20px;
-            padding: 10px 12px;
+        .skin-card.equipped {
+            border-color: #00ffaa;
+            box-shadow: 0 0 20px #00ffaa60;
+            border-width: 2px;
+        }
+
+        .skin-locked {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 16px;
+            opacity: 0.7;
+        }
+
+        .skin-preview {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px currentColor;
+        }
+
+        .skin-letter {
+            font-size: 36px;
+            font-weight: 900;
+        }
+
+        .skin-name {
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .skin-rarity {
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+
+        .rarity-common { color: #aaaacc; }
+        .rarity-rare { color: #00ffff; text-shadow: 0 0 8px #00ffff; }
+        .rarity-epic { color: #a78bfa; text-shadow: 0 0 8px #a78bfa; }
+        .rarity-legendary { color: #ffd700; text-shadow: 0 0 10px #ffd700; }
+        .rarity-mythic { color: #ff4444; text-shadow: 0 0 12px #ff4444; }
+
+        .skin-price {
+            color: #00ffaa;
             font-weight: 600;
             font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .skin-achievement {
+            color: #ffaa00;
+            font-size: 10px;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .skin-btn {
+            background: linear-gradient(135deg, #1a1a2e, #0d0d1a);
+            color: #00ffff;
+            border: 1px solid #00ffff60;
+            border-radius: 15px;
+            padding: 6px 10px;
+            font-weight: 600;
+            font-size: 11px;
             width: 100%;
             cursor: pointer;
             touch-action: manipulation;
         }
 
+        .skin-btn.equipped {
+            background: linear-gradient(135deg, #00ffaa30, #00ffff30);
+            color: #00ffaa;
+        }
+
+        /* Достижения */
+        .achievements-section {
+            margin-top: 16px;
+            background: rgba(10, 10, 20, 0.7);
+            border-radius: 20px;
+            padding: 16px;
+            border: 1px solid #ffd70030;
+        }
+
+        .achievements-title {
+            color: #ffd700;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .achievement-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(0, 255, 255, 0.05);
+            border-radius: 14px;
+            margin-bottom: 8px;
+        }
+
+        .achievement-icon {
+            font-size: 28px;
+        }
+
+        .achievement-info {
+            flex: 1;
+        }
+
+        .achievement-name {
+            color: #fff;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .achievement-progress {
+            color: #00ffff;
+            font-size: 11px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #1a1a2e;
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ffff, #ffd700);
+            border-radius: 4px;
+            width: 0%;
+        }
+
+        .achievement-reward {
+            color: #ffd700;
+            font-size: 18px;
+        }
+
+        /* Прокачка */
+        .upgrade-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .upgrade-card {
+            background: rgba(10, 10, 20, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 18px;
+            padding: 18px 10px;
+            border: 1px solid #00ffff40;
+            text-align: center;
+        }
+
+        .upgrade-icon { font-size: 32px; margin-bottom: 8px; }
+        .upgrade-card h4 { color: #ffd700; font-size: 14px; margin-bottom: 4px; }
+        .upgrade-desc { color: #00ffff; font-size: 11px; margin-bottom: 8px; }
+        .upgrade-price { color: #00ffaa; font-weight: 700; margin-bottom: 6px; }
+        .upgrade-level { color: #aaaacc; font-size: 11px; margin-bottom: 8px; }
+
+        .btn-upgrade {
+            background: linear-gradient(135deg, #1a1a2e, #0d0d1a);
+            color: #00ffff;
+            border: 1px solid #00ffff80;
+            border-radius: 16px;
+            padding: 8px 10px;
+            font-weight: 600;
+            font-size: 11px;
+            width: 100%;
+            cursor: pointer;
+        }
+
         /* Вывод */
         .ton-card {
             background: rgba(10, 10, 20, 0.9);
-            backdrop-filter: blur(10px);
-            border-radius: 28px;
-            padding: 22px;
+            border-radius: 24px;
+            padding: 20px;
             border: 1px solid #00ffff40;
         }
 
         .rate-box {
             background: rgba(0, 255, 255, 0.06);
-            border-radius: 20px;
-            padding: 18px;
+            border-radius: 18px;
+            padding: 16px;
             text-align: center;
-            margin-bottom: 22px;
-            border: 1px solid #00ffff40;
+            margin-bottom: 20px;
         }
 
         .rate-number {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 800;
             color: #ffd700;
-            text-shadow: 0 0 20px #ffd700;
         }
 
         .cyber-input {
             width: 100%;
             background: #0a0a14;
             border: 1.5px solid #00ffff60;
-            border-radius: 18px;
-            padding: 16px 18px;
-            color: #ffffff;
-            font-size: 15px;
-            margin-bottom: 18px;
-        }
-
-        .cyber-input:focus {
-            outline: none;
-            border-color: #00ffff;
-            box-shadow: 0 0 25px #00ffff50;
+            border-radius: 16px;
+            padding: 14px 16px;
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 16px;
         }
 
         .info-box {
             background: rgba(255, 215, 0, 0.06);
-            border-radius: 16px;
-            padding: 16px;
-            margin: 18px 0;
+            border-radius: 14px;
+            padding: 14px;
+            margin: 16px 0;
             border: 1px solid #ffd70040;
         }
 
         .history-item {
             background: #0a0a14;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
             border: 1px solid #00ffff30;
         }
 
         .status-badge {
-            font-size: 12px;
-            padding: 4px 12px;
+            font-size: 11px;
+            padding: 3px 10px;
             border-radius: 20px;
         }
 
@@ -548,148 +705,53 @@
         .toast-msg {
             text-align: center;
             color: #00ffff;
-            font-size: 14px;
-            margin-top: 16px;
+            font-size: 13px;
+            margin-top: 14px;
             text-shadow: 0 0 15px #00ffff;
         }
 
-        /* СТРАНИЦА ПОДДЕРЖКИ */
+        /* Поддержка */
         .support-card {
             background: rgba(10, 10, 20, 0.9);
-            backdrop-filter: blur(10px);
-            border-radius: 28px;
-            padding: 30px 24px;
+            border-radius: 24px;
+            padding: 28px 22px;
             border: 1px solid #00ffff40;
             text-align: center;
         }
 
-        .support-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .support-title {
-            color: #00ffff;
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 16px;
-            text-shadow: 0 0 20px #00ffff;
-        }
-
-        .support-text {
-            color: #cbd5e1;
-            font-size: 16px;
-            margin-bottom: 24px;
-            line-height: 1.5;
-        }
-
-        .support-contact {
-            background: rgba(0, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 24px;
-            border: 1px solid #00ffff60;
-        }
-
-        .support-username {
-            font-size: 28px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #00ffff, #ffd700);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 8px;
-            text-shadow: 0 0 30px #00ffff80;
-        }
-
-        .support-note {
-            color: #aaaacc;
-            font-size: 14px;
-        }
-
-        .support-btn {
-            background: linear-gradient(135deg, #00ffff, #0088ff);
-            color: #030308;
-            border: none;
-            border-radius: 20px;
-            padding: 18px 24px;
-            font-weight: 800;
-            font-size: 18px;
-            box-shadow: 0 0 30px #00ffff80;
-            cursor: pointer;
-            transition: all 0.15s;
-            width: 100%;
-            touch-action: manipulation;
-        }
-
-        .support-btn:active {
-            transform: scale(0.97);
-            box-shadow: 0 0 50px #00ffff;
-        }
-
-        .faq-section {
-            margin-top: 24px;
-            text-align: left;
-        }
-
-        .faq-title {
-            color: #ffd700;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-
-        .faq-item {
-            background: rgba(0, 255, 255, 0.05);
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 10px;
-            border: 1px solid #00ffff30;
-        }
-
-        .faq-question {
-            color: #00ffff;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .faq-answer {
-            color: #aaaacc;
-            font-size: 13px;
-        }
+        .support-icon { font-size: 70px; margin-bottom: 16px; }
+        .support-title { color: #00ffff; font-size: 22px; font-weight: 800; margin-bottom: 14px; }
+        .support-text { color: #cbd5e1; font-size: 15px; margin-bottom: 20px; }
+        .support-contact { background: rgba(0, 255, 255, 0.08); border-radius: 18px; padding: 18px; margin-bottom: 20px; }
+        .support-username { font-size: 26px; font-weight: 900; background: linear-gradient(135deg, #00ffff, #ffd700); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .support-btn { background: linear-gradient(135deg, #00ffff, #0088ff); color: #030308; border: none; border-radius: 18px; padding: 16px 20px; font-weight: 800; font-size: 16px; width: 100%; cursor: pointer; }
 
         /* Нижняя панель */
         .bottom-nav {
             background: rgba(10, 10, 20, 0.95);
             backdrop-filter: blur(25px);
-            padding: 10px 10px;
+            padding: 10px 8px;
             border-top: 1.5px solid #00ffff40;
             display: flex;
-            gap: 6px;
+            gap: 4px;
             z-index: 50;
         }
 
         .nav-btn {
             flex: 1;
-            padding: 10px 4px;
+            padding: 8px 2px;
             border: none;
             background: transparent;
             color: #8888aa;
             font-weight: 600;
-            font-size: 11px;
-            border-radius: 16px;
+            font-size: 10px;
+            border-radius: 14px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             touch-action: manipulation;
         }
 
@@ -697,10 +759,10 @@
             background: linear-gradient(135deg, #00ffff30, #0088ff30);
             color: #00ffff;
             border: 1.5px solid #00ffff80;
-            box-shadow: 0 0 20px #00ffff40;
+            box-shadow: 0 0 15px #00ffff40;
         }
 
-        .nav-icon { font-size: 22px; }
+        .nav-icon { font-size: 20px; }
     </style>
 </head>
 <body>
@@ -720,121 +782,90 @@
                 </div>
 
                 <div class="balance-card">
-                    <div class="balance-header">
-                        <span>◆</span> БАЛАНС HASKOIN <span>◆</span>
-                    </div>
+                    <div class="balance-header"><span>◆</span> БАЛАНС HASKOIN <span>◆</span></div>
                     <div class="balance-amount">
                         <span class="balance-number" id="balanceDisplay">0.00</span>
                         <span class="balance-currency">HASK</span>
                     </div>
                     <div class="balance-footer">
-                        <div class="passive-income">
-                            <span>⚡</span>
-                            <span id="passiveIncome">+0.00/сек</span>
-                        </div>
-                        <div class="tap-badge">
-                            <span id="tapValue">+0.05</span> за тап
-                        </div>
+                        <div class="passive-income"><span>⚡</span><span id="passiveIncome">+0.00/сек</span></div>
+                        <div class="tap-badge"><span id="tapValue">+0.05</span> за тап</div>
                     </div>
                 </div>
 
                 <div class="energy-section">
                     <div class="energy-header">
-                        <div class="energy-label">
-                            <span>🔋</span>
-                            <span>ЭНЕРГИЯ</span>
-                        </div>
+                        <div class="energy-label"><span>🔋</span><span>ЭНЕРГИЯ</span></div>
                         <div class="energy-value" id="energyText">500/500</div>
                     </div>
-                    <div class="energy-bar">
-                        <div class="energy-fill" id="energyFill"></div>
-                    </div>
+                    <div class="energy-bar"><div class="energy-fill" id="energyFill"></div></div>
                     <div class="regen-hint" id="regenInfo">+1 / 5 сек</div>
                 </div>
 
                 <div class="coin-container">
                     <div class="coin-glow-aura"></div>
                     <div class="coin-3d" id="coin3D">
-                        <div class="coin-face">
+                        <div class="coin-face" id="coinFace">
                             <div class="coin-shine"></div>
-                            <div class="coin-letter-h">H</div>
+                            <div class="coin-letter" id="coinLetter">H</div>
                             <div class="coin-label">TAP</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="action-row">
-                    <button class="cyber-btn" id="regenBtn">
-                        <span>⚡</span> 20 HASK
-                    </button>
-                    <button class="cyber-btn gold" id="bonusBtn">
-                        <span>🎁</span> БОНУС
-                    </button>
+                    <button class="cyber-btn" id="regenBtn"><span>⚡</span>20 HASK</button>
+                    <button class="cyber-btn gold" id="bonusBtn"><span>🎁</span>БОНУС</button>
                 </div>
 
                 <div class="toast-msg" id="mineStatus">💎 ТАПАЙ ПО МОНЕТЕ</div>
             </div>
 
+            <!-- СТРАНИЦА МАГАЗИН СКИНОВ -->
+            <div class="page" id="page-skins">
+                <h3 style="color: #00ffff; margin-bottom: 12px; text-align: center; text-shadow: 0 0 15px #00ffff; font-size: 20px;">🎨 МАГАЗИН СКИНОВ</h3>
+                
+                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                    <div style="flex: 1; text-align: center; color: #ffd700; font-size: 13px;">
+                        <span>🏆 Мои достижения: </span>
+                        <span id="achievementPoints">0</span>
+                    </div>
+                </div>
+
+                <div class="skin-grid" id="skinGrid"></div>
+
+                <div class="achievements-section">
+                    <div class="achievements-title"><span>🏆</span> ДОСТИЖЕНИЯ <span>🏆</span></div>
+                    <div id="achievementsList"></div>
+                </div>
+                <div class="toast-msg" id="skinStatus"></div>
+            </div>
+
             <!-- СТРАНИЦА ПРОКАЧКА -->
             <div class="page" id="page-boost">
-                <h3 style="color: #00ffff; margin-bottom: 18px; text-align: center; text-shadow: 0 0 15px #00ffff; font-size: 22px;">🚀 ПРОКАЧКА</h3>
+                <h3 style="color: #00ffff; margin-bottom: 16px; text-align: center; text-shadow: 0 0 15px #00ffff; font-size: 20px;">🚀 ПРОКАЧКА</h3>
                 <div class="upgrade-grid">
-                    <div class="upgrade-card">
-                        <div class="upgrade-icon">⚡</div>
-                        <h4>Энергия</h4>
-                        <div class="upgrade-desc">+100 макс.</div>
-                        <div class="upgrade-price" id="energyCost">5.00 HASK</div>
-                        <div class="upgrade-level" id="energyLevel">Ур. 1</div>
-                        <button class="btn-upgrade" data-boost="energy">УЛУЧШИТЬ</button>
-                    </div>
-                    <div class="upgrade-card">
-                        <div class="upgrade-icon">⛏️</div>
-                        <h4>Сила тапа</h4>
-                        <div class="upgrade-desc">+0.05 за тап</div>
-                        <div class="upgrade-price" id="multitapCost">10.00 HASK</div>
-                        <div class="upgrade-level" id="multitapLevel">Ур. 1</div>
-                        <button class="btn-upgrade" data-boost="multitap">УЛУЧШИТЬ</button>
-                    </div>
-                    <div class="upgrade-card">
-                        <div class="upgrade-icon">🔄</div>
-                        <h4>Регенерация</h4>
-                        <div class="upgrade-desc">+1 / 5 сек</div>
-                        <div class="upgrade-price" id="regenCost">8.00 HASK</div>
-                        <div class="upgrade-level" id="regenLevel">Ур. 1</div>
-                        <button class="btn-upgrade" data-boost="regen">УЛУЧШИТЬ</button>
-                    </div>
-                    <div class="upgrade-card">
-                        <div class="upgrade-icon">🤖</div>
-                        <h4>Автокликер</h4>
-                        <div class="upgrade-desc">Авто-тап</div>
-                        <div class="upgrade-price">20.00 HASK</div>
-                        <div class="upgrade-level" id="autoLevel">Выкл</div>
-                        <button class="btn-upgrade" data-boost="auto">АКТИВИРОВАТЬ</button>
-                    </div>
+                    <div class="upgrade-card"><div class="upgrade-icon">⚡</div><h4>Энергия</h4><div class="upgrade-desc">+100 макс.</div><div class="upgrade-price" id="energyCost">5.00 HASK</div><div class="upgrade-level" id="energyLevel">Ур. 1</div><button class="btn-upgrade" data-boost="energy">УЛУЧШИТЬ</button></div>
+                    <div class="upgrade-card"><div class="upgrade-icon">⛏️</div><h4>Сила тапа</h4><div class="upgrade-desc">+0.05 за тап</div><div class="upgrade-price" id="multitapCost">10.00 HASK</div><div class="upgrade-level" id="multitapLevel">Ур. 1</div><button class="btn-upgrade" data-boost="multitap">УЛУЧШИТЬ</button></div>
+                    <div class="upgrade-card"><div class="upgrade-icon">🔄</div><h4>Регенерация</h4><div class="upgrade-desc">+1 / 5 сек</div><div class="upgrade-price" id="regenCost">8.00 HASK</div><div class="upgrade-level" id="regenLevel">Ур. 1</div><button class="btn-upgrade" data-boost="regen">УЛУЧШИТЬ</button></div>
+                    <div class="upgrade-card"><div class="upgrade-icon">🤖</div><h4>Автокликер</h4><div class="upgrade-desc">Авто-тап</div><div class="upgrade-price">20.00 HASK</div><div class="upgrade-level" id="autoLevel">Выкл</div><button class="btn-upgrade" data-boost="auto">АКТИВИРОВАТЬ</button></div>
                 </div>
                 <div class="toast-msg" id="boostStatus"></div>
             </div>
 
             <!-- СТРАНИЦА ВЫВОД -->
             <div class="page" id="page-wallet">
-                <h3 style="color: #00ffff; margin-bottom: 18px; text-align: center; text-shadow: 0 0 15px #00ffff; font-size: 22px;">💎 ВЫВОД TON</h3>
+                <h3 style="color: #00ffff; margin-bottom: 16px; text-align: center; text-shadow: 0 0 15px #00ffff; font-size: 20px;">💎 ВЫВОД TON</h3>
                 <div class="ton-card">
-                    <div class="rate-box">
-                        <div class="rate-number">3000 HASK = 0.01 TON</div>
-                        <div style="color: #00ffff; margin-top: 6px; font-size: 14px;">Курс обмена</div>
-                    </div>
+                    <div class="rate-box"><div class="rate-number">3000 HASK = 0.01 TON</div><div style="color: #00ffff; margin-top: 4px;">Курс обмена</div></div>
                     <input type="text" class="cyber-input" id="tonAddress" placeholder="Адрес TON (EQ... / UQ...)">
                     <input type="number" class="cyber-input" id="withdrawAmount" placeholder="Сумма в HASK">
                     <div class="info-box">
-                        <div style="color: #ffd700; font-size: 16px;">💰 Вы получите: <span id="tonReceive">0</span> TON</div>
-                        <div style="color: #ffaa00; font-size: 14px; margin-top: 8px;">⚠️ Минимальный вывод: 1 TON</div>
-                        <div style="color: #aaaacc; font-size: 12px; margin-top: 8px;">⏱ Обработка до 24 часов</div>
+                        <div style="color: #ffd700;">💰 Вы получите: <span id="tonReceive">0</span> TON</div>
+                        <div style="color: #ffaa00; margin-top: 6px;">⚠️ Минимальный вывод: 1 TON</div>
                     </div>
                     <button class="cyber-btn" id="withdrawBtn" style="width: 100%;">💎 ОТПРАВИТЬ ЗАЯВКУ</button>
-                    <div style="margin-top: 24px;">
-                        <h4 style="color: #00ffff; margin-bottom: 14px; font-size: 16px;">📋 История</h4>
-                        <div id="historyContainer"></div>
-                    </div>
+                    <div style="margin-top: 20px;"><h4 style="color: #00ffff; margin-bottom: 12px;">📋 История</h4><div id="historyContainer"></div></div>
                     <div class="toast-msg" id="walletStatus"></div>
                 </div>
             </div>
@@ -844,31 +875,12 @@
                 <div class="support-card">
                     <div class="support-icon">🆘</div>
                     <h2 class="support-title">НУЖНА ПОМОЩЬ?</h2>
-                    <p class="support-text">Свяжитесь с нашей службой поддержки. Мы ответим в течение 24 часов.</p>
-                    
-                    <div class="support-contact">
-                        <div class="support-username">@KU1003</div>
-                        <div class="support-note">Telegram поддержки</div>
-                    </div>
-
-                    <button class="support-btn" id="openSupportBtn">
-                        💬 НАПИСАТЬ В ПОДДЕРЖКУ
-                    </button>
-
-                    <div class="faq-section">
-                        <h3 class="faq-title">❓ ЧАСТЫЕ ВОПРОСЫ</h3>
-                        <div class="faq-item">
-                            <div class="faq-question">💎 Как вывести TON?</div>
-                            <div class="faq-answer">Перейдите во вкладку "Вывод", укажите адрес кошелька и сумму. Минимальный вывод — 1 TON.</div>
-                        </div>
-                        <div class="faq-item">
-                            <div class="faq-question">⛏️ Как увеличить доход?</div>
-                            <div class="faq-answer">Покупайте улучшения во вкладке "Прокачка": сила тапа, энергия, регенерация и автокликер.</div>
-                        </div>
-                        <div class="faq-item">
-                            <div class="faq-question">💰 Курс обмена</div>
-                            <div class="faq-answer">3000 HASK = 0.01 TON. Курс фиксированный.</div>
-                        </div>
+                    <p class="support-text">Свяжитесь с нашей службой поддержки</p>
+                    <div class="support-contact"><div class="support-username">@KU1003</div><div style="color: #aaaacc; margin-top: 6px;">Telegram поддержки</div></div>
+                    <button class="support-btn" id="openSupportBtn">💬 НАПИСАТЬ</button>
+                    <div style="margin-top: 20px; text-align: left;"><h4 style="color: #ffd700; margin-bottom: 10px;">❓ FAQ</h4>
+                        <div style="background: rgba(0,255,255,0.05); border-radius: 12px; padding: 12px; margin-bottom: 8px;"><div style="color: #00ffff; font-weight: 600;">💎 Как вывести TON?</div><div style="color: #aaaacc; font-size: 12px;">Вкладка "Вывод", укажите адрес и сумму. Мин. 1 TON.</div></div>
+                        <div style="background: rgba(0,255,255,0.05); border-radius: 12px; padding: 12px; margin-bottom: 8px;"><div style="color: #00ffff; font-weight: 600;">🎨 Как получить скины?</div><div style="color: #aaaacc; font-size: 12px;">Вкладка "Скины" — покупайте за HASK или выполняйте достижения.</div></div>
                     </div>
                 </div>
             </div>
@@ -876,22 +888,11 @@
 
         <!-- НИЖНЯЯ ПАНЕЛЬ -->
         <div class="bottom-nav">
-            <button class="nav-btn active" data-page="mine">
-                <span class="nav-icon">⛏️</span>
-                <span>Майнинг</span>
-            </button>
-            <button class="nav-btn" data-page="boost">
-                <span class="nav-icon">🚀</span>
-                <span>Прокачка</span>
-            </button>
-            <button class="nav-btn" data-page="wallet">
-                <span class="nav-icon">💎</span>
-                <span>Вывод</span>
-            </button>
-            <button class="nav-btn" data-page="support">
-                <span class="nav-icon">🆘</span>
-                <span>Поддержка</span>
-            </button>
+            <button class="nav-btn active" data-page="mine"><span class="nav-icon">⛏️</span><span>Майнинг</span></button>
+            <button class="nav-btn" data-page="skins"><span class="nav-icon">🎨</span><span>Скины</span></button>
+            <button class="nav-btn" data-page="boost"><span class="nav-icon">🚀</span><span>Прокачка</span></button>
+            <button class="nav-btn" data-page="wallet"><span class="nav-icon">💎</span><span>Вывод</span></button>
+            <button class="nav-btn" data-page="support"><span class="nav-icon">🆘</span><span>Поддержка</span></button>
         </div>
     </div>
 
@@ -913,6 +914,43 @@
             const MIN_WITHDRAW_TON = 1;
             const MIN_WITHDRAW_HASK = MIN_WITHDRAW_TON / TON_RATE;
 
+            // 20+ СКИНОВ
+            const SKINS = [
+                { id: 'default', name: 'Классик', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ffe680, #d4a017, #8b6914)', border: '#ffd700', glow: '#ffd700', rarity: 'common', price: 0, owned: true },
+                { id: 'neon', name: 'Неон', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #00ffff, #0088ff, #0044aa)', border: '#00ffff', glow: '#00ffff', rarity: 'rare', price: 50, achievement: null },
+                { id: 'cyber', name: 'Киберпанк', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ff00ff, #8800ff, #440088)', border: '#ff00ff', glow: '#ff00ff', rarity: 'rare', price: 75 },
+                { id: 'gold', name: 'Золотой', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #fff8dc, #ffd700, #b8860b)', border: '#ffd700', glow: '#ffaa00', rarity: 'epic', price: 200 },
+                { id: 'ruby', name: 'Рубин', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ff6666, #cc0000, #660000)', border: '#ff4444', glow: '#ff0000', rarity: 'epic', price: 250 },
+                { id: 'emerald', name: 'Изумруд', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #66ff99, #00cc44, #006622)', border: '#00ff88', glow: '#00ff66', rarity: 'epic', price: 250 },
+                { id: 'sapphire', name: 'Сапфир', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #6699ff, #0044cc, #001166)', border: '#4488ff', glow: '#0066ff', rarity: 'epic', price: 250 },
+                { id: 'amethyst', name: 'Аметист', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #cc99ff, #6600cc, #330066)', border: '#9944ff', glow: '#7700ff', rarity: 'epic', price: 250 },
+                { id: 'obsidian', name: 'Обсидиан', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #666666, #222222, #000000)', border: '#888888', glow: '#aaaaaa', rarity: 'rare', price: 100 },
+                { id: 'rainbow', name: 'Радужный', letter: 'H', bg: 'linear-gradient(135deg, red, orange, yellow, green, blue, indigo, violet)', border: '#ffffff', glow: '#ff00ff', rarity: 'legendary', price: 500 },
+                { id: 'ice', name: 'Ледяной', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ccf0ff, #66ccff, #0066aa)', border: '#99eeff', glow: '#00ccff', rarity: 'rare', price: 80 },
+                { id: 'fire', name: 'Огненный', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ffcc66, #ff6600, #993300)', border: '#ff9900', glow: '#ff4400', rarity: 'rare', price: 80 },
+                { id: 'cosmic', name: 'Космос', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ccbbff, #6644cc, #220066)', border: '#aa88ff', glow: '#7733ff', rarity: 'legendary', achievement: 'cosmic_miner' },
+                { id: 'diamond', name: 'Алмаз', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #eef5ff, #99bbee, #336699)', border: '#cce0ff', glow: '#88bbff', rarity: 'legendary', achievement: 'diamond_hands' },
+                { id: 'toxic', name: 'Токсичный', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ccff66, #66cc00, #336600)', border: '#88ff00', glow: '#55ff00', rarity: 'rare', price: 90 },
+                { id: 'vampire', name: 'Вампир', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ff99bb, #cc0044, #660022)', border: '#ff4488', glow: '#ff0066', rarity: 'legendary', achievement: 'night_miner' },
+                { id: 'phoenix', name: 'Феникс', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ffaa66, #ff4400, #992200)', border: '#ff7733', glow: '#ff5500', rarity: 'mythic', achievement: 'phoenix_rising' },
+                { id: 'dragon', name: 'Дракон', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #66ff66, #009900, #004400)', border: '#33ff33', glow: '#00ff00', rarity: 'mythic', achievement: 'dragon_hoard' },
+                { id: 'angel', name: 'Ангел', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ffffff, #ffddaa, #ccaa77)', border: '#ffeecc', glow: '#ffddbb', rarity: 'legendary', achievement: 'angel_investor' },
+                { id: 'demon', name: 'Демон', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ff6666, #990000, #440000)', border: '#ff3333', glow: '#cc0000', rarity: 'legendary', achievement: 'demon_tapper' },
+                { id: 'void', name: 'Пустота', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #333344, #111122, #000011)', border: '#555577', glow: '#333366', rarity: 'mythic', achievement: 'void_master' }
+            ];
+
+            // ДОСТИЖЕНИЯ
+            const ACHIEVEMENTS = [
+                { id: 'cosmic_miner', name: 'Космический майнер', desc: 'Накопить 10 000 HASK', target: 10000, reward: 'cosmic', icon: '🌌' },
+                { id: 'diamond_hands', name: 'Алмазные руки', desc: 'Не выводить 7 дней', target: 7, reward: 'diamond', icon: '💎', type: 'days' },
+                { id: 'night_miner', name: 'Ночной майнер', desc: 'Совершить 1000 тапов', target: 1000, reward: 'vampire', icon: '🌙', type: 'taps' },
+                { id: 'phoenix_rising', name: 'Восхождение Феникса', desc: 'Накопить 50 000 HASK', target: 50000, reward: 'phoenix', icon: '🔥' },
+                { id: 'dragon_hoard', name: 'Сокровище дракона', desc: 'Накопить 100 000 HASK', target: 100000, reward: 'dragon', icon: '🐉' },
+                { id: 'angel_investor', name: 'Ангел-инвестор', desc: 'Купить все улучшения', target: 4, reward: 'angel', icon: '👼', type: 'upgrades' },
+                { id: 'demon_tapper', name: 'Демон тапа', desc: 'Совершить 5000 тапов', target: 5000, reward: 'demon', icon: '👿', type: 'taps' },
+                { id: 'void_master', name: 'Мастер пустоты', desc: 'Накопить 200 000 HASK', target: 200000, reward: 'void', icon: '🌀' }
+            ];
+
             let balance = 0.00;
             let maxEnergy = BASE_MAX_ENERGY;
             let currentEnergy = maxEnergy;
@@ -922,18 +960,15 @@
             let energyLvl = 1, tapLvl = 1, regenLvl = 1;
             let lastBonus = 0;
             let history = [];
+            let totalTaps = 0;
+            let daysWithoutWithdraw = 0;
+            let lastWithdrawDate = null;
+            let ownedSkins = ['default'];
+            let equippedSkin = 'default';
+            let achievements = {};
             
             const userId = tg.initDataUnsafe?.user?.id || 'demo';
-            const STORAGE_KEY = `haskoin_support_${userId}`;
-
-            const balanceEl = document.getElementById('balanceDisplay');
-            const energyText = document.getElementById('energyText');
-            const energyFill = document.getElementById('energyFill');
-            const tapValueEl = document.getElementById('tapValue');
-            const mineStatus = document.getElementById('mineStatus');
-            const regenInfo = document.getElementById('regenInfo');
-            const passiveIncome = document.getElementById('passiveIncome');
-            const coin3D = document.getElementById('coin3D');
+            const STORAGE_KEY = `haskoin_full_${userId}`;
 
             const user = tg.initDataUnsafe?.user;
             if (user) {
@@ -945,7 +980,7 @@
             function haskToTon(h) { return (h * TON_RATE).toFixed(4); }
 
             function saveData() {
-                const data = { balance, maxEnergy, currentEnergy, tapMult, regenMult, autoActive, energyLvl, tapLvl, regenLvl, lastBonus, history };
+                const data = { balance, maxEnergy, currentEnergy, tapMult, regenMult, autoActive, energyLvl, tapLvl, regenLvl, lastBonus, history, totalTaps, daysWithoutWithdraw, lastWithdrawDate, ownedSkins, equippedSkin, achievements };
                 tg.CloudStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             }
 
@@ -965,25 +1000,35 @@
                             regenLvl = d.regenLvl || 1;
                             lastBonus = d.lastBonus || 0;
                             history = d.history || [];
+                            totalTaps = d.totalTaps || 0;
+                            daysWithoutWithdraw = d.daysWithoutWithdraw || 0;
+                            lastWithdrawDate = d.lastWithdrawDate || null;
+                            ownedSkins = d.ownedSkins || ['default'];
+                            equippedSkin = d.equippedSkin || 'default';
+                            achievements = d.achievements || {};
                         } catch(e) {}
                     }
                     refreshUI();
                     updateBoostUI();
                     updateHistory();
+                    renderSkins();
+                    renderAchievements();
+                    applySkin(equippedSkin);
                 });
             }
 
             function refreshUI() {
-                balanceEl.textContent = fmt(balance);
+                document.getElementById('balanceDisplay').textContent = fmt(balance);
                 const pct = (currentEnergy / maxEnergy) * 100;
-                energyFill.style.width = Math.max(0, pct) + '%';
-                energyText.textContent = `${Math.floor(currentEnergy)}/${maxEnergy}`;
-                tapValueEl.textContent = `+${(BASE_TAP * tapMult).toFixed(2)}`;
-                regenInfo.textContent = `+${(BASE_REGEN * regenMult).toFixed(1)} / 5 сек`;
-                passiveIncome.textContent = `+${(autoActive ? BASE_TAP * tapMult : 0).toFixed(2)}/сек`;
+                document.getElementById('energyFill').style.width = Math.max(0, pct) + '%';
+                document.getElementById('energyText').textContent = `${Math.floor(currentEnergy)}/${maxEnergy}`;
+                document.getElementById('tapValue').textContent = `+${(BASE_TAP * tapMult).toFixed(2)}`;
+                document.getElementById('regenInfo').textContent = `+${(BASE_REGEN * regenMult).toFixed(1)} / 5 сек`;
+                document.getElementById('passiveIncome').textContent = `+${(autoActive ? BASE_TAP * tapMult : 0).toFixed(2)}/сек`;
                 
                 const rank = balance < 1000 ? 'НОВИЧОК' : balance < 10000 ? 'МАЙНЕР' : balance < 50000 ? 'ПРОФИ' : 'ЛЕГЕНДА';
                 document.getElementById('rankDisplay').textContent = rank;
+                document.getElementById('achievementPoints').textContent = Object.keys(achievements).length;
             }
 
             function updateBoostUI() {
@@ -1001,95 +1046,128 @@
                 if (!history.length) { c.innerHTML = '<p style="color:#8888aa;text-align:center;">Нет операций</p>'; return; }
                 c.innerHTML = history.slice(-5).reverse().map(h => `
                     <div class="history-item">
-                        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
                             <span style="color:#ffd700;font-weight:700;">${fmt(h.amount)} HASK</span>
                             <span class="status-badge ${h.status==='done'?'status-done':'status-pending'}">${h.status==='done'?'✅ Выполнено':'⏳ В работе'}</span>
                         </div>
-                        <div style="color:#aaaacc;font-size:13px;">${h.address?.slice(0,10)}...${h.address?.slice(-8)} · ${h.ton} TON</div>
-                        <div style="color:#666688;font-size:11px;margin-top:6px;">${h.date}</div>
+                        <div style="color:#aaaacc;font-size:12px;">${h.address?.slice(0,10)}...${h.address?.slice(-8)} · ${h.ton} TON</div>
                     </div>
                 `).join('');
             }
 
-            function createEffect(x, y, amt, isCrit) {
-                const el = document.createElement('div');
-                el.className = 'float-score' + (isCrit ? ' crit' : '');
-                el.textContent = '+' + amt.toFixed(2);
-                el.style.left = x + 'px';
-                el.style.top = y + 'px';
-                document.body.appendChild(el);
-                setTimeout(() => el.remove(), 900);
-            }
-
-            function tiltCoin(e) {
-                const rect = coin3D.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                
-                let clientX, clientY;
-                if (e.touches) {
-                    clientX = e.touches[0].clientX;
-                    clientY = e.touches[0].clientY;
-                } else {
-                    clientX = e.clientX;
-                    clientY = e.clientY;
-                }
-                
-                const deltaX = (clientX - centerX) / (rect.width / 2);
-                const deltaY = (clientY - centerY) / (rect.height / 2);
-                
-                const rotateY = deltaX * 18;
-                const rotateX = -deltaY * 18;
-                
-                coin3D.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-            }
-
-            function resetTilt() {
-                coin3D.style.transform = 'rotateX(0deg) rotateY(0deg)';
-            }
-
-            function handleTap(e) {
-                if (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-                
-                tiltCoin(e);
-                setTimeout(resetTilt, 180);
-                
-                if (currentEnergy < 1) {
-                    mineStatus.textContent = '❌ НЕТ ЭНЕРГИИ';
-                    setTimeout(() => mineStatus.textContent = '💎 ТАПАЙ ПО МОНЕТЕ', 800);
-                    return;
-                }
-                
-                currentEnergy -= 1;
-                let earned = BASE_TAP * tapMult;
-                const isCrit = Math.random() < 0.1;
-                if (isCrit) earned *= 3;
-                balance += earned;
-                
-                refreshUI();
-                
-                if (e) {
-                    const x = e.touches ? e.touches[0].clientX : e.clientX;
-                    const y = e.touches ? e.touches[0].clientY : e.clientY;
-                    createEffect(x, y, earned, isCrit);
-                }
-                
-                mineStatus.textContent = isCrit ? `🔥 КРИТ! +${earned.toFixed(2)}` : `+${earned.toFixed(2)} HASK`;
-                setTimeout(() => mineStatus.textContent = '💎 ТАПАЙ ПО МОНЕТЕ', 600);
+            function applySkin(skinId) {
+                const skin = SKINS.find(s => s.id === skinId);
+                if (!skin) return;
+                equippedSkin = skinId;
+                const face = document.getElementById('coinFace');
+                const letter = document.getElementById('coinLetter');
+                face.style.background = skin.bg;
+                face.style.borderColor = skin.border;
+                face.style.boxShadow = `0 0 0 4px ${skin.border}80, 0 0 0 8px ${skin.glow}30, 0 20px 40px #000000cc, inset 0 -8px 12px rgba(0,0,0,0.3), inset 0 8px 15px rgba(255,255,255,0.3), 0 0 50px ${skin.glow}40`;
+                letter.textContent = skin.letter;
                 saveData();
-                
-                return false;
             }
 
-            function regen() {
-                if (currentEnergy < maxEnergy) {
-                    currentEnergy = Math.min(currentEnergy + BASE_REGEN * regenMult, maxEnergy);
-                    refreshUI();
-                    saveData();
-                }
+            function renderSkins() {
+                const grid = document.getElementById('skinGrid');
+                grid.innerHTML = SKINS.map(skin => {
+                    const owned = ownedSkins.includes(skin.id);
+                    const equipped = equippedSkin === skin.id;
+                    const lockedIcon = !owned ? '🔒' : '';
+                    const rarityClass = `rarity-${skin.rarity}`;
+                    
+                    return `
+                        <div class="skin-card ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}">
+                            <span class="skin-locked">${lockedIcon}</span>
+                            <div class="skin-preview" style="background: ${skin.bg}; border: 2px solid ${skin.border}; box-shadow: 0 0 15px ${skin.glow};">
+                                <span class="skin-letter" style="background: linear-gradient(135deg, #fff, ${skin.glow}); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 2px 3px 0 rgba(0,0,0,0.3);">${skin.letter}</span>
+                            </div>
+                            <div class="skin-name">${skin.name}</div>
+                            <div class="skin-rarity ${rarityClass}">${skin.rarity.toUpperCase()}</div>
+                            ${!owned && skin.price ? `<div class="skin-price">${skin.price} HASK</div>` : ''}
+                            ${!owned && skin.achievement ? `<div class="skin-achievement">🏆 ${ACHIEVEMENTS.find(a => a.reward === skin.id)?.name}</div>` : ''}
+                            <button class="skin-btn ${equipped ? 'equipped' : ''}" data-skin-id="${skin.id}">
+                                ${equipped ? '✅ Выбрано' : (owned ? '👕 Надеть' : (skin.price ? '💰 Купить' : '🔓 Получить'))}
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+
+                document.querySelectorAll('.skin-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const skinId = btn.dataset.skinId;
+                        const skin = SKINS.find(s => s.id === skinId);
+                        
+                        if (ownedSkins.includes(skinId)) {
+                            applySkin(skinId);
+                            renderSkins();
+                            document.getElementById('skinStatus').textContent = `✅ Скин "${skin.name}" надет!`;
+                        } else if (skin.price && balance >= skin.price) {
+                            balance -= skin.price;
+                            ownedSkins.push(skinId);
+                            refreshUI();
+                            renderSkins();
+                            saveData();
+                            document.getElementById('skinStatus').textContent = `🎉 Скин "${skin.name}" куплен!`;
+                        } else if (skin.achievement && achievements[skin.achievement]) {
+                            ownedSkins.push(skinId);
+                            renderSkins();
+                            saveData();
+                            document.getElementById('skinStatus').textContent = `🏆 Скин "${skin.name}" получен за достижение!`;
+                        } else {
+                            document.getElementById('skinStatus').textContent = `❌ Недостаточно HASK или не выполнено достижение`;
+                        }
+                        setTimeout(() => document.getElementById('skinStatus').textContent = '', 2000);
+                    });
+                });
+            }
+
+            function checkAchievements() {
+                ACHIEVEMENTS.forEach(ach => {
+                    if (achievements[ach.id]) return;
+                    let completed = false;
+                    
+                    if (ach.type === 'taps') completed = totalTaps >= ach.target;
+                    else if (ach.type === 'days') completed = daysWithoutWithdraw >= ach.target;
+                    else if (ach.type === 'upgrades') {
+                        const upgrades = (energyLvl > 1 ? 1 : 0) + (tapLvl > 1 ? 1 : 0) + (regenLvl > 1 ? 1 : 0) + (autoActive ? 1 : 0);
+                        completed = upgrades >= ach.target;
+                    }
+                    else completed = balance >= ach.target;
+                    
+                    if (completed) {
+                        achievements[ach.id] = true;
+                        if (ach.reward) ownedSkins.push(ach.reward);
+                        saveData();
+                    }
+                });
+                renderAchievements();
+                renderSkins();
+            }
+
+            function renderAchievements() {
+                const container = document.getElementById('achievementsList');
+                container.innerHTML = ACHIEVEMENTS.map(ach => {
+                    let progress = 0;
+                    if (ach.type === 'taps') progress = Math.min(100, (totalTaps / ach.target) * 100);
+                    else if (ach.type === 'days') progress = Math.min(100, (daysWithoutWithdraw / ach.target) * 100);
+                    else progress = Math.min(100, (balance / ach.target) * 100);
+                    
+                    const completed = achievements[ach.id];
+                    
+                    return `
+                        <div class="achievement-item">
+                            <div class="achievement-icon">${ach.icon}</div>
+                            <div class="achievement-info">
+                                <div class="achievement-name">${ach.name}</div>
+                                <div class="achievement-progress">${ach.desc}</div>
+                                <div class="progress-bar"><div class="progress-fill" style="width: ${completed ? 100 : progress}%"></div></div>
+                            </div>
+                            <div class="achievement-reward">${completed ? '✅' : SKINS.find(s => s.id === ach.reward)?.letter || '🎁'}</div>
+                        </div>
+                    `;
+                }).join('');
             }
 
             // Навигация
@@ -1104,133 +1182,109 @@
             });
 
             // Монета
-            coin3D.addEventListener('click', handleTap);
-            coin3D.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                handleTap(e);
-            }, { passive: false });
+            const coin3D = document.getElementById('coin3D');
             
-            coin3D.addEventListener('touchmove', function(e) {
-                e.preventDefault();
-                tiltCoin(e);
-            }, { passive: false });
-            
-            coin3D.addEventListener('touchend', resetTilt);
-            coin3D.addEventListener('mousemove', tiltCoin);
-            coin3D.addEventListener('mouseleave', resetTilt);
-
-            document.getElementById('regenBtn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (balance >= 20) {
-                    balance -= 20;
-                    currentEnergy = maxEnergy;
-                    refreshUI();
-                    mineStatus.textContent = '🔋 ЭНЕРГИЯ ВОССТАНОВЛЕНА';
-                    saveData();
-                } else {
-                    mineStatus.textContent = '❌ НЕ ХВАТАЕТ HASK';
+            function handleTap(e) {
+                if (e) e.preventDefault();
+                if (currentEnergy < 1) {
+                    document.getElementById('mineStatus').textContent = '❌ НЕТ ЭНЕРГИИ';
+                    setTimeout(() => document.getElementById('mineStatus').textContent = '💎 ТАПАЙ ПО МОНЕТЕ', 800);
+                    return;
                 }
-                setTimeout(() => mineStatus.textContent = '💎 ТАПАЙ ПО МОНЕТЕ', 1000);
+                currentEnergy -= 1;
+                totalTaps++;
+                let earned = BASE_TAP * tapMult;
+                const isCrit = Math.random() < 0.1;
+                if (isCrit) earned *= 3;
+                balance += earned;
+                refreshUI();
+                checkAchievements();
+                document.getElementById('mineStatus').textContent = isCrit ? `🔥 КРИТ! +${earned.toFixed(2)}` : `+${earned.toFixed(2)} HASK`;
+                setTimeout(() => document.getElementById('mineStatus').textContent = '💎 ТАПАЙ ПО МОНЕТЕ', 600);
+                saveData();
+            }
+
+            coin3D.addEventListener('click', handleTap);
+            coin3D.addEventListener('touchstart', (e) => { e.preventDefault(); handleTap(e); }, { passive: false });
+
+            document.getElementById('regenBtn').addEventListener('click', () => {
+                if (balance >= 20) { balance -= 20; currentEnergy = maxEnergy; refreshUI(); saveData(); }
             });
 
-            document.getElementById('bonusBtn').addEventListener('click', (e) => {
-                e.stopPropagation();
+            document.getElementById('bonusBtn').addEventListener('click', () => {
                 const now = Date.now();
-                if (now - lastBonus >= 86400000) {
-                    balance += 5.00;
-                    lastBonus = now;
-                    refreshUI();
-                    mineStatus.textContent = '🎁 +5 HASK';
-                    saveData();
-                } else {
-                    const h = 24 - Math.floor((now - lastBonus) / 3600000);
-                    mineStatus.textContent = `⏰ БОНУС ЧЕРЕЗ ${h} Ч`;
-                }
-                setTimeout(() => mineStatus.textContent = '💎 ТАПАЙ ПО МОНЕТЕ', 1200);
+                if (now - lastBonus >= 86400000) { balance += 5; lastBonus = now; refreshUI(); saveData(); }
             });
 
             document.querySelectorAll('[data-boost]').forEach(b => {
-                b.addEventListener('click', (e) => {
-                    e.stopPropagation();
+                b.addEventListener('click', () => {
                     const t = b.dataset.boost;
-                    let cost = 0, msg = '';
-                    if (t === 'energy' && balance >= 5*energyLvl) { cost = 5*energyLvl; maxEnergy += 100; energyLvl++; msg = '⚡ ЭНЕРГИЯ +100'; }
-                    else if (t === 'multitap' && balance >= 10*tapLvl) { cost = 10*tapLvl; tapMult += 0.5; tapLvl++; msg = '⛏️ СИЛА ТАПА +0.5'; }
-                    else if (t === 'regen' && balance >= 8*regenLvl) { cost = 8*regenLvl; regenMult += 0.5; regenLvl++; msg = '🔄 РЕГЕН УЛУЧШЕН'; }
-                    else if (t === 'auto' && balance >= 20) { cost = 20; autoActive = true; msg = '🤖 АВТОКЛИКЕР ВКЛ'; }
-                    else { document.getElementById('boostStatus').textContent = '❌ НЕДОСТАТОЧНО HASK'; return; }
+                    let cost = 0;
+                    if (t === 'energy' && balance >= 5*energyLvl) { cost = 5*energyLvl; maxEnergy += 100; energyLvl++; }
+                    else if (t === 'multitap' && balance >= 10*tapLvl) { cost = 10*tapLvl; tapMult += 0.5; tapLvl++; }
+                    else if (t === 'regen' && balance >= 8*regenLvl) { cost = 8*regenLvl; regenMult += 0.5; regenLvl++; }
+                    else if (t === 'auto' && balance >= 20) { cost = 20; autoActive = true; }
+                    else return;
                     balance -= cost;
                     refreshUI();
                     updateBoostUI();
-                    document.getElementById('boostStatus').textContent = msg;
-                    setTimeout(() => document.getElementById('boostStatus').textContent = '', 2000);
+                    checkAchievements();
                     saveData();
                 });
             });
 
             document.getElementById('withdrawAmount').addEventListener('input', e => {
-                const amt = parseFloat(e.target.value) || 0;
-                document.getElementById('tonReceive').textContent = haskToTon(amt);
+                document.getElementById('tonReceive').textContent = haskToTon(parseFloat(e.target.value) || 0);
             });
 
-            document.getElementById('withdrawBtn').addEventListener('click', (e) => {
-                e.stopPropagation();
+            document.getElementById('withdrawBtn').addEventListener('click', () => {
                 const addr = document.getElementById('tonAddress').value.trim();
                 const amt = parseFloat(document.getElementById('withdrawAmount').value);
-                const s = document.getElementById('walletStatus');
-                
-                if (!addr || (!addr.startsWith('EQ') && !addr.startsWith('UQ'))) {
-                    s.textContent = '❌ НЕВЕРНЫЙ АДРЕС TON';
-                    return;
-                }
-                if (!amt || amt < MIN_WITHDRAW_HASK) {
-                    s.textContent = `❌ МИНИМУМ ${fmt(MIN_WITHDRAW_HASK)} HASK (1 TON)`;
-                    return;
-                }
-                if (amt > balance) {
-                    s.textContent = '❌ НЕДОСТАТОЧНО СРЕДСТВ';
-                    return;
-                }
-                
-                const tonAmt = haskToTon(amt);
+                if (!addr || !amt || amt < MIN_WITHDRAW_HASK || amt > balance) return;
                 balance -= amt;
-                
-                history.push({
-                    amount: amt,
-                    ton: tonAmt,
-                    address: addr,
-                    date: new Date().toLocaleString('ru-RU'),
-                    status: 'pending'
-                });
-                
+                lastWithdrawDate = Date.now();
+                daysWithoutWithdraw = 0;
+                history.push({ amount: amt, ton: haskToTon(amt), address: addr, date: new Date().toLocaleString('ru-RU'), status: 'pending' });
                 refreshUI();
                 updateHistory();
                 saveData();
-                
-                const message = `🔔 *НОВАЯ ЗАЯВКА*\n\n👤 ${user?.first_name || 'Пользователь'}\n💰 ${fmt(amt)} HASK = ${tonAmt} TON\n📤 \`${addr}\``;
-                
-                tg.sendData(JSON.stringify({ action: 'withdraw', chat_id: ADMIN_ID, text: message }));
-                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${ADMIN_ID}&text=${encodeURIComponent(message)}&parse_mode=Markdown`, { mode: 'no-cors' }).catch(()=>{});
-                
-                s.innerHTML = `✅ ЗАЯВКА НА ${tonAmt} TON ПРИНЯТА!`;
                 document.getElementById('tonAddress').value = '';
                 document.getElementById('withdrawAmount').value = '';
-                document.getElementById('tonReceive').textContent = '0';
             });
 
-            // КНОПКА ПОДДЕРЖКИ
             document.getElementById('openSupportBtn').addEventListener('click', () => {
                 tg.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}`);
             });
 
-            setInterval(() => {
-                if (autoActive && currentEnergy >= 1) {
-                    currentEnergy -= 1;
-                    balance += BASE_TAP * tapMult;
+            function regen() {
+                if (currentEnergy < maxEnergy) {
+                    currentEnergy = Math.min(currentEnergy + BASE_REGEN * regenMult, maxEnergy);
                     refreshUI();
                     saveData();
                 }
+            }
+
+            setInterval(() => {
+                if (autoActive && currentEnergy >= 1) {
+                    currentEnergy -= 1;
+                    totalTaps++;
+                    balance += BASE_TAP * tapMult;
+                    refreshUI();
+                    checkAchievements();
+                    saveData();
+                }
             }, 1000);
+
+            setInterval(() => {
+                if (lastWithdrawDate) {
+                    const days = Math.floor((Date.now() - lastWithdrawDate) / 86400000);
+                    if (days > daysWithoutWithdraw) {
+                        daysWithoutWithdraw = days;
+                        checkAchievements();
+                        saveData();
+                    }
+                }
+            }, 3600000);
 
             loadData();
             setInterval(regen, REGEN_INTERVAL);
