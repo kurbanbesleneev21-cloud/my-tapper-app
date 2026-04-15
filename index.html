@@ -20,7 +20,7 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-end;
+            align-items: center;
             position: relative;
             overflow-x: hidden;
         }
@@ -39,7 +39,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.08) 0%, transparent 50%);
+            background: radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.06) 0%, transparent 50%);
             animation: moveGradient1 15s infinite alternate ease-in-out;
         }
 
@@ -47,16 +47,8 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 80% 70%, rgba(255, 215, 0, 0.06) 0%, transparent 50%);
+            background: radial-gradient(circle at 80% 70%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
             animation: moveGradient2 18s infinite alternate ease-in-out;
-        }
-
-        .bg-gradient-3 {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.04) 0%, transparent 60%);
-            animation: pulse 8s infinite ease-in-out;
         }
 
         @keyframes moveGradient1 {
@@ -69,12 +61,6 @@
             100% { transform: translate(-5%, -4%) scale(1.15); }
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.6; }
-        }
-
-        /* СЕТКА */
         .cyber-grid {
             position: fixed;
             top: 0;
@@ -82,76 +68,44 @@
             right: 0;
             bottom: 0;
             background-image: 
-                linear-gradient(rgba(0, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px);
+                linear-gradient(rgba(0, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.015) 1px, transparent 1px);
             background-size: 40px 40px;
             pointer-events: none;
             z-index: 0;
-            animation: gridShift 20s linear infinite;
-        }
-
-        @keyframes gridShift {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(40px, 40px); }
-        }
-
-        /* ЧАСТИЦЫ */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: #00ffff;
-            border-radius: 50%;
-            opacity: 0.4;
-            animation: floatParticle 12s infinite ease-in-out;
-        }
-
-        @keyframes floatParticle {
-            0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
-            25% { transform: translateY(-60px) scale(1.5); opacity: 0.6; }
-            50% { transform: translateY(-30px) scale(1); opacity: 0.3; }
-            75% { transform: translateY(-80px) scale(1.8); opacity: 0.5; }
         }
 
         .app {
-            max-width: 400px;
+            max-width: 390px;
             width: 100%;
             position: relative;
             z-index: 10;
             height: 100vh;
             display: flex;
             flex-direction: column;
+            padding: 12px 12px 0;
         }
 
+        /* КОНТЕНТ С ПРОКРУТКОЙ */
         .page-content {
             flex: 1;
             overflow-y: auto;
-            padding: 16px 12px 8px;
+            padding-bottom: 8px;
             scrollbar-width: none;
+            display: flex;
+            flex-direction: column;
         }
 
         .page-content::-webkit-scrollbar { display: none; }
 
         .page { 
             display: none;
-            animation: pageFadeIn 0.4s ease-out;
+            flex: 1;
         }
 
-        .page.active { display: block; }
-
-        @keyframes pageFadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+        .page.active { 
+            display: flex;
+            flex-direction: column;
         }
 
         /* ВЕРХНЯЯ ПАНЕЛЬ */
@@ -159,33 +113,34 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
         }
 
         .player-card {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             background: rgba(10, 10, 25, 0.85);
             backdrop-filter: blur(20px);
-            padding: 8px 16px 8px 8px;
-            border-radius: 50px;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 255, 255, 0.1);
+            padding: 6px 14px 6px 6px;
+            border-radius: 40px;
+            border: 1px solid rgba(0, 255, 255, 0.25);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .player-avatar {
-            width: 44px;
-            height: 44px;
+            width: 38px;
+            height: 38px;
             background: linear-gradient(145deg, #00ffff, #0066ff);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #020108;
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.6), inset 0 2px 4px rgba(255,255,255,0.3);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
         .player-info {
@@ -196,8 +151,7 @@
         .player-name {
             color: #ffffff;
             font-weight: 700;
-            font-size: 15px;
-            letter-spacing: 0.5px;
+            font-size: 14px;
         }
 
         .player-status {
@@ -205,12 +159,12 @@
             align-items: center;
             gap: 4px;
             color: #00ffaa;
-            font-size: 11px;
+            font-size: 10px;
         }
 
         .status-dot {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             background: #00ffaa;
             border-radius: 50%;
             animation: blink 1.5s infinite;
@@ -223,145 +177,135 @@
 
         .rank-badge {
             background: linear-gradient(145deg, #ffd700, #ffaa00);
-            padding: 8px 18px;
-            border-radius: 40px;
+            padding: 6px 16px;
+            border-radius: 30px;
             font-weight: 800;
-            font-size: 13px;
+            font-size: 12px;
             color: #020108;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5), inset 0 1px 3px rgba(255,255,255,0.5);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            letter-spacing: 0.5px;
         }
 
         /* КАРТОЧКА БАЛАНСА */
         .balance-card {
             background: linear-gradient(145deg, rgba(20, 20, 45, 0.9), rgba(10, 10, 25, 0.95));
             backdrop-filter: blur(25px);
-            border-radius: 32px;
-            padding: 22px 20px;
-            margin-bottom: 16px;
-            border: 1px solid rgba(0, 255, 255, 0.25);
-            box-shadow: 
-                0 20px 50px rgba(0, 0, 0, 0.5),
-                0 0 50px rgba(0, 255, 255, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            flex-shrink: 0;
         }
 
         .balance-header {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin-bottom: 12px;
+            gap: 6px;
+            margin-bottom: 8px;
         }
 
         .balance-icon {
-            font-size: 20px;
-            animation: coinSpin 4s infinite linear;
-        }
-
-        @keyframes coinSpin {
-            0% { transform: rotateY(0deg); }
-            100% { transform: rotateY(360deg); }
+            font-size: 16px;
         }
 
         .balance-title {
             color: #00ffff;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            letter-spacing: 4px;
-            text-shadow: 0 0 15px #00ffff;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px #00ffff;
         }
 
         .balance-main {
             display: flex;
             align-items: baseline;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .balance-number {
-            font-size: 58px;
+            font-size: 46px;
             font-weight: 900;
-            background: linear-gradient(145deg, #ffffff, #ffd700, #ffaa00);
+            background: linear-gradient(145deg, #ffffff, #ffd700);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
-            letter-spacing: -1px;
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
         }
 
         .balance-currency {
             color: #ffd700;
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 700;
-            text-shadow: 0 0 15px #ffd700;
         }
 
         .balance-stats {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 16px;
+            margin-top: 12px;
         }
 
         .stat-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            background: rgba(0, 255, 255, 0.06);
-            padding: 8px 16px;
-            border-radius: 40px;
-            border: 1px solid rgba(0, 255, 255, 0.15);
+            gap: 6px;
+            background: rgba(0, 255, 255, 0.05);
+            padding: 5px 14px;
+            border-radius: 30px;
+            border: 1px solid rgba(0, 255, 255, 0.1);
         }
 
         .stat-icon {
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .stat-value {
             color: #00ffaa;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .stat-label {
             color: #8888aa;
-            font-size: 12px;
-            margin-left: 4px;
+            font-size: 11px;
         }
 
         .tap-stat {
-            background: rgba(255, 215, 0, 0.08);
-            padding: 8px 18px;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 215, 0, 0.2);
+            background: rgba(255, 215, 0, 0.06);
+            padding: 5px 16px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 215, 0, 0.15);
         }
 
         .tap-stat span {
             color: #ffd700;
             font-weight: 800;
-            font-size: 18px;
+            font-size: 16px;
         }
 
         /* ЭНЕРГИЯ */
         .energy-section {
-            margin-bottom: 18px;
+            margin-bottom: 16px;
+            flex-shrink: 0;
         }
 
         .energy-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .energy-label {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             color: #00ffff;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             letter-spacing: 1px;
         }
@@ -369,49 +313,31 @@
         .energy-value {
             color: #ffffff;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .energy-bar-container {
-            height: 14px;
+            height: 10px;
             background: rgba(10, 10, 20, 0.8);
-            border-radius: 30px;
-            padding: 2px;
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+            border-radius: 20px;
+            padding: 1.5px;
+            border: 1px solid rgba(0, 255, 255, 0.15);
         }
 
         .energy-fill {
             height: 100%;
             background: linear-gradient(90deg, #00ffff, #00ffaa, #ffd700);
-            border-radius: 30px;
-            transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 20px #00ffff, inset 0 1px 2px rgba(255,255,255,0.5);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .energy-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
+            border-radius: 20px;
+            transition: width 0.2s ease;
+            box-shadow: 0 0 12px #00ffff;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
         }
 
         .energy-footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 6px;
+            margin-top: 5px;
         }
 
         .regen-info {
@@ -419,52 +345,57 @@
             align-items: center;
             gap: 4px;
             color: #00ffaa;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .energy-tip {
             color: #8888aa;
-            font-size: 11px;
+            font-size: 10px;
         }
 
-        /* 3D МОНЕТА */
-        .coin-container {
+        /* МОНЕТА - ИДЕАЛЬНО ПО ЦЕНТРУ */
+        .coin-wrapper {
             display: flex;
             justify-content: center;
-            margin: 10px 0 20px;
+            align-items: center;
+            margin: 8px 0 16px;
             position: relative;
-            perspective: 1200px;
+            flex-shrink: 0;
+        }
+
+        .coin-container {
+            position: relative;
+            perspective: 1000px;
         }
 
         .coin-aura {
             position: absolute;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(0, 255, 255, 0.2) 0%, rgba(255, 215, 0, 0.15) 40%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.15) 0%, rgba(255, 215, 0, 0.1) 40%, transparent 70%);
             border-radius: 50%;
             animation: auraPulse 3s infinite alternate;
             pointer-events: none;
         }
 
         @keyframes auraPulse {
-            0% { opacity: 0.3; transform: scale(0.95); }
-            100% { opacity: 0.7; transform: scale(1.15); }
+            0% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.95); }
+            100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
         }
 
         .coin-3d {
-            width: 240px;
-            height: 240px;
+            width: 170px;
+            height: 170px;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
-            filter: drop-shadow(0 0 40px rgba(0, 255, 255, 0.3));
-        }
-
-        .coin-3d:active {
-            transition: transform 0.1s ease-out;
+            filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.25));
         }
 
         .coin-face {
@@ -478,388 +409,304 @@
             justify-content: center;
             backface-visibility: hidden;
             box-shadow: 
-                0 0 0 6px rgba(255, 215, 0, 0.4),
-                0 0 0 12px rgba(0, 255, 255, 0.2),
-                0 30px 60px rgba(0, 0, 0, 0.7),
-                inset 0 -12px 18px rgba(0, 0, 0, 0.4),
-                inset 0 12px 20px rgba(255, 255, 255, 0.4),
-                0 0 80px rgba(0, 255, 255, 0.3);
-            border: 4px solid #ffd700;
+                0 0 0 4px rgba(255, 215, 0, 0.4),
+                0 0 0 8px rgba(0, 255, 255, 0.15),
+                0 20px 40px rgba(0, 0, 0, 0.5),
+                inset 0 -8px 12px rgba(0, 0, 0, 0.3),
+                inset 0 8px 14px rgba(255, 255, 255, 0.3);
+            border: 3px solid #ffd700;
             pointer-events: none;
-            position: relative;
             overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .coin-face::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: 
-                repeating-radial-gradient(circle at 30% 40%, transparent 0, rgba(0,0,0,0.08) 5px, transparent 10px),
-                repeating-linear-gradient(45deg, transparent 0, rgba(255,255,255,0.04) 3px, transparent 6px);
-            pointer-events: none;
         }
 
         .coin-face::after {
             content: '';
             position: absolute;
-            top: -6px;
-            left: -6px;
-            right: -6px;
-            bottom: -6px;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
             border-radius: 50%;
             border: 2px solid #00ffff;
-            box-shadow: 0 0 30px #00ffff, inset 0 0 15px rgba(0, 255, 255, 0.5);
-            opacity: 0.8;
+            box-shadow: 0 0 20px #00ffff, inset 0 0 10px rgba(0, 255, 255, 0.4);
+            opacity: 0.7;
             pointer-events: none;
-            animation: neonFlicker 3s infinite;
-        }
-
-        @keyframes neonFlicker {
-            0%, 100% { opacity: 0.7; box-shadow: 0 0 20px #00ffff, inset 0 0 10px #00ffff; }
-            50% { opacity: 1; box-shadow: 0 0 40px #00ffff, inset 0 0 20px #00ffff; }
         }
 
         .coin-shine {
             position: absolute;
             top: 6%;
-            left: 10%;
-            width: 40%;
-            height: 22%;
-            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.2) 60%, transparent 90%);
+            left: 12%;
+            width: 35%;
+            height: 18%;
+            background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.1) 70%);
             border-radius: 50%;
             pointer-events: none;
-            filter: blur(3px);
+            filter: blur(2px);
         }
 
         .coin-letter {
-            font-size: 88px;
+            font-size: 64px;
             font-weight: 900;
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             pointer-events: none;
-            letter-spacing: 4px;
-            transform: translateZ(15px);
-            text-shadow: 6px 8px 0 rgba(0, 0, 0, 0.3);
+            letter-spacing: 2px;
+            text-shadow: 4px 5px 0 rgba(0, 0, 0, 0.2);
         }
 
         .coin-tap-label {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(12px);
-            padding: 8px 28px;
-            border-radius: 60px;
-            font-weight: 900;
-            font-size: 18px;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(8px);
+            padding: 4px 20px;
+            border-radius: 40px;
+            font-weight: 800;
+            font-size: 13px;
             color: #00ffff;
-            text-shadow: 0 0 20px #00ffff;
-            border: 2px solid rgba(0, 255, 255, 0.6);
-            letter-spacing: 6px;
+            text-shadow: 0 0 12px #00ffff;
+            border: 1.5px solid rgba(0, 255, 255, 0.5);
+            letter-spacing: 4px;
             pointer-events: none;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3), inset 0 0 15px rgba(0, 255, 255, 0.2);
         }
 
         /* ЭФФЕКТ +МОНЕТЫ */
         .floating-score {
             position: absolute;
-            font-size: 32px;
+            font-size: 26px;
             font-weight: 900;
             color: #ffd700;
-            text-shadow: 0 0 50px #ffd700, 0 0 30px #00ffff;
+            text-shadow: 0 0 35px #ffd700, 0 0 20px #00ffff;
             pointer-events: none;
             z-index: 100;
-            animation: flyUp 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-            white-space: nowrap;
+            animation: flyUp 0.9s ease-out forwards;
         }
 
         .floating-score.crit {
             color: #00ffff;
-            font-size: 44px;
-            text-shadow: 0 0 60px #00ffff, 0 0 30px #ffffff;
+            font-size: 34px;
+            text-shadow: 0 0 45px #00ffff;
         }
 
         @keyframes flyUp {
             0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-140px) scale(2); }
+            100% { opacity: 0; transform: translateY(-100px) scale(1.6); }
         }
 
         /* КНОПКИ ДЕЙСТВИЙ */
         .action-buttons {
             display: flex;
-            gap: 12px;
-            margin-bottom: 18px;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-shrink: 0;
         }
 
         .game-btn {
             flex: 1;
             background: linear-gradient(145deg, #1a1a3e, #0d0d22);
             color: #00ffff;
-            border: 1.5px solid rgba(0, 255, 255, 0.5);
-            border-radius: 20px;
-            padding: 16px 12px;
+            border: 1.5px solid rgba(0, 255, 255, 0.4);
+            border-radius: 18px;
+            padding: 14px 10px;
             font-weight: 800;
-            font-size: 15px;
-            box-shadow: 
-                0 8px 0 #0a0a1a,
-                0 0 30px rgba(0, 255, 255, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            box-shadow: 0 6px 0 #0a0a1a, 0 0 20px rgba(0, 255, 255, 0.15);
             cursor: pointer;
-            transition: all 0.08s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.06s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            text-shadow: 0 0 15px #00ffff;
+            gap: 6px;
+            text-shadow: 0 0 10px #00ffff;
             touch-action: manipulation;
-            letter-spacing: 1px;
         }
 
         .game-btn:active {
-            transform: translateY(6px);
-            box-shadow: 
-                0 2px 0 #0a0a1a,
-                0 0 40px rgba(0, 255, 255, 0.4);
+            transform: translateY(5px);
+            box-shadow: 0 1px 0 #0a0a1a, 0 0 30px rgba(0, 255, 255, 0.3);
         }
 
         .game-btn.gold {
             color: #ffd700;
-            border-color: rgba(255, 215, 0, 0.5);
-            box-shadow: 
-                0 8px 0 #1a1500,
-                0 0 30px rgba(255, 215, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            text-shadow: 0 0 15px #ffd700;
+            border-color: rgba(255, 215, 0, 0.4);
+            text-shadow: 0 0 10px #ffd700;
         }
 
         .game-btn.purple {
             color: #a78bfa;
-            border-color: rgba(139, 92, 246, 0.5);
-            box-shadow: 
-                0 8px 0 #1a1030,
-                0 0 30px rgba(139, 92, 246, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            text-shadow: 0 0 15px #a78bfa;
+            border-color: rgba(139, 92, 246, 0.4);
+            text-shadow: 0 0 10px #a78bfa;
+        }
+
+        /* СТАТУС */
+        .status-toast {
+            text-align: center;
+            color: #00ffff;
+            font-size: 13px;
+            text-shadow: 0 0 15px #00ffff;
+            font-weight: 600;
+            min-height: 22px;
+            flex-shrink: 0;
         }
 
         /* НИЖНЯЯ ПАНЕЛЬ */
         .bottom-nav {
             background: linear-gradient(0deg, rgba(10, 10, 25, 0.98), rgba(20, 20, 45, 0.9));
             backdrop-filter: blur(30px);
-            padding: 14px 12px;
-            border-top: 1.5px solid rgba(0, 255, 255, 0.3);
+            padding: 12px 10px;
+            border-top: 1.5px solid rgba(0, 255, 255, 0.25);
             display: flex;
-            gap: 8px;
+            gap: 6px;
             z-index: 50;
-            border-radius: 0 0 0 0;
+            border-radius: 20px 20px 0 0;
+            margin-top: 4px;
         }
 
         .nav-btn {
             flex: 1;
-            padding: 10px 4px;
+            padding: 8px 2px;
             border: none;
             background: transparent;
             color: #7777aa;
             font-weight: 700;
             font-size: 11px;
-            border-radius: 18px;
+            border-radius: 16px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
             touch-action: manipulation;
-            letter-spacing: 0.5px;
         }
 
         .nav-btn.active {
-            background: linear-gradient(145deg, rgba(0, 255, 255, 0.15), rgba(0, 136, 255, 0.1));
+            background: linear-gradient(145deg, rgba(0, 255, 255, 0.12), rgba(0, 136, 255, 0.08));
             color: #00ffff;
-            border: 1.5px solid rgba(0, 255, 255, 0.5);
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
-            transform: translateY(-2px);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            box-shadow: 0 0 18px rgba(0, 255, 255, 0.2);
         }
 
         .nav-icon {
-            font-size: 24px;
-            filter: drop-shadow(0 0 8px currentColor);
+            font-size: 22px;
         }
 
-        /* ТОСТЫ */
-        .status-toast {
-            text-align: center;
-            color: #00ffff;
-            font-size: 14px;
-            margin-top: 16px;
-            text-shadow: 0 0 20px #00ffff;
-            font-weight: 600;
-            letter-spacing: 1px;
-            min-height: 24px;
-        }
-
-        /* КАРТОЧКИ */
+        /* КАРТОЧКИ ДЛЯ ОСТАЛЬНЫХ СТРАНИЦ */
         .section-title {
             color: #00ffff;
             font-size: 20px;
             font-weight: 800;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
             text-align: center;
-            text-shadow: 0 0 25px #00ffff;
-            letter-spacing: 2px;
+            text-shadow: 0 0 20px #00ffff;
         }
 
         .skin-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
         }
 
         .skin-card {
             background: linear-gradient(145deg, rgba(20, 20, 45, 0.9), rgba(10, 10, 25, 0.95));
-            backdrop-filter: blur(15px);
-            border-radius: 22px;
-            padding: 16px 10px;
-            border: 1.5px solid rgba(0, 255, 255, 0.2);
+            border-radius: 18px;
+            padding: 14px 8px;
+            border: 1px solid rgba(0, 255, 255, 0.15);
             text-align: center;
-            transition: all 0.2s ease;
-        }
-
-        .skin-card.owned {
-            border-color: rgba(255, 215, 0, 0.5);
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.2);
-        }
-
-        .skin-card.equipped {
-            border-color: #00ffaa;
-            box-shadow: 0 0 30px rgba(0, 255, 170, 0.4);
-            border-width: 2.5px;
         }
 
         .skin-preview {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 12px;
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 10px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 30px currentColor;
-        }
-
-        .skin-letter {
-            font-size: 40px;
-            font-weight: 900;
         }
 
         .skin-name {
             color: #fff;
-            font-weight: 800;
-            font-size: 15px;
-            margin-bottom: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 8px;
         }
 
         .skin-btn {
-            background: linear-gradient(145deg, #1a1a3e, #0d0d22);
+            background: #1a1a3e;
             color: #00ffff;
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            border-radius: 16px;
-            padding: 10px 12px;
+            border: 1px solid #00ffff40;
+            border-radius: 14px;
+            padding: 8px;
+            font-size: 11px;
             font-weight: 700;
-            font-size: 12px;
             width: 100%;
             cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .skin-btn:active {
-            transform: scale(0.96);
         }
 
         .upgrade-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
         }
 
         .upgrade-card {
             background: linear-gradient(145deg, rgba(20, 20, 45, 0.9), rgba(10, 10, 25, 0.95));
-            backdrop-filter: blur(15px);
-            border-radius: 24px;
-            padding: 22px 12px;
-            border: 1.5px solid rgba(0, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 18px 10px;
+            border: 1px solid rgba(0, 255, 255, 0.15);
             text-align: center;
         }
 
         .upgrade-icon {
-            font-size: 40px;
-            margin-bottom: 12px;
-        }
-
-        .upgrade-card h4 {
-            color: #ffd700;
-            font-size: 17px;
-            font-weight: 800;
-            margin-bottom: 6px;
+            font-size: 34px;
+            margin-bottom: 8px;
         }
 
         .upgrade-btn {
-            background: linear-gradient(145deg, #1a1a3e, #0d0d22);
+            background: #1a1a3e;
             color: #00ffff;
-            border: 1.5px solid rgba(0, 255, 255, 0.4);
-            border-radius: 18px;
-            padding: 12px 12px;
+            border: 1px solid #00ffff40;
+            border-radius: 16px;
+            padding: 10px;
+            font-size: 12px;
             font-weight: 700;
-            font-size: 13px;
             width: 100%;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .ton-card {
             background: linear-gradient(145deg, rgba(20, 20, 45, 0.9), rgba(10, 10, 25, 0.95));
-            backdrop-filter: blur(15px);
-            border-radius: 32px;
-            padding: 24px;
-            border: 1.5px solid rgba(0, 255, 255, 0.25);
+            border-radius: 26px;
+            padding: 22px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
         }
 
         .cyber-input {
             width: 100%;
-            background: rgba(10, 10, 20, 0.9);
-            border: 2px solid rgba(0, 255, 255, 0.3);
-            border-radius: 20px;
-            padding: 18px 18px;
+            background: #0a0a1a;
+            border: 1.5px solid #00ffff30;
+            border-radius: 18px;
+            padding: 16px;
             color: #fff;
-            font-size: 15px;
-            margin-bottom: 16px;
-            transition: all 0.2s;
-        }
-
-        .cyber-input:focus {
-            outline: none;
-            border-color: #00ffff;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            font-size: 14px;
+            margin-bottom: 14px;
         }
 
         .support-card {
             background: linear-gradient(145deg, rgba(20, 20, 45, 0.9), rgba(10, 10, 25, 0.95));
-            border-radius: 36px;
-            padding: 36px 24px;
+            border-radius: 30px;
+            padding: 32px 22px;
             text-align: center;
         }
 
         .support-username {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 900;
             background: linear-gradient(145deg, #00ffff, #ffd700);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin: 20px 0;
+            margin: 16px 0;
         }
     </style>
 </head>
@@ -867,10 +714,8 @@
     <div class="animated-bg">
         <div class="bg-gradient-1"></div>
         <div class="bg-gradient-2"></div>
-        <div class="bg-gradient-3"></div>
     </div>
     <div class="cyber-grid"></div>
-    <div class="particles" id="particles"></div>
 
     <div class="app">
         <div class="page-content">
@@ -897,7 +742,7 @@
                         <span class="balance-icon">💎</span>
                     </div>
                     <div class="balance-main">
-                        <span class="balance-number" id="balanceDisplay">0.00</span>
+                        <span class="balance-number" id="balanceDisplay">3.90</span>
                         <span class="balance-currency">HASK</span>
                     </div>
                     <div class="balance-stats">
@@ -918,27 +763,29 @@
                             <span>🔋</span>
                             <span>ЭНЕРГИЯ</span>
                         </div>
-                        <div class="energy-value" id="energyText">500/500</div>
+                        <div class="energy-value" id="energyText">445/500</div>
                     </div>
                     <div class="energy-bar-container">
-                        <div class="energy-fill" id="energyFill"></div>
+                        <div class="energy-fill" id="energyFill" style="width: 89%;"></div>
                     </div>
                     <div class="energy-footer">
                         <div class="regen-info">
                             <span>🔄</span>
-                            <span id="regenInfo">+1 / 5 сек</span>
+                            <span id="regenInfo">+1.0 / 5 сек</span>
                         </div>
                         <div class="energy-tip">⚡ -1 за тап</div>
                     </div>
                 </div>
 
-                <div class="coin-container">
-                    <div class="coin-aura"></div>
-                    <div class="coin-3d" id="coin3D">
-                        <div class="coin-face" id="coinFace">
-                            <div class="coin-shine"></div>
-                            <div class="coin-letter" id="coinLetter">H</div>
-                            <div class="coin-tap-label">TAP</div>
+                <div class="coin-wrapper">
+                    <div class="coin-container">
+                        <div class="coin-aura"></div>
+                        <div class="coin-3d" id="coin3D">
+                            <div class="coin-face" id="coinFace" style="background: radial-gradient(circle at 30% 35%, #ffe680, #d4a017, #8b6914); border-color: #ffd700;">
+                                <div class="coin-shine"></div>
+                                <div class="coin-letter" id="coinLetter" style="background: linear-gradient(145deg, #fff8dc, #ffd700); -webkit-background-clip: text; background-clip: text; color: transparent;">H</div>
+                                <div class="coin-tap-label">TAP</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -951,11 +798,44 @@
                 <div class="status-toast" id="mineStatus">💎 ТАПАЙ ПО МОНЕТЕ</div>
             </div>
 
-            <!-- ОСТАЛЬНЫЕ СТРАНИЦЫ (скины, прокачка, вывод, поддержка) - структура аналогична -->
-            <div class="page" id="page-skins"><div class="section-title">🎨 СКИНЫ</div><div class="skin-grid" id="skinGrid"></div><div class="status-toast" id="skinStatus"></div></div>
-            <div class="page" id="page-boost"><div class="section-title">🚀 ПРОКАЧКА</div><div class="upgrade-grid" id="upgradeGrid"></div><div class="status-toast" id="boostStatus"></div></div>
-            <div class="page" id="page-wallet"><div class="section-title">💎 ВЫВОД TON</div><div class="ton-card"><div class="rate-box" style="text-align:center;margin-bottom:20px;"><span style="color:#ffd700;font-size:28px;font-weight:800;">3000 HASK = 0.01 TON</span></div><input class="cyber-input" id="tonAddress" placeholder="Адрес TON (EQ... / UQ...)"><input class="cyber-input" id="withdrawAmount" placeholder="Сумма в HASK"><div style="color:#ffd700;margin-bottom:16px;">💰 Вы получите: <span id="tonReceive">0</span> TON</div><button class="game-btn" id="withdrawBtn" style="width:100%;">💎 ОТПРАВИТЬ</button><div id="historyContainer" style="margin-top:20px;"></div></div></div>
-            <div class="page" id="page-support"><div class="support-card"><div style="font-size:70px;">🆘</div><h2 style="color:#00ffff;margin:16px 0;">ПОДДЕРЖКА</h2><div class="support-username">@KU1003</div><button class="game-btn" id="openSupportBtn" style="width:100%;">💬 НАПИСАТЬ</button></div></div>
+            <!-- СКИНЫ -->
+            <div class="page" id="page-skins">
+                <div class="section-title">🎨 СКИНЫ</div>
+                <div class="skin-grid" id="skinGrid"></div>
+                <div class="status-toast" id="skinStatus"></div>
+            </div>
+
+            <!-- ПРОКАЧКА -->
+            <div class="page" id="page-boost">
+                <div class="section-title">🚀 ПРОКАЧКА</div>
+                <div class="upgrade-grid" id="upgradeGrid"></div>
+                <div class="status-toast" id="boostStatus"></div>
+            </div>
+
+            <!-- ВЫВОД -->
+            <div class="page" id="page-wallet">
+                <div class="section-title">💎 ВЫВОД TON</div>
+                <div class="ton-card">
+                    <div style="text-align:center;margin-bottom:20px;">
+                        <span style="color:#ffd700;font-size:24px;font-weight:800;">3000 HASK = 0.01 TON</span>
+                    </div>
+                    <input class="cyber-input" id="tonAddress" placeholder="Адрес TON (EQ... / UQ...)">
+                    <input class="cyber-input" id="withdrawAmount" placeholder="Сумма в HASK">
+                    <div style="color:#ffd700;margin-bottom:16px;">💰 Вы получите: <span id="tonReceive">0</span> TON</div>
+                    <button class="game-btn" id="withdrawBtn" style="width:100%;">💎 ОТПРАВИТЬ</button>
+                    <div id="historyContainer" style="margin-top:20px;"></div>
+                </div>
+            </div>
+
+            <!-- ПОДДЕРЖКА -->
+            <div class="page" id="page-support">
+                <div class="support-card">
+                    <div style="font-size:60px;">🆘</div>
+                    <h2 style="color:#00ffff;margin:12px 0;">ПОДДЕРЖКА</h2>
+                    <div class="support-username">@KU1003</div>
+                    <button class="game-btn" id="openSupportBtn" style="width:100%;">💬 НАПИСАТЬ</button>
+                </div>
+            </div>
         </div>
 
         <!-- НИЖНЯЯ ПАНЕЛЬ -->
@@ -969,35 +849,23 @@
     </div>
 
     <script>
-        // Генерация частиц
-        for (let i = 0; i < 30; i++) {
-            const p = document.createElement('div');
-            p.className = 'particle';
-            p.style.left = Math.random() * 100 + '%';
-            p.style.top = Math.random() * 100 + '%';
-            p.style.animationDelay = Math.random() * 12 + 's';
-            p.style.background = i % 2 === 0 ? '#00ffff' : '#ffd700';
-            document.getElementById('particles').appendChild(p);
-        }
-
         (function(){
             const tg = window.Telegram.WebApp;
             tg.expand();
             tg.ready();
 
-            // Данные и логика (сохраняем всю предыдущую механику)
             const SKINS = [
-                { id: 'default', name: 'Классик', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ffe680, #d4a017, #8b6914)', border: '#ffd700', glow: '#ffd700', rarity: 'common', price: 0, owned: true },
-                { id: 'neon', name: 'Неон', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #00ffff, #0088ff, #0044aa)', border: '#00ffff', glow: '#00ffff', rarity: 'rare', price: 50 },
-                { id: 'gold', name: 'Золотой', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #fff8dc, #ffd700, #b8860b)', border: '#ffd700', glow: '#ffaa00', rarity: 'epic', price: 200 },
-                { id: 'ruby', name: 'Рубин', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ff6666, #cc0000, #660000)', border: '#ff4444', glow: '#ff0000', rarity: 'epic', price: 250 },
-                { id: 'rainbow', name: 'Радужный', letter: 'H', bg: 'linear-gradient(135deg, red, orange, yellow, green, blue, indigo, violet)', border: '#ffffff', glow: '#ff00ff', rarity: 'legendary', price: 500 }
+                { id: 'default', name: 'Классик', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ffe680, #d4a017, #8b6914)', border: '#ffd700', glow: '#ffd700', price: 0, owned: true },
+                { id: 'neon', name: 'Неон', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #00ffff, #0088ff, #0044aa)', border: '#00ffff', glow: '#00ffff', price: 50 },
+                { id: 'gold', name: 'Золотой', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #fff8dc, #ffd700, #b8860b)', border: '#ffd700', glow: '#ffaa00', price: 200 },
+                { id: 'ruby', name: 'Рубин', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ff6666, #cc0000, #660000)', border: '#ff4444', glow: '#ff0000', price: 250 },
+                { id: 'rainbow', name: 'Радужный', letter: 'H', bg: 'linear-gradient(135deg, red, orange, yellow, green, blue, indigo, violet)', border: '#ffffff', glow: '#ff00ff', price: 500 }
             ];
 
-            let balance = 0, maxEnergy = 500, currentEnergy = 500, tapMult = 1, regenMult = 1, autoActive = false;
+            let balance = 3.90, maxEnergy = 500, currentEnergy = 445, tapMult = 1, regenMult = 1, autoActive = false;
             let ownedSkins = ['default'], equippedSkin = 'default';
             const userId = tg.initDataUnsafe?.user?.id || 'demo';
-            const STORAGE_KEY = `haskoin_ultra_${userId}`;
+            const STORAGE_KEY = `haskoin_fixed_${userId}`;
 
             const user = tg.initDataUnsafe?.user;
             if (user) {
@@ -1016,9 +884,9 @@
                     if (!err && val) {
                         try {
                             const d = JSON.parse(val);
-                            balance = d.balance || 0;
+                            balance = d.balance || 3.90;
                             maxEnergy = d.maxEnergy || 500;
-                            currentEnergy = d.currentEnergy ?? maxEnergy;
+                            currentEnergy = d.currentEnergy ?? 445;
                             tapMult = d.tapMult || 1;
                             regenMult = d.regenMult || 1;
                             autoActive = d.autoActive || false;
@@ -1040,7 +908,7 @@
                 document.getElementById('tapValue').textContent = `+${(0.05 * tapMult).toFixed(2)}`;
                 document.getElementById('regenInfo').textContent = `+${(1 * regenMult).toFixed(1)} / 5 сек`;
                 document.getElementById('passiveIncome').textContent = `+${(autoActive ? 0.05 * tapMult : 0).toFixed(2)}`;
-                const rank = balance < 1000 ? 'НОВИЧОК' : balance < 10000 ? 'МАЙНЕР' : balance < 50000 ? 'ПРОФИ' : 'ЛЕГЕНДА';
+                const rank = balance < 1000 ? 'НОВИЧОК' : balance < 10000 ? 'МАЙНЕР' : 'ПРОФИ';
                 document.getElementById('rankDisplay').textContent = rank;
             }
 
@@ -1051,6 +919,10 @@
                 const letter = document.getElementById('coinLetter');
                 face.style.background = skin.bg;
                 face.style.borderColor = skin.border;
+                letter.style.background = `linear-gradient(145deg, #fff8dc, ${skin.glow})`;
+                letter.style.webkitBackgroundClip = 'text';
+                letter.style.backgroundClip = 'text';
+                letter.style.color = 'transparent';
                 letter.textContent = skin.letter;
                 saveData();
             }
@@ -1058,9 +930,9 @@
             function renderSkins() {
                 const grid = document.getElementById('skinGrid');
                 grid.innerHTML = SKINS.map(skin => `
-                    <div class="skin-card ${ownedSkins.includes(skin.id) ? 'owned' : ''} ${equippedSkin === skin.id ? 'equipped' : ''}">
-                        <div class="skin-preview" style="background: ${skin.bg}; border: 2px solid ${skin.border};">
-                            <span class="skin-letter" style="background: linear-gradient(145deg, #fff, ${skin.glow}); -webkit-background-clip: text; background-clip: text; color: transparent;">${skin.letter}</span>
+                    <div class="skin-card">
+                        <div class="skin-preview" style="background: ${skin.bg}; border: 2px solid ${skin.border}; display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 32px; font-weight: 900; background: linear-gradient(145deg, #fff, ${skin.glow}); -webkit-background-clip: text; background-clip: text; color: transparent;">${skin.letter}</span>
                         </div>
                         <div class="skin-name">${skin.name}</div>
                         <button class="skin-btn" data-skin-id="${skin.id}">
@@ -1097,7 +969,7 @@
                 let clientY = e.touches ? e.touches[0].clientY : e.clientY;
                 const deltaX = (clientX - centerX) / (rect.width / 2);
                 const deltaY = (clientY - centerY) / (rect.height / 2);
-                coin3D.style.transform = `rotateX(${-deltaY * 20}deg) rotateY(${deltaX * 20}deg)`;
+                coin3D.style.transform = `rotateX(${-deltaY * 18}deg) rotateY(${deltaX * 18}deg)`;
             }
 
             function resetTilt() {
@@ -1107,7 +979,7 @@
             function handleTap(e) {
                 if (e) e.preventDefault();
                 tiltCoin(e);
-                setTimeout(resetTilt, 200);
+                setTimeout(resetTilt, 180);
                 
                 if (currentEnergy < 1) {
                     document.getElementById('mineStatus').textContent = '❌ НЕТ ЭНЕРГИИ';
@@ -1128,7 +1000,7 @@
                 el.style.left = x + 'px';
                 el.style.top = y + 'px';
                 document.body.appendChild(el);
-                setTimeout(() => el.remove(), 1000);
+                setTimeout(() => el.remove(), 900);
                 
                 document.getElementById('mineStatus').textContent = `+${earned.toFixed(2)} HASK`;
                 setTimeout(() => document.getElementById('mineStatus').textContent = '💎 ТАПАЙ ПО МОНЕТЕ', 500);
@@ -1170,6 +1042,15 @@
                     saveData();
                 }
             }
+
+            // Рендер прокачки
+            const upgradeGrid = document.getElementById('upgradeGrid');
+            upgradeGrid.innerHTML = `
+                <div class="upgrade-card"><div class="upgrade-icon">⚡</div><h4 style="color:#ffd700;">Энергия</h4><button class="upgrade-btn">5 HASK</button></div>
+                <div class="upgrade-card"><div class="upgrade-icon">⛏️</div><h4 style="color:#ffd700;">Сила тапа</h4><button class="upgrade-btn">10 HASK</button></div>
+                <div class="upgrade-card"><div class="upgrade-icon">🔄</div><h4 style="color:#ffd700;">Реген</h4><button class="upgrade-btn">8 HASK</button></div>
+                <div class="upgrade-card"><div class="upgrade-icon">🤖</div><h4 style="color:#ffd700;">Автоклик</h4><button class="upgrade-btn">20 HASK</button></div>
+            `;
 
             loadData();
             setInterval(regen, 5000);
