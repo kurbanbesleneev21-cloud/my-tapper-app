@@ -1,1 +1,1190 @@
-<!DOCTYPE html><html lang="ru"><head>    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">    <title>HASKOIN TON Edition</title>    <script src="https://unpkg.com/lucide@latest"></script>    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">    <style>        :root {            --primary: #fbbf24;            --primary-dark: #d97706;            --ton: #0088cc;            --bg: #030712;            --card: rgba(255, 255, 255, 0.03);            --glass: rgba(17, 24, 39, 0.7);        }        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }                body {             background: radial-gradient(circle at top, #111827 0%, #030712 100%);             color: #f8fafc;             overflow: hidden;             height: 100vh;        }        .container { padding: 20px; display: flex; flex-direction: column; height: 100vh; max-width: 450px; margin: 0 auto; position: relative; }        /* Красивый баланс */        .balance-card {            background: var(--card);            backdrop-filter: blur(10px);            border-radius: 28px;            padding: 25px;            text-align: center;            border: 1px solid rgba(255,255,255,0.1);            margin-top: 10px;            box-shadow: 0 10px 30px rgba(0,0,0,0.5);        }        .balance-label { font-size: 11px; letter-spacing: 2px; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }        .balance-val {             font-family: 'Montserrat', sans-serif;            font-size: 48px;             font-weight: 900;             color: #fff;            text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);            display: flex;            align-items: center;            justify-content: center;            gap: 10px;        }        /* Монета с анимацией */        .coin-wrap {             flex-grow: 1;             display: flex;             align-items: center;             justify-content: center;             perspective: 1000px;            position: relative;        }                .coin {            width: 240px; height: 240px;            background: radial-gradient(circle at 35% 35%, #fbbf24, #78350f);            border-radius: 50%;            border: 10px solid #fbbf24;            display: flex; align-items: center; justify-content: center;            font-family: 'Montserrat', sans-serif;            font-size: 100px; font-weight: 900; color: #78350f;            box-shadow: 0 0 60px rgba(251, 191, 36, 0.15), inset 0 0 20px rgba(0,0,0,0.5);            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);            user-select: none;            cursor: pointer;            position: relative;            z-index: 2;        }        /* Эффект вылетающих цифр */        .tap-particle {            position: absolute;            color: #fbbf24;            font-weight: 900;            font-size: 24px;            pointer-events: none;            animation: floatUp 0.8s ease-out forwards;            z-index: 10;            text-shadow: 0 2px 10px rgba(0,0,0,0.5);        }        @keyframes floatUp {            0% { transform: translateY(0) scale(1); opacity: 1; }            100% { transform: translateY(-150px) scale(1.5); opacity: 0; }        }        /* Энергия */        .energy-container {            background: var(--card);            padding: 15px 20px;            border-radius: 20px;            margin-bottom: 110px;            border: 1px solid rgba(255,255,255,0.05);        }        .energy-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; font-weight: 600; }        .energy-bar-bg { height: 12px; background: #1e293b; border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }        .energy-bar-fill {             height: 100%; width: 100%;             background: linear-gradient(90deg, var(--ton), #38bdf8);             box-shadow: 0 0 15px var(--ton);            transition: width 0.3s ease;        }        /* Навигация */        .nav {            position: fixed; bottom: 25px; left: 20px; right: 20px;            background: var(--glass);            backdrop-filter: blur(15px);            border-radius: 24px; display: flex; padding: 8px;            border: 1px solid rgba(255,255,255,0.1);            box-shadow: 0 15px 35px rgba(0,0,0,0.4);        }        .nav-item {            flex: 1; border: none; background: none; color: #64748b;            display: flex; flex-direction: column; align-items: center; gap: 4px;             font-size: 11px; font-weight: 600; transition: 0.2s;            padding: 10px 0;        }        .nav-item.active { color: var(--primary); transform: translateY(-5px); }        .nav-item i { margin-bottom: 2px; }        /* Формы */        .input-field {            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #374151;            padding: 16px; border-radius: 16px; color: white; margin-top: 5px;            transition: 0.3s;        }        .input-field:focus { border-color: var(--ton); background: rgba(0,0,0,0.5); }        .btn-send {            background: linear-gradient(135deg, #10b981, #059669);            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);            border: none; padding: 18px; border-radius: 16px; width: 100%;            color: white; font-weight: 900; font-size: 16px; margin-top: 20px;        }        .screen { display: none; flex-direction: column; height: 100%; animation: fadeIn 0.4s ease; }        .screen.active { display: flex; }        @keyframes fadeIn { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }    </style></head><body>    <div class="container">        <!-- Экран Игры -->        <div id="game" class="screen active">            <div class="balance-card">                <p class="balance-label">TOTAL BALANCE</p>                <div class="balance-val">                    <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="32" alt="ton">                    <span id="balance">0.00</span>                </div>            </div>            <div class="coin-wrap" id="tapArea">                <div class="coin" id="coinBtn">H</div>            </div>            <div class="energy-container">                <div class="energy-header">                    <span>⚡ Energy</span>                    <span id="e-txt">1000/1000</span>                </div>                <div class="energy-bar-bg">                    <div id="e-bar" class="energy-bar-fill"></div>                </div>            </div>        </div>        <!-- Экран Вывода -->        <div id="wallet" class="screen">            <h2 style="margin: 20px 0; font-family: 'Montserrat';">Withdraw HASK</h2>            <div style="background: var(--card); padding: 25px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);">                <div style="margin-bottom: 15px;">                    <label style="font-size: 12px; color: #94a3b8; font-weight: 600;">FULL NAME</label>                    <input type="text" id="w-name" class="input-field" placeholder="Enter your name">                </div>                <div style="margin-bottom: 15px;">                    <label style="font-size: 12px; color: #94a3b8; font-weight: 600;">TON WALLET ADDRESS</label>                    <input type="text" id="w-address" class="input-field" placeholder="UQAr...xxxx">                </div>                <div>                    <label style="font-size: 12px; color: #94a3b8; font-weight: 600;">AMOUNT</label>                    <input type="number" id="w-amount" class="input-field" readonly>                </div>                <button class="btn-send" onclick="sendAutoWithdraw()">SEND REQUEST</button>                <p id="status" style="margin-top:15px; text-align:center; font-weight:600;"></p>            </div>        </div>        <!-- Экран Друзей -->        <div id="friends" class="screen">            <h2 style="margin: 20px 0; font-family: 'Montserrat';">Invite Friends</h2>            <div class="balance-card">                <i data-lucide="gift" style="color: var(--primary); margin-bottom: 10px;"></i>                <p style="font-size: 14px; line-height: 1.5;">Invite friends and get 10% of their earnings!</p>                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin: 20px 0; font-size: 12px; color: var(--ton); word-break: break-all;">                    t.me/haskoin_bot?start=6735777649                </div>                <button onclick="copyRef()" style="background: var(--primary); border:none; padding: 15px; border-radius: 12px; width: 100%; font-weight: 900; color: #78350f;">COPY LINK</button>            </div>        </div>    </div>    <nav class="nav">        <button class="nav-item active" onclick="nav('game')"><i data-lucide="coins"></i>Mine</button>        <button class="nav-item" onclick="nav('friends')"><i data-lucide="users"></i>Friends</button>        <button class="nav-item" onclick="nav('wallet')"><i data-lucide="wallet"></i>Wallet</button>    </nav>    <script>        lucide.createIcons();        let bal = parseFloat(localStorage.getItem('h_bal')) || 0;        let energy = parseInt(localStorage.getItem('h_energy')) || 1000;                const BOT_TOKEN = "8672019950:AAF6HWX4zsz-CDWdXZGAAQctYdjfI8oaYWs";        const ADMIN_ID = "6735777649";         function nav(id) {            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));            document.getElementById(id).classList.add('active');            event.currentTarget.classList.add('active');            if(id === 'wallet') document.getElementById('w-amount').value = bal.toFixed(2);        }        const coinBtn = document.getElementById('coinBtn');        const tapArea = document.getElementById('tapArea');        tapArea.addEventListener('touchstart', (e) => {            e.preventDefault();            if(energy <= 0) return;            const touch = e.touches[0];            createParticle(touch.clientX, touch.clientY);                        // Вибрация            if (navigator.vibrate) navigator.vibrate(10);            // 3D эффект наклона            const rect = coinBtn.getBoundingClientRect();            const x = touch.clientX - rect.left - rect.width/2;            const y = touch.clientY - rect.top - rect.height/2;            coinBtn.style.transform = `scale(0.95) rotateX(${-y/5}deg) rotateY(${x/5}deg)`;            bal += 0.05;            energy -= 1;            update();                        setTimeout(() => {                coinBtn.style.transform = 'scale(1) rotateX(0) rotateY(0)';            }, 100);        });        function createParticle(x, y) {            const p = document.createElement('div');            p.className = 'tap-particle';            p.innerText = '+0.05';            p.style.left = x + 'px';            p.style.top = y + 'px';            document.body.appendChild(p);            setTimeout(() => p.remove(), 800);        }        function update() {            document.getElementById('balance').innerText = bal.toFixed(2);            document.getElementById('e-txt').innerText = energy + '/1000';            document.getElementById('e-bar').style.width = (energy/10) + '%';            localStorage.setItem('h_bal', bal);            localStorage.setItem('h_energy', energy);        }        function copyRef() {            navigator.clipboard.writeText('t.me/haskoin_bot?start=6735777649');            alert('Ссылка скопирована!');        }        async function sendAutoWithdraw() {            const name = document.getElementById('w-name').value;            const addr = document.getElementById('w-address').value;            const status = document.getElementById('status');            if(!name || !addr) return alert('Fill all fields!');            if(bal < 3000) return alert('Minimum 3000 HASK required');            status.style.color = "#fbbf24";            status.innerText = "⏳ Processing...";            const message = `🚀 <b>NEW WITHDRAWAL!</b>%0A%0A👤 User: ${name}%0A💰 Amount: ${bal.toFixed(2)} HASK%0A🏦 Wallet: <code>${addr}</code>`;            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${ADMIN_ID}&text=${message}&parse_mode=html`;            try {                const response = await fetch(url);                if(response.ok) {                    status.style.color = "#10b981";                    status.innerText = "✅ Success! Sent to Kurban.";                    bal = 0;                    update();                } else {                    status.innerText = "❌ Error. Try again.";                }            } catch (e) {                status.innerText = "❌ Network error.";            }        }        // Регенерация энергии        setInterval(() => {            if(energy < 1000) {                energy = Math.min(1000, energy + 1);                update();            }        }, 1500);        update();    </script></body></html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>HASKOIN · Тапалка</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #0b1120;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Анимированный фон */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(251, 191, 36, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app {
+            max-width: 400px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+            padding: 16px 12px;
+        }
+
+        /* Заголовок */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 900;
+            color: #0f172a;
+            box-shadow: 0 4px 0 #92400e, 0 0 20px rgba(251, 191, 36, 0.3);
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fef3c7, #fbbf24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .menu-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 12px;
+            color: #94a3b8;
+            font-size: 20px;
+            cursor: pointer;
+            border: 1px solid rgba(251, 191, 36, 0.15);
+        }
+
+        /* Профиль */
+        .profile-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(251, 191, 36, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #0f172a;
+            box-shadow: 0 4px 0 #92400e;
+        }
+
+        .user-info h3 {
+            color: #f1f5f9;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #10b981;
+            font-size: 12px;
+        }
+
+        /* Баланс */
+        .balance-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            text-align: center;
+        }
+
+        .balance-label {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .balance-value {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fef3c7, #fbbf24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+        }
+
+        .balance-usd {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Энергия */
+        .energy-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+
+        .energy-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .energy-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        .energy-value {
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .energy-bar {
+            height: 8px;
+            background: #0f172a;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .energy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399, #fbbf24);
+            border-radius: 10px;
+            transition: width 0.1s;
+            width: 100%;
+        }
+
+        .regen-text {
+            color: #34d399;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        /* Монета */
+        .coin-section {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0 16px;
+            position: relative;
+        }
+
+        .coin-ring {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.15) 0%, transparent 70%);
+            animation: pulseRing 2s infinite;
+        }
+
+        @keyframes pulseRing {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.08); opacity: 0.8; }
+        }
+
+        .coin-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            touch-action: manipulation;
+            transition: transform 0.1s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .coin-btn:active { transform: scale(0.94); }
+
+        .coin-visual {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 30%, #fde68a, #d97706);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 0 0 4px rgba(251, 191, 36, 0.3),
+                0 20px 40px rgba(0, 0, 0, 0.5),
+                inset 0 -6px 8px rgba(146, 64, 14, 0.5),
+                inset 0 6px 12px rgba(255, 251, 235, 0.5);
+            border: 2px solid #fde68a;
+            position: relative;
+        }
+
+        .coin-visual::after {
+            content: '';
+            position: absolute;
+            top: 12%;
+            left: 18%;
+            width: 20%;
+            height: 12%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .coin-letter {
+            font-size: 56px;
+            font-weight: 900;
+            color: #78350f;
+            text-shadow: 3px 5px 0 #fde68a;
+        }
+
+        .coin-tap {
+            background: rgba(180, 83, 9, 0.5);
+            backdrop-filter: blur(4px);
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 13px;
+            color: white;
+            margin-top: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Инфо тапа */
+        .tap-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .tap-reward {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(251, 191, 36, 0.1);
+            padding: 8px 20px;
+            border-radius: 40px;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+        .tap-reward span {
+            color: #fbbf24;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .tap-cost {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* Кнопки действий */
+        .action-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            flex: 1;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 0 #1e40af;
+            cursor: pointer;
+            transition: all 0.08s;
+            touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn:active { transform: translateY(4px); box-shadow: 0 0 0 #1e40af; }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 4px 0 #b45309;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 0 #047857;
+        }
+
+        /* Навигация */
+        .nav-bar {
+            display: flex;
+            gap: 8px;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(20px);
+            padding: 6px;
+            border-radius: 20px;
+            border: 1px solid rgba(251, 191, 36, 0.1);
+            margin-bottom: 16px;
+        }
+
+        .nav-item {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 13px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+        }
+
+        .nav-icon { font-size: 20px; }
+
+        /* Панели */
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        /* Бусты */
+        .boost-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .boost-item {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 18px;
+            padding: 16px 12px;
+            border: 1px solid rgba(251, 191, 36, 0.15);
+            text-align: center;
+        }
+
+        .boost-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .boost-item h4 {
+            color: #fbbf24;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .boost-item p {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .boost-price {
+            color: #10b981;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .boost-level {
+            color: #a78bfa;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 12px;
+            width: 100%;
+        }
+
+        /* Вывод TON */
+        .withdraw-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .rate-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .rate-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fbbf24;
+        }
+
+        .rate-label {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .form-group input {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 14px 16px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .info-note {
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 14px;
+            padding: 14px;
+            margin: 16px 0;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .info-note p {
+            color: #fbbf24;
+            font-size: 13px;
+        }
+
+        .history-list {
+            margin-top: 20px;
+        }
+
+        .history-item {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+
+        .history-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .history-amount {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        .history-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-done {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .history-detail {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        /* Статус */
+        .status-toast {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 12px;
+            min-height: 20px;
+        }
+
+        /* Эффект +монеты */
+        .float-coin {
+            position: absolute;
+            font-size: 22px;
+            font-weight: 900;
+            color: #fbbf24;
+            text-shadow: 0 0 20px #fbbf24;
+            pointer-events: none;
+            z-index: 100;
+            animation: floatUp 1s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-80px) scale(1.3); }
+        }
+
+        /* Индикатор сохранения */
+        .save-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(16, 185, 129, 0.95);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .save-toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+    <div class="save-toast" id="saveToast">💾 Сохранено</div>
+
+    <div class="app">
+        <!-- Заголовок -->
+        <div class="app-header">
+            <div class="logo">
+                <div class="logo-icon">H</div>
+                <div class="logo-text">HASKOIN</div>
+            </div>
+            <button class="menu-btn" id="refreshBtn">⟳</button>
+        </div>
+
+        <!-- Профиль -->
+        <div class="profile-card">
+            <div class="avatar" id="avatar">👤</div>
+            <div class="user-info">
+                <h3 id="userName">Майнер</h3>
+                <div class="user-badge">
+                    <span>🟢</span>
+                    <span>Онлайн</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Баланс -->
+        <div class="balance-card">
+            <div class="balance-label">Ваш баланс</div>
+            <div class="balance-value" id="balanceDisplay">0.00</div>
+            <div class="balance-usd" id="tonValue">≈ 0 TON</div>
+        </div>
+
+        <!-- Энергия -->
+        <div class="energy-card">
+            <div class="energy-row">
+                <div class="energy-label">
+                    <span>⚡</span>
+                    <span>Энергия</span>
+                </div>
+                <div class="energy-value" id="energyText">500/500</div>
+            </div>
+            <div class="energy-bar">
+                <div class="energy-fill" id="energyFill"></div>
+            </div>
+            <div class="regen-text" id="regenInfo">+1 / 5 сек</div>
+        </div>
+
+        <!-- Монета -->
+        <div class="coin-section">
+            <div class="coin-ring"></div>
+            <button class="coin-btn" id="tapButton">
+                <div class="coin-visual">
+                    <div class="coin-letter">H</div>
+                    <div class="coin-tap">ТАП</div>
+                </div>
+            </button>
+        </div>
+
+        <!-- Инфо -->
+        <div class="tap-info">
+            <div class="tap-reward">
+                <span id="tapValue">+0.05</span> HASK
+                <span class="tap-cost">⚡ -1</span>
+            </div>
+        </div>
+
+        <!-- Кнопки -->
+        <div class="action-row">
+            <button class="btn btn-warning" id="regenBtn">
+                <span>⚡</span> 20 HASK
+            </button>
+            <button class="btn btn-success" id="bonusBtn">
+                <span>🎁</span> Бонус
+            </button>
+        </div>
+
+        <!-- Навигация -->
+        <div class="nav-bar">
+            <button class="nav-item active" data-panel="mine">
+                <span class="nav-icon">⛏️</span>
+                <span>Майнинг</span>
+            </button>
+            <button class="nav-item" data-panel="boost">
+                <span class="nav-icon">🚀</span>
+                <span>Бусты</span>
+            </button>
+            <button class="nav-item" data-panel="wallet">
+                <span class="nav-icon">💎</span>
+                <span>Вывод</span>
+            </button>
+        </div>
+
+        <!-- ПАНЕЛЬ МАЙНИНГ -->
+        <div class="panel active" id="panel-mine">
+            <div class="status-toast" id="mineStatus">👆 Жми на монету!</div>
+        </div>
+
+        <!-- ПАНЕЛЬ БУСТЫ -->
+        <div class="panel" id="panel-boost">
+            <div class="boost-grid">
+                <div class="boost-item">
+                    <div class="boost-icon">⚡</div>
+                    <h4>Энергия</h4>
+                    <p>+100 макс.</p>
+                    <div class="boost-price" id="energyCost">5.00 HASK</div>
+                    <div class="boost-level" id="energyLevel">Ур. 1</div>
+                    <button class="btn btn-small boost-btn" data-boost="energy">Купить</button>
+                </div>
+                <div class="boost-item">
+                    <div class="boost-icon">⛏️</div>
+                    <h4>Мультитап</h4>
+                    <p>+0.05 за тап</p>
+                    <div class="boost-price" id="multitapCost">10.00 HASK</div>
+                    <div class="boost-level" id="multitapLevel">Ур. 1</div>
+                    <button class="btn btn-small boost-btn" data-boost="multitap">Купить</button>
+                </div>
+                <div class="boost-item">
+                    <div class="boost-icon">🔄</div>
+                    <h4>Реген</h4>
+                    <p>+1 / 5 сек</p>
+                    <div class="boost-price" id="regenCost">8.00 HASK</div>
+                    <div class="boost-level" id="regenLevel">Ур. 1</div>
+                    <button class="btn btn-small boost-btn" data-boost="regen">Купить</button>
+                </div>
+                <div class="boost-item">
+                    <div class="boost-icon">🤖</div>
+                    <h4>Автоклик</h4>
+                    <p>Авто-тап</p>
+                    <div class="boost-price">20.00 HASK</div>
+                    <div class="boost-level" id="autoLevel">Выкл</div>
+                    <button class="btn btn-small boost-btn" data-boost="auto">Купить</button>
+                </div>
+            </div>
+            <div class="status-toast" id="boostStatus"></div>
+        </div>
+
+        <!-- ПАНЕЛЬ ВЫВОД TON -->
+        <div class="panel" id="panel-wallet">
+            <div class="withdraw-card">
+                <div class="rate-box">
+                    <div class="rate-value">3000 HASK = 0.5 TON</div>
+                    <div class="rate-label">Курс обмена</div>
+                </div>
+
+                <div class="form-group">
+                    <label>💎 Адрес TON кошелька</label>
+                    <input type="text" id="tonAddress" placeholder="EQD... или UQ...">
+                </div>
+
+                <div class="form-group">
+                    <label>💰 Сумма (HASK)</label>
+                    <input type="number" id="withdrawAmount" placeholder="Мин. 3000 HASK" min="3000">
+                </div>
+
+                <div class="info-note">
+                    <p>📤 Вы получите: <span id="tonReceive">0</span> TON</p>
+                    <p>⏱ Обработка до 24 часов</p>
+                </div>
+
+                <button class="btn btn-success" id="withdrawBtn" style="width: 100%;">
+                    💎 Отправить заявку
+                </button>
+
+                <div class="history-list">
+                    <h4 style="color: #e2e8f0; margin-bottom: 12px;">📋 История</h4>
+                    <div id="historyContainer">
+                        <p style="color: #64748b; text-align: center;">Нет операций</p>
+                    </div>
+                </div>
+
+                <div class="status-toast" id="walletStatus"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            const tg = window.Telegram.WebApp;
+            tg.expand();
+            tg.ready();
+
+            // ========== КОНФИГУРАЦИЯ ==========
+            const BOT_TOKEN = '8672019950:AAF6HWX4zsz-CDWdXZGAAQctYdjfI8oaYWs';
+            const ADMIN_ID = '8445377034';
+            
+            const BASE_TAP = 0.05;
+            const MAX_ENERGY_BASE = 500;
+            const ENERGY_COST = 1;
+            const REGEN_BASE = 1;
+            const REGEN_INTERVAL = 5000;
+            const REGEN_COST = 20;
+            const DAILY_BONUS = 5.00;
+            const MIN_WITHDRAW = 3000;
+            const TON_RATE = 0.5 / 3000; // TON за 1 HASK
+
+            // ========== СОСТОЯНИЕ ==========
+            let balance = 0.00;
+            let maxEnergy = MAX_ENERGY_BASE;
+            let currentEnergy = maxEnergy;
+            let tapMult = 1.0;
+            let regenMult = 1.0;
+            let autoActive = false;
+            let totalMined = 0.00;
+            
+            let energyLvl = 1;
+            let tapLvl = 1;
+            let regenLvl = 1;
+            
+            let lastBonus = 0;
+            let history = [];
+            
+            const userId = tg.initDataUnsafe?.user?.id?.toString() || 'demo';
+            const STORAGE_KEY = `haskoin_ton_${userId}`;
+
+            // UI
+            const balanceEl = document.getElementById('balanceDisplay');
+            const tonValueEl = document.getElementById('tonValue');
+            const energyText = document.getElementById('energyText');
+            const energyFill = document.getElementById('energyFill');
+            const tapValueEl = document.getElementById('tapValue');
+            const mineStatus = document.getElementById('mineStatus');
+            const regenInfo = document.getElementById('regenInfo');
+            const saveToast = document.getElementById('saveToast');
+
+            // ========== ПРОФИЛЬ ==========
+            const user = tg.initDataUnsafe?.user;
+            if (user) {
+                document.getElementById('userName').textContent = user.first_name || 'Майнер';
+                document.getElementById('avatar').textContent = (user.first_name?.charAt(0) || 'H').toUpperCase();
+            }
+
+            // ========== ФОРМАТ ==========
+            function fmt(num) {
+                return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+
+            function haskToTon(hask) {
+                return (hask * TON_RATE).toFixed(3);
+            }
+
+            // ========== СОХРАНЕНИЕ ==========
+            function showSave() {
+                saveToast.classList.add('show');
+                setTimeout(() => saveToast.classList.remove('show'), 1000);
+            }
+
+            function saveData() {
+                const data = {
+                    balance, maxEnergy, currentEnergy, tapMult, regenMult, autoActive,
+                    totalMined, energyLvl, tapLvl, regenLvl, lastBonus, history
+                };
+                tg.CloudStorage.setItem(STORAGE_KEY, JSON.stringify(data), () => showSave());
+            }
+
+            // ========== ЗАГРУЗКА ==========
+            function loadData() {
+                tg.CloudStorage.getItem(STORAGE_KEY, (err, val) => {
+                    if (!err && val) {
+                        try {
+                            const d = JSON.parse(val);
+                            balance = d.balance || 0;
+                            maxEnergy = d.maxEnergy || MAX_ENERGY_BASE;
+                            currentEnergy = d.currentEnergy ?? maxEnergy;
+                            tapMult = d.tapMult || 1;
+                            regenMult = d.regenMult || 1;
+                            autoActive = d.autoActive || false;
+                            totalMined = d.totalMined || 0;
+                            energyLvl = d.energyLvl || 1;
+                            tapLvl = d.tapLvl || 1;
+                            regenLvl = d.regenLvl || 1;
+                            lastBonus = d.lastBonus || 0;
+                            history = d.history || [];
+                        } catch(e) {}
+                    }
+                    refreshUI();
+                    updateBoostUI();
+                    updateHistory();
+                });
+            }
+
+            // ========== UI ==========
+            function refreshUI() {
+                balanceEl.textContent = fmt(balance);
+                tonValueEl.textContent = `≈ ${haskToTon(balance)} TON`;
+                
+                const pct = (currentEnergy / maxEnergy) * 100;
+                energyFill.style.width = Math.max(0, pct) + '%';
+                energyText.textContent = `${Math.floor(currentEnergy)}/${maxEnergy}`;
+                
+                tapValueEl.textContent = `+${(BASE_TAP * tapMult).toFixed(2)}`;
+                regenInfo.textContent = `+${(REGEN_BASE * regenMult).toFixed(1)} / 5 сек`;
+            }
+
+            function updateBoostUI() {
+                document.getElementById('energyLevel').textContent = `Ур. ${energyLvl}`;
+                document.getElementById('multitapLevel').textContent = `Ур. ${tapLvl}`;
+                document.getElementById('regenLevel').textContent = `Ур. ${regenLvl}`;
+                document.getElementById('autoLevel').textContent = autoActive ? 'Вкл' : 'Выкл';
+                
+                document.getElementById('energyCost').textContent = `${(5 * energyLvl).toFixed(2)} HASK`;
+                document.getElementById('multitapCost').textContent = `${(10 * tapLvl).toFixed(2)} HASK`;
+                document.getElementById('regenCost').textContent = `${(8 * regenLvl).toFixed(2)} HASK`;
+            }
+
+            function updateHistory() {
+                const cont = document.getElementById('historyContainer');
+                if (!history.length) {
+                    cont.innerHTML = '<p style="color:#64748b;text-align:center;">Нет операций</p>';
+                    return;
+                }
+                cont.innerHTML = history.slice(-5).reverse().map(h => `
+                    <div class="history-item">
+                        <div class="history-row">
+                            <span class="history-amount">${fmt(h.amount)} HASK</span>
+                            <span class="history-status ${h.status === 'done' ? 'status-done' : 'status-pending'}">
+                                ${h.status === 'done' ? '✅ Выполнено' : '⏳ В работе'}
+                            </span>
+                        </div>
+                        <div class="history-detail">
+                            ${h.address.slice(0, 8)}...${h.address.slice(-6)} · ${h.ton} TON<br>
+                            ${h.date}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // ========== УВЕДОМЛЕНИЕ В БОТ ==========
+            async function sendToBot(message) {
+                try {
+                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: ADMIN_ID,
+                            text: message,
+                            parse_mode: 'HTML'
+                        })
+                    });
+                } catch(e) {
+                    console.log('Уведомление отправлено');
+                }
+            }
+
+            // ========== ТАП ==========
+            function createFloat(x, y, amt) {
+                const el = document.createElement('div');
+                el.className = 'float-coin';
+                el.textContent = '+' + amt.toFixed(2);
+                el.style.left = x + 'px';
+                el.style.top = y + 'px';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 1000);
+            }
+
+            function handleTap(e) {
+                if (e) e.preventDefault();
+                if (currentEnergy < ENERGY_COST) {
+                    mineStatus.textContent = '❌ Нет энергии!';
+                    setTimeout(() => mineStatus.textContent = '👆 Жми на монету!', 800);
+                    return;
+                }
+                
+                currentEnergy -= ENERGY_COST;
+                const earned = BASE_TAP * tapMult;
+                balance += earned;
+                totalMined += earned;
+                
+                refreshUI();
+                
+                if (e) {
+                    const x = e.touches ? e.touches[0].clientX : e.clientX;
+                    const y = e.touches ? e.touches[0].clientY : e.clientY;
+                    createFloat(x, y, earned);
+                }
+                
+                mineStatus.textContent = `✅ +${earned.toFixed(2)} HASK!`;
+                setTimeout(() => mineStatus.textContent = '👆 Жми на монету!', 500);
+                saveData();
+            }
+
+            // ========== РЕГЕН ==========
+            function regen() {
+                if (currentEnergy < maxEnergy) {
+                    currentEnergy = Math.min(currentEnergy + (REGEN_BASE * regenMult), maxEnergy);
+                    refreshUI();
+                    saveData();
+                }
+            }
+
+            // ========== АВТО ==========
+            function autoClick() {
+                if (autoActive && currentEnergy >= ENERGY_COST) {
+                    currentEnergy -= ENERGY_COST;
+                    balance += BASE_TAP * tapMult;
+                    totalMined += BASE_TAP * tapMult;
+                    refreshUI();
+                    saveData();
+                }
+            }
+
+            // ========== НАВИГАЦИЯ ==========
+            document.querySelectorAll('.nav-item').forEach(n => {
+                n.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+                    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                    n.classList.add('active');
+                    document.getElementById(`panel-${n.dataset.panel}`).classList.add('active');
+                });
+            });
+
+            // ========== ОБРАБОТЧИКИ ==========
+            const tapBtn = document.getElementById('tapButton');
+            tapBtn.addEventListener('click', handleTap);
+            tapBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleTap(e); }, { passive: false });
+
+            document.getElementById('regenBtn').addEventListener('click', () => {
+                if (balance >= REGEN_COST) {
+                    balance -= REGEN_COST;
+                    currentEnergy = maxEnergy;
+                    refreshUI();
+                    mineStatus.textContent = `🔋 Энергия восстановлена!`;
+                    setTimeout(() => mineStatus.textContent = '👆 Жми на монету!', 1500);
+                    saveData();
+                } else {
+                    mineStatus.textContent = `❌ Нужно ${REGEN_COST} HASK`;
+                    setTimeout(() => mineStatus.textContent = '👆 Жми на монету!', 1500);
+                }
+            });
+
+            document.getElementById('bonusBtn').addEventListener('click', () => {
+                const now = Date.now();
+                if (now - lastBonus >= 86400000) {
+                    balance += DAILY_BONUS;
+                    totalMined += DAILY_BONUS;
+                    lastBonus = now;
+                    refreshUI();
+                    mineStatus.textContent = `🎁 +${DAILY_BONUS} HASK!`;
+                    setTimeout(() => mineStatus.textContent = '👆 Жми на монету!', 1500);
+                    saveData();
+                } else {
+                    const h = 24 - Math.floor((now - lastBonus) / 3600000);
+                    mineStatus.textContent = `⏰ Бонус через ${h} ч`;
+                    setTimeout(() => mineStatus.textContent = '👆 Жми на монету!', 1500);
+                }
+            });
+
+            // Бусты
+            document.querySelectorAll('.boost-btn').forEach(b => {
+                b.addEventListener('click', () => {
+                    const type = b.dataset.boost;
+                    let cost = 0, msg = '';
+                    
+                    if (type === 'energy' && balance >= 5 * energyLvl) {
+                        cost = 5 * energyLvl;
+                        maxEnergy += 100;
+                        energyLvl++;
+                        msg = `⚡ Энергия +100! Ур.${energyLvl}`;
+                    } else if (type === 'multitap' && balance >= 10 * tapLvl) {
+                        cost = 10 * tapLvl;
+                        tapMult += 0.5;
+                        tapLvl++;
+                        msg = `⛏️ Мультитап! Ур.${tapLvl}`;
+                    } else if (type === 'regen' && balance >= 8 * regenLvl) {
+                        cost = 8 * regenLvl;
+                        regenMult += 0.5;
+                        regenLvl++;
+                        msg = `🔄 Реген! Ур.${regenLvl}`;
+                    } else if (type === 'auto' && balance >= 20) {
+                        cost = 20;
+                        autoActive = true;
+                        msg = '🤖 Автокликер вкл!';
+                    } else {
+                        document.getElementById('boostStatus').textContent = '❌ Не хватает HASK';
+                        return;
+                    }
+                    
+                    balance -= cost;
+                    refreshUI();
+                    updateBoostUI();
+                    document.getElementById('boostStatus').textContent = msg;
+                    setTimeout(() => document.getElementById('boostStatus').textContent = '', 2000);
+                    saveData();
+                });
+            });
+
+            // Расчёт TON
+            document.getElementById('withdrawAmount').addEventListener('input', (e) => {
+                const amt = parseFloat(e.target.value) || 0;
+                document.getElementById('tonReceive').textContent = haskToTon(amt);
+            });
+
+            // ВЫВОД TON
+            document.getElementById('withdrawBtn').addEventListener('click', async () => {
+                const addr = document.getElementById('tonAddress').value.trim();
+                const amt = parseFloat(document.getElementById('withdrawAmount').value);
+                const status = document.getElementById('walletStatus');
+                
+                if (!addr || !addr.startsWith('EQ') && !addr.startsWith('UQ')) {
+                    status.textContent = '❌ Неверный адрес TON';
+                    return;
+                }
+                if (!amt || amt < MIN_WITHDRAW) {
+                    status.textContent = `❌ Мин. сумма ${MIN_WITHDRAW} HASK`;
+                    return;
+                }
+                if (amt > balance) {
+                    status.textContent = '❌ Недостаточно средств';
+                    return;
+                }
+                
+                const tonAmt = haskToTon(amt);
+                
+                balance -= amt;
+                
+                const record = {
+                    amount: amt,
+                    ton: tonAmt,
+                    address: addr,
+                    date: new Date().toLocaleString('ru-RU'),
+                    status: 'pending'
+                };
+                history.push(record);
+                
+                refreshUI();
+                updateHistory();
+                
+                // Уведомление в бот
+                const msg = `🔔 <b>НОВАЯ ЗАЯВКА НА ВЫВОД</b>\n\n` +
+                    `👤 ${user?.first_name || 'Пользователь'}\n` +
+                    `🆔 ${userId}\n` +
+                    `💰 ${fmt(amt)} HASK = ${tonAmt} TON\n` +
+                    `📤 Адрес: <code>${addr}</code>\n` +
+                    `📅 ${record.date}`;
+                
+                await sendToBot(msg);
+                
+                status.innerHTML = `✅ Заявка принята! ${tonAmt} TON`;
+                
+                document.getElementById('tonAddress').value = '';
+                document.getElementById('withdrawAmount').value = '';
+                document.getElementById('tonReceive').textContent = '0';
+                
+                saveData();
+            });
+
+            document.getElementById('refreshBtn').addEventListener('click', () => {
+                loadData();
+                mineStatus.textContent = '🔄 Данные обновлены';
+                setTimeout(() => mineStatus.textContent = '👆 Жми на монету!', 1000);
+            });
+
+            // ========== ЗАПУСК ==========
+            loadData();
+            setInterval(regen, REGEN_INTERVAL);
+            setInterval(autoClick, 1000);
+            window.addEventListener('beforeunload', saveData);
+        })();
+    </script>
+</body>
+</html>
