@@ -3,297 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>HASKOIN PREMIUM</title>
+    <title>HASKOIN TON Edition</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
             --primary: #fbbf24;
-            --secondary: #3b82f6;
+            --ton: #0088cc;
             --bg: #030712;
-            --card-bg: rgba(17, 24, 39, 0.8);
-            --text-main: #f8fafc;
+            --card: rgba(17, 24, 39, 0.95);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
         
-        body {
-            background: var(--bg);
-            color: var(--text-main);
-            font-family: 'Inter', system-ui, sans-serif;
-            overflow: hidden;
-            height: 100vh;
-        }
+        body { background: var(--bg); color: #f8fafc; overflow: hidden; height: 100vh; }
 
-        /* Улучшенный живой фон */
-        .bg-animate {
-            position: fixed;
-            inset: 0;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(251, 191, 36, 0.1) 0%, transparent 50%);
-            z-index: -1;
-        }
+        .container { padding: 20px; display: flex; flex-direction: column; height: 100vh; max-width: 450px; margin: 0 auto; }
 
-        .container {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            max-width: 450px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        /* Навигационные экраны */
-        .screen { display: none; flex-direction: column; height: 100%; animation: fadeIn 0.3s ease; }
+        /* Экраны */
+        .screen { display: none; flex-direction: column; height: 100%; animation: slideUp 0.3s ease; }
         .screen.active { display: flex; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Счётчик */
-        .score-header {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
+        /* Баланс */
+        .balance-card {
+            background: var(--card);
             border-radius: 24px;
             padding: 20px;
             text-align: center;
             border: 1px solid rgba(255,255,255,0.05);
-            margin-top: 10px;
+            margin-bottom: 20px;
         }
+        .balance-val { font-size: 44px; font-weight: 900; color: var(--primary); }
 
-        .balance {
-            font-size: 42px;
-            font-weight: 900;
-            background: linear-gradient(to bottom, #fff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Анимированный токен */
-        .coin-section {
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            perspective: 1000px;
-        }
-
+        /* Монета */
+        .coin-wrap { flex-grow: 1; display: flex; align-items: center; justify-content: center; }
         .coin {
-            width: 240px;
-            height: 240px;
+            width: 220px; height: 220px;
             background: radial-gradient(circle at 30% 30%, #fde68a, #d97706);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 90px;
-            font-weight: 900;
-            color: #78350f;
-            border: 8px solid #b45309;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 4px 10px rgba(255,255,255,0.5);
-            cursor: pointer;
-            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
+            border: 8px solid #78350f;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 80px; font-weight: 900; color: #78350f;
+            box-shadow: 0 0 40px rgba(251, 191, 36, 0.2);
+            transition: transform 0.1s;
         }
+        .coin:active { transform: scale(0.92); }
 
-        /* Эффект нажатия */
-        .coin:active {
-            transform: scale(0.9) rotateX(10deg);
-        }
-
-        /* Энергия */
-        .energy-box { margin-bottom: 110px; }
-        .progress-track {
-            height: 12px;
-            background: #1f2937;
+        /* Анкета вывода */
+        .withdraw-form {
+            background: var(--card);
             border-radius: 20px;
-            margin-top: 8px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--secondary), #60a5fa);
-            width: 100%;
-            transition: width 0.3s;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
-        }
-
-        /* Кнопки меню */
-        .nav-menu {
-            position: fixed;
-            bottom: 25px;
-            left: 20px;
-            right: 20px;
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(15px);
-            border-radius: 22px;
-            display: flex;
-            padding: 8px;
+            padding: 20px;
             border: 1px solid rgba(255,255,255,0.1);
-            justify-content: space-around;
         }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
+        .input-field {
+            width: 100%;
+            background: #111827;
+            border: 1px solid #374151;
+            padding: 12px;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+        }
+        .input-field:focus { border-color: var(--ton); outline: none; }
 
-        .nav-btn {
-            background: none;
+        .btn-send {
+            background: #10b981;
+            color: white;
             border: none;
-            color: #64748b;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            font-size: 10px;
-            flex: 1;
-            padding: 10px 0;
-            transition: 0.2s;
+            padding: 15px;
+            border-radius: 12px;
+            width: 100%;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
         }
 
-        .nav-btn.active { color: var(--primary); }
-        .nav-btn.active i { transform: translateY(-3px); color: var(--primary); }
-
-        /* Всплывающие цифры */
-        .float-val {
-            position: absolute;
-            color: var(--primary);
-            font-weight: 900;
-            font-size: 30px;
-            pointer-events: none;
-            animation: floatUp 0.8s ease-out forwards;
-            z-index: 100;
+        /* Меню */
+        .nav {
+            position: fixed; bottom: 20px; left: 20px; right: 20px;
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 20px; display: flex; padding: 10px;
+            border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);
         }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-120px) scale(1.2); opacity: 0; }
+        .nav-item {
+            flex: 1; border: none; background: none; color: #64748b;
+            display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px;
         }
-
-        /* Заглушки для других экранов */
-        .placeholder {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            margin-top: 20px;
-        }
+        .nav-item.active { color: var(--primary); }
     </style>
 </head>
 <body>
-    <div class="bg-animate"></div>
-    
+
     <div class="container">
-        <div id="game-screen" class="screen active">
-            <div class="score-header">
-                <p style="color: #94a3b8; font-size: 12px; letter-spacing: 1px;">БАЛАНС HASKOIN</p>
-                <div class="balance" id="balance">0.00</div>
-                <p style="color: #64748b; font-size: 14px;">≈ <span id="rub">0</span> ₽</p>
+        <div id="game" class="screen active">
+            <div class="balance-card">
+                <p style="color: #94a3b8; font-size: 12px;">МОЙ БАЛАНС</p>
+                <div class="balance-val" id="balance">0.00</div>
             </div>
-
-            <div class="coin-section">
-                <div class="coin" id="tap-coin">H</div>
+            <div class="coin-wrap">
+                <div class="coin" id="coinBtn">H</div>
             </div>
-
-            <div class="energy-box">
-                <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                    <span>⚡ Энергия</span>
-                    <span id="energy-text">1000/1000</span>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-bar" id="energy-bar"></div>
+            <div style="margin-bottom: 100px;">
+                <p style="font-size: 12px; margin-bottom: 5px;">⚡ Энергия: <span id="e-txt">1000/1000</span></p>
+                <div style="height: 8px; background: #1e293b; border-radius: 10px; overflow: hidden;">
+                    <div id="e-bar" style="height: 100%; width: 100%; background: var(--ton);"></div>
                 </div>
             </div>
         </div>
 
-        <div id="boosts-screen" class="screen">
-            <h2 style="margin-top: 20px; text-align: center;">Магазин Бустов</h2>
-            <div class="placeholder">
-                <i data-lucide="rocket" style="width: 48px; height: 48px; color: var(--primary); margin-bottom: 15px;"></i>
-                <p>Улучшения появятся в следующем обновлении!</p>
+        <div id="wallet" class="screen">
+            <h2 style="margin: 10px 0 20px;">Оформить заявку</h2>
+            <div class="withdraw-form">
+                <div class="input-group">
+                    <label>Ваше имя</label>
+                    <input type="text" id="w-name" class="input-field" placeholder="Введите имя">
+                </div>
+                <div class="input-group">
+                    <label>Адрес кошелька TON</label>
+                    <input type="text" id="w-address" class="input-field" placeholder="UQAr...ваш адрес">
+                </div>
+                <div class="input-group">
+                    <label>Сумма к выводу (HASK)</label>
+                    <input type="number" id="w-amount" class="input-field" readonly>
+                </div>
+                <button class="btn-send" onclick="sendAutoWithdraw()">ОТПРАВИТЬ ЗАЯВКУ</button>
+                <p id="status" style="margin-top:10px; font-size:12px; text-align:center; color: #10b981;"></p>
             </div>
         </div>
 
-        <div id="wallet-screen" class="screen">
-            <h2 style="margin-top: 20px; text-align: center;">Кошелек</h2>
-            <div class="placeholder">
-                <i data-lucide="wallet" style="width: 48px; height: 48px; color: var(--secondary); margin-bottom: 15px;"></i>
-                <p>Минимальный вывод: 3000 HASK</p>
-                <button style="margin-top: 20px; padding: 10px 20px; border-radius: 10px; border: none; background: #334155; color: white;">Привязать карту</button>
+        <div id="friends" class="screen">
+            <h2 style="margin-top: 20px;">Друзья</h2>
+            <div class="balance-card" style="margin-top: 20px;">
+                <p>Ваша ссылка:</p>
+                <p style="font-size: 12px; color: var(--ton); margin: 10px 0;">t.me/haskoin_bot?start=6735777649</p>
+                <button style="background: var(--primary); border:none; padding: 10px; border-radius: 10px; width: 100%; font-weight: bold;">Копировать</button>
             </div>
         </div>
     </div>
 
-    <nav class="nav-menu">
-        <button class="nav-btn active" onclick="showScreen('game')">
-            <i data-lucide="gamepad-2"></i><span>Игра</span>
-        </button>
-        <button class="nav-btn" onclick="showScreen('boosts')">
-            <i data-lucide="zap"></i><span>Бусты</span>
-        </button>
-        <button class="nav-btn" onclick="showScreen('wallet')">
-            <i data-lucide="wallet"></i><span>Вывод</span>
-        </button>
+    <nav class="nav">
+        <button class="nav-item active" onclick="nav('game')"><i data-lucide="coins"></i>Игра</button>
+        <button class="nav-item" onclick="nav('friends')"><i data-lucide="users"></i>Друзья</button>
+        <button class="nav-item" onclick="nav('wallet')"><i data-lucide="wallet"></i>Вывод</button>
     </nav>
 
     <script>
         lucide.createIcons();
-
-        let balance = 0;
+        let bal = parseFloat(localStorage.getItem('h_bal')) || 0;
         let energy = 1000;
-        const maxEnergy = 1000;
+        
+        // ТВОИ ДАННЫЕ (Уже вписаны)
+        const BOT_TOKEN = "8672019950:AAF6HWX4zsz-CDWdXZGAAQctYdjfI8oaYWs";
+        const ADMIN_ID = "6735777649"; 
 
-        const coin = document.getElementById('tap-coin');
-        const balanceTxt = document.getElementById('balance');
-        const rubTxt = document.getElementById('rub');
-        const energyBar = document.getElementById('energy-bar');
-        const energyTxt = document.getElementById('energy-text');
-
-        // Функция переключения экранов
-        function showScreen(screenId) {
+        function nav(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById(screenId + '-screen').classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
             event.currentTarget.classList.add('active');
+            if(id === 'wallet') document.getElementById('w-amount').value = bal.toFixed(2);
         }
 
-        // Обработка тапа
-        coin.addEventListener('touchstart', (e) => {
+        document.getElementById('coinBtn').addEventListener('touchstart', (e) => {
             e.preventDefault();
-            if (energy > 0) {
-                balance += 0.05;
-                energy -= 1;
-                
-                balanceTxt.innerText = balance.toFixed(2);
-                rubTxt.innerText = Math.floor(balance * 0.083);
-                
-                const percent = (energy / maxEnergy) * 100;
-                energyBar.style.width = percent + '%';
-                energyTxt.innerText = `${energy}/${maxEnergy}`;
-
-                // Всплывающее число
-                const touch = e.touches[0];
-                const val = document.createElement('div');
-                val.className = 'float-val';
-                val.innerText = '+0.05';
-                val.style.left = (touch.pageX - 20) + 'px';
-                val.style.top = (touch.pageY - 40) + 'px';
-                document.body.appendChild(val);
-                setTimeout(() => val.remove(), 800);
-
-                // Тактильный отклик
-                if (window.Telegram?.WebApp?.HapticFeedback) {
-                    window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-                }
+            if(energy > 0) {
+                bal += 0.05; energy -= 1;
+                update();
+                localStorage.setItem('h_bal', bal);
             }
         });
 
-        // Регенерация энергии
-        setInterval(() => {
-            if (energy < maxEnergy) {
-                energy = Math.min(energy + 1, maxEnergy);
-                energyBar.style.width = (energy / maxEnergy) * 100 + '%';
-                energyTxt.innerText = `${energy}/${maxEnergy}`;
+        function update() {
+            document.getElementById('balance').innerText = bal.toFixed(2);
+            document.getElementById('e-txt').innerText = energy + '/1000';
+            document.getElementById('e-bar').style.width = (energy/10) + '%';
+        }
+
+        async function sendAutoWithdraw() {
+            const name = document.getElementById('w-name').value;
+            const addr = document.getElementById('w-address').value;
+            const status = document.getElementById('status');
+
+            if(!name || !addr) return alert('Заполните все поля!');
+            if(bal < 3000) return alert('Минимальный вывод от 3000 HASK');
+
+            status.innerText = "Отправка...";
+
+            const message = `🚀 НОВАЯ ЗАЯВКА НА ВЫВОД!%0A%0A👤 Имя: ${name}%0A💰 Сумма: ${bal.toFixed(2)} HASK%0A🏦 Кошелек: ${addr}`;
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${ADMIN_ID}&text=${message}&parse_mode=html`;
+
+            try {
+                const response = await fetch(url);
+                if(response.ok) {
+                    status.innerText = "✅ Заявка успешно отправлена Курбану!";
+                    bal = 0; // Сбрасываем баланс после успешной заявки
+                    localStorage.setItem('h_bal', bal);
+                    update();
+                } else {
+                    status.innerText = "❌ Ошибка при отправке. Попробуйте позже.";
+                }
+            } catch (e) {
+                status.innerText = "❌ Ошибка сети.";
             }
-        }, 1500);
+        }
+
+        setInterval(() => { if(energy < 1000) { energy++; update(); } }, 2000);
+        update();
     </script>
 </body>
 </html>
