@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>HASKOIN · Премиум Тапалка</title>
+    <title>HASKOIN · Реалистичный Майнинг</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -25,7 +25,6 @@
             overflow-x: hidden;
         }
 
-        /* АНИМИРОВАННЫЙ ФОН */
         .animated-bg {
             position: fixed;
             top: 0;
@@ -86,7 +85,6 @@
             padding: 12px 12px 0;
         }
 
-        /* КОНТЕНТ С ПРОКРУТКОЙ */
         .page-content {
             flex: 1;
             overflow-y: auto;
@@ -126,7 +124,6 @@
             padding: 6px 14px 6px 6px;
             border-radius: 40px;
             border: 1px solid rgba(0, 255, 255, 0.25);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .player-avatar {
@@ -184,7 +181,6 @@
             color: #020108;
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            letter-spacing: 0.5px;
         }
 
         /* КАРТОЧКА БАЛАНСА */
@@ -195,7 +191,6 @@
             padding: 16px 18px;
             margin-bottom: 12px;
             border: 1px solid rgba(0, 255, 255, 0.2);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             flex-shrink: 0;
         }
 
@@ -353,7 +348,7 @@
             font-size: 10px;
         }
 
-        /* МОНЕТА - ИДЕАЛЬНО ПО ЦЕНТРУ */
+        /* МОНЕТА */
         .coin-wrapper {
             display: flex;
             justify-content: center;
@@ -474,7 +469,7 @@
         /* ЭФФЕКТ +МОНЕТЫ */
         .floating-score {
             position: absolute;
-            font-size: 26px;
+            font-size: 22px;
             font-weight: 900;
             color: #ffd700;
             text-shadow: 0 0 35px #ffd700, 0 0 20px #00ffff;
@@ -483,18 +478,12 @@
             animation: flyUp 0.9s ease-out forwards;
         }
 
-        .floating-score.crit {
-            color: #00ffff;
-            font-size: 34px;
-            text-shadow: 0 0 45px #00ffff;
-        }
-
         @keyframes flyUp {
             0% { opacity: 1; transform: translateY(0) scale(1); }
             100% { opacity: 0; transform: translateY(-100px) scale(1.6); }
         }
 
-        /* КНОПКИ ДЕЙСТВИЙ */
+        /* КНОПКИ */
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -592,7 +581,7 @@
             font-size: 22px;
         }
 
-        /* КАРТОЧКИ ДЛЯ ОСТАЛЬНЫХ СТРАНИЦ */
+        /* КАРТОЧКИ */
         .section-title {
             color: #00ffff;
             font-size: 20px;
@@ -600,46 +589,6 @@
             margin-bottom: 16px;
             text-align: center;
             text-shadow: 0 0 20px #00ffff;
-        }
-
-        .skin-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .skin-card {
-            background: linear-gradient(145deg, rgba(20, 20, 45, 0.9), rgba(10, 10, 25, 0.95));
-            border-radius: 18px;
-            padding: 14px 8px;
-            border: 1px solid rgba(0, 255, 255, 0.15);
-            text-align: center;
-        }
-
-        .skin-preview {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 10px;
-            border-radius: 50%;
-        }
-
-        .skin-name {
-            color: #fff;
-            font-weight: 700;
-            font-size: 13px;
-            margin-bottom: 8px;
-        }
-
-        .skin-btn {
-            background: #1a1a3e;
-            color: #00ffff;
-            border: 1px solid #00ffff40;
-            border-radius: 14px;
-            padding: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            width: 100%;
-            cursor: pointer;
         }
 
         .upgrade-grid {
@@ -661,6 +610,31 @@
             margin-bottom: 8px;
         }
 
+        .upgrade-card h4 {
+            color: #ffd700;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .upgrade-desc {
+            color: #00ffff;
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+
+        .upgrade-price {
+            color: #00ffaa;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .upgrade-level {
+            color: #aaaacc;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
         .upgrade-btn {
             background: #1a1a3e;
             color: #00ffff;
@@ -671,7 +645,6 @@
             font-weight: 700;
             width: 100%;
             cursor: pointer;
-            margin-top: 8px;
         }
 
         .ton-card {
@@ -708,6 +681,29 @@
             color: transparent;
             margin: 16px 0;
         }
+
+        .warning-box {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .ref-link-box {
+            background: rgba(0, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .ref-link {
+            color: #00ffff;
+            font-size: 12px;
+            word-break: break-all;
+            margin: 8px 0;
+        }
     </style>
 </head>
 <body>
@@ -732,7 +728,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="rank-badge" id="rankDisplay">НОВИЧОК</div>
+                    <div class="rank-badge" id="rankDisplay">ШАХТЁР</div>
                 </div>
 
                 <div class="balance-card">
@@ -742,17 +738,17 @@
                         <span class="balance-icon">💎</span>
                     </div>
                     <div class="balance-main">
-                        <span class="balance-number" id="balanceDisplay">3.90</span>
+                        <span class="balance-number" id="balanceDisplay">0.000</span>
                         <span class="balance-currency">HASK</span>
                     </div>
                     <div class="balance-stats">
                         <div class="stat-item">
                             <span class="stat-icon">⚡</span>
-                            <span class="stat-value" id="passiveIncome">+0.00</span>
+                            <span class="stat-value" id="passiveIncome">+0.000</span>
                             <span class="stat-label">/сек</span>
                         </div>
                         <div class="tap-stat">
-                            <span id="tapValue">+0.05</span> за тап
+                            <span id="tapValue">+0.001</span> за тап
                         </div>
                     </div>
                 </div>
@@ -763,15 +759,15 @@
                             <span>🔋</span>
                             <span>ЭНЕРГИЯ</span>
                         </div>
-                        <div class="energy-value" id="energyText">445/500</div>
+                        <div class="energy-value" id="energyText">500/500</div>
                     </div>
                     <div class="energy-bar-container">
-                        <div class="energy-fill" id="energyFill" style="width: 89%;"></div>
+                        <div class="energy-fill" id="energyFill" style="width: 100%;"></div>
                     </div>
                     <div class="energy-footer">
                         <div class="regen-info">
-                            <span>🔄</span>
-                            <span id="regenInfo">+1.0 / 5 сек</span>
+                            <span>🐢</span>
+                            <span id="regenInfo">+1 / 3 сек</span>
                         </div>
                         <div class="energy-tip">⚡ -1 за тап</div>
                     </div>
@@ -781,35 +777,48 @@
                     <div class="coin-container">
                         <div class="coin-aura"></div>
                         <div class="coin-3d" id="coin3D">
-                            <div class="coin-face" id="coinFace" style="background: radial-gradient(circle at 30% 35%, #ffe680, #d4a017, #8b6914); border-color: #ffd700;">
+                            <div class="coin-face" id="coinFace" style="background: radial-gradient(circle at 30% 35%, #a0a0a0, #606060, #303030); border-color: #888888;">
                                 <div class="coin-shine"></div>
-                                <div class="coin-letter" id="coinLetter" style="background: linear-gradient(145deg, #fff8dc, #ffd700); -webkit-background-clip: text; background-clip: text; color: transparent;">H</div>
-                                <div class="coin-tap-label">TAP</div>
+                                <div class="coin-letter" id="coinLetter" style="background: linear-gradient(145deg, #e0e0e0, #909090); -webkit-background-clip: text; background-clip: text; color: transparent;">H</div>
+                                <div class="coin-tap-label">MINE</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="action-buttons">
-                    <button class="game-btn purple" id="regenBtn"><span>⚡</span>20 HASK</button>
+                    <button class="game-btn purple" id="regenBtn"><span>⚡</span>0.5 HASK</button>
                     <button class="game-btn gold" id="bonusBtn"><span>🎁</span>БОНУС</button>
                 </div>
 
-                <div class="status-toast" id="mineStatus">💎 ТАПАЙ ПО МОНЕТЕ</div>
-            </div>
-
-            <!-- СКИНЫ -->
-            <div class="page" id="page-skins">
-                <div class="section-title">🎨 СКИНЫ</div>
-                <div class="skin-grid" id="skinGrid"></div>
-                <div class="status-toast" id="skinStatus"></div>
+                <div class="status-toast" id="mineStatus">💪 1000 тапов = 1 HASK</div>
             </div>
 
             <!-- ПРОКАЧКА -->
             <div class="page" id="page-boost">
-                <div class="section-title">🚀 ПРОКАЧКА</div>
+                <div class="section-title">📈 ПРОКАЧКА</div>
                 <div class="upgrade-grid" id="upgradeGrid"></div>
                 <div class="status-toast" id="boostStatus"></div>
+            </div>
+
+            <!-- РЕФЕРАЛЫ -->
+            <div class="page" id="page-referrals">
+                <div class="section-title">👥 РЕФЕРАЛЫ</div>
+                <div class="ton-card">
+                    <div class="ref-link-box">
+                        <div style="color:#ffd700;margin-bottom:8px;">🔗 Ваша ссылка</div>
+                        <div class="ref-link" id="refLink">Загрузка...</div>
+                        <button class="game-btn" id="copyRefBtn" style="margin-top:12px;width:100%;">📋 КОПИРОВАТЬ</button>
+                    </div>
+                    <div style="color:#00ffff;margin-bottom:12px;text-align:center;">
+                        👥 Рефералов: <span id="refCount">0</span> / 3
+                    </div>
+                    <div class="warning-box">
+                        <p style="color:#ff6666;font-size:13px;margin-bottom:8px;">⚠️ УСЛОВИЯ ВЫВОДА</p>
+                        <p style="color:#aaaacc;font-size:12px;">• Минимум 3 реферала<br>• Баланс от 100 HASK<br>• Только для реальных игроков</p>
+                    </div>
+                    <div id="refStatus" style="color:#00ffaa;font-size:12px;text-align:center;"></div>
+                </div>
             </div>
 
             <!-- ВЫВОД -->
@@ -817,13 +826,18 @@
                 <div class="section-title">💎 ВЫВОД TON</div>
                 <div class="ton-card">
                     <div style="text-align:center;margin-bottom:20px;">
-                        <span style="color:#ffd700;font-size:24px;font-weight:800;">3000 HASK = 0.01 TON</span>
+                        <span style="color:#ffd700;font-size:20px;font-weight:800;">100 HASK = 0.5 TON</span>
                     </div>
                     <input class="cyber-input" id="tonAddress" placeholder="Адрес TON (EQ... / UQ...)">
-                    <input class="cyber-input" id="withdrawAmount" placeholder="Сумма в HASK">
-                    <div style="color:#ffd700;margin-bottom:16px;">💰 Вы получите: <span id="tonReceive">0</span> TON</div>
-                    <button class="game-btn" id="withdrawBtn" style="width:100%;">💎 ОТПРАВИТЬ</button>
-                    <div id="historyContainer" style="margin-top:20px;"></div>
+                    <div style="color:#ffd700;margin-bottom:16px;text-align:center;">
+                        💰 Доступно: <span id="availableBalance">0.000</span> HASK
+                    </div>
+                    <div id="withdrawWarning" class="warning-box" style="display:none;"></div>
+                    <button class="game-btn" id="withdrawBtn" style="width:100%;">💎 ВЫВЕСТИ ВСЁ</button>
+                    <div style="margin-top:20px;">
+                        <h4 style="color:#00ffff;margin-bottom:10px;">📋 История</h4>
+                        <div id="historyContainer"></div>
+                    </div>
                 </div>
             </div>
 
@@ -841,8 +855,8 @@
         <!-- НИЖНЯЯ ПАНЕЛЬ -->
         <div class="bottom-nav">
             <button class="nav-btn active" data-page="mine"><span class="nav-icon">⛏️</span><span>Майнинг</span></button>
-            <button class="nav-btn" data-page="skins"><span class="nav-icon">🎨</span><span>Скины</span></button>
-            <button class="nav-btn" data-page="boost"><span class="nav-icon">🚀</span><span>Прокачка</span></button>
+            <button class="nav-btn" data-page="boost"><span class="nav-icon">📈</span><span>Прокачка</span></button>
+            <button class="nav-btn" data-page="referrals"><span class="nav-icon">👥</span><span>Рефералы</span></button>
             <button class="nav-btn" data-page="wallet"><span class="nav-icon">💎</span><span>Вывод</span></button>
             <button class="nav-btn" data-page="support"><span class="nav-icon">🆘</span><span>Поддержка</span></button>
         </div>
@@ -854,18 +868,37 @@
             tg.expand();
             tg.ready();
 
-            const SKINS = [
-                { id: 'default', name: 'Классик', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ffe680, #d4a017, #8b6914)', border: '#ffd700', glow: '#ffd700', price: 0, owned: true },
-                { id: 'neon', name: 'Неон', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #00ffff, #0088ff, #0044aa)', border: '#00ffff', glow: '#00ffff', price: 50 },
-                { id: 'gold', name: 'Золотой', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #fff8dc, #ffd700, #b8860b)', border: '#ffd700', glow: '#ffaa00', price: 200 },
-                { id: 'ruby', name: 'Рубин', letter: 'H', bg: 'radial-gradient(circle at 30% 35%, #ff6666, #cc0000, #660000)', border: '#ff4444', glow: '#ff0000', price: 250 },
-                { id: 'rainbow', name: 'Радужный', letter: 'H', bg: 'linear-gradient(135deg, red, orange, yellow, green, blue, indigo, violet)', border: '#ffffff', glow: '#ff00ff', price: 500 }
-            ];
+            const BOT_TOKEN = '8672019950:AAF6HWX4zsz-CDWdXZGAAQctYdjfI8oaYWs';
+            const ADMIN_ID = '8445377034';
+            const SUPPORT_USERNAME = 'KU1003';
+            
+            // НОВЫЕ ПАРАМЕТРЫ
+            const BASE_TAP = 0.001; // 0.001 HASK за тап
+            const BASE_MAX_ENERGY = 500;
+            const ENERGY_COST = 1;
+            const BASE_REGEN = 1;
+            const REGEN_INTERVAL = 3000; // 3 секунды
+            const REGEN_COST = 0.5; // 0.5 HASK за полное восстановление
+            const MIN_WITHDRAW = 100; // 100 HASK
+            const TON_RATE = 0.5 / 100; // 100 HASK = 0.5 TON
+            const REFERRAL_REQUIRED = 3;
 
-            let balance = 3.90, maxEnergy = 500, currentEnergy = 445, tapMult = 1, regenMult = 1, autoActive = false;
-            let ownedSkins = ['default'], equippedSkin = 'default';
+            let balance = 0.000;
+            let maxEnergy = BASE_MAX_ENERGY;
+            let currentEnergy = maxEnergy;
+            let tapMult = 1.0;
+            let regenMult = 1.0;
+            let autoActive = false;
+            let totalTaps = 0;
+            
+            let energyLvl = 1, tapLvl = 1, regenLvl = 1;
+            let lastBonus = 0;
+            let history = [];
+            let referralCount = 0;
+            let referrals = [];
+            
             const userId = tg.initDataUnsafe?.user?.id || 'demo';
-            const STORAGE_KEY = `haskoin_fixed_${userId}`;
+            const STORAGE_KEY = `haskoin_real_${userId}`;
 
             const user = tg.initDataUnsafe?.user;
             if (user) {
@@ -873,10 +906,16 @@
                 document.getElementById('avatar').textContent = user.first_name?.charAt(0) || 'H';
             }
 
-            function fmt(n) { return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+            // Генерация реферальной ссылки
+            const refLink = `https://t.me/HaskoinBot?start=${userId}`;
+            document.getElementById('refLink').textContent = refLink;
+
+            function fmt(n) { return n.toFixed(3).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+            function haskToTon(h) { return ((h / 100) * 0.5).toFixed(3); }
 
             function saveData() {
-                tg.CloudStorage.setItem(STORAGE_KEY, JSON.stringify({ balance, maxEnergy, currentEnergy, tapMult, regenMult, autoActive, ownedSkins, equippedSkin }));
+                const data = { balance, maxEnergy, currentEnergy, tapMult, regenMult, autoActive, totalTaps, energyLvl, tapLvl, regenLvl, lastBonus, history, referralCount, referrals };
+                tg.CloudStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             }
 
             function loadData() {
@@ -884,79 +923,143 @@
                     if (!err && val) {
                         try {
                             const d = JSON.parse(val);
-                            balance = d.balance || 3.90;
-                            maxEnergy = d.maxEnergy || 500;
-                            currentEnergy = d.currentEnergy ?? 445;
-                            tapMult = d.tapMult || 1;
-                            regenMult = d.regenMult || 1;
+                            balance = d.balance || 0.000;
+                            maxEnergy = d.maxEnergy || BASE_MAX_ENERGY;
+                            currentEnergy = d.currentEnergy ?? maxEnergy;
+                            tapMult = d.tapMult || 1.0;
+                            regenMult = d.regenMult || 1.0;
                             autoActive = d.autoActive || false;
-                            ownedSkins = d.ownedSkins || ['default'];
-                            equippedSkin = d.equippedSkin || 'default';
+                            totalTaps = d.totalTaps || 0;
+                            energyLvl = d.energyLvl || 1;
+                            tapLvl = d.tapLvl || 1;
+                            regenLvl = d.regenLvl || 1;
+                            lastBonus = d.lastBonus || 0;
+                            history = d.history || [];
+                            referralCount = d.referralCount || 0;
+                            referrals = d.referrals || [];
                         } catch(e) {}
                     }
+                    
+                    // Проверка реферала при запуске
+                    const startParam = tg.initDataUnsafe?.start_param;
+                    if (startParam && startParam !== userId && !referrals.includes(startParam)) {
+                        // Отправляем уведомление о новом реферале
+                        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${startParam}&text=🎉 У вас новый реферал!`, { mode: 'no-cors' });
+                    }
+                    
                     refreshUI();
-                    renderSkins();
-                    applySkin(equippedSkin);
+                    renderUpgrades();
+                    updateHistory();
+                    updateRefUI();
                 });
             }
 
             function refreshUI() {
                 document.getElementById('balanceDisplay').textContent = fmt(balance);
+                document.getElementById('availableBalance').textContent = fmt(balance);
                 const pct = (currentEnergy / maxEnergy) * 100;
                 document.getElementById('energyFill').style.width = Math.max(0, pct) + '%';
                 document.getElementById('energyText').textContent = `${Math.floor(currentEnergy)}/${maxEnergy}`;
-                document.getElementById('tapValue').textContent = `+${(0.05 * tapMult).toFixed(2)}`;
-                document.getElementById('regenInfo').textContent = `+${(1 * regenMult).toFixed(1)} / 5 сек`;
-                document.getElementById('passiveIncome').textContent = `+${(autoActive ? 0.05 * tapMult : 0).toFixed(2)}`;
-                const rank = balance < 1000 ? 'НОВИЧОК' : balance < 10000 ? 'МАЙНЕР' : 'ПРОФИ';
-                document.getElementById('rankDisplay').textContent = rank;
+                document.getElementById('tapValue').textContent = `+${(BASE_TAP * tapMult).toFixed(3)}`;
+                document.getElementById('regenInfo').textContent = `+${(BASE_REGEN * regenMult).toFixed(1)} / 3 сек`;
+                document.getElementById('passiveIncome').textContent = `+${(autoActive ? BASE_TAP * tapMult : 0).toFixed(3)}`;
             }
 
-            function applySkin(skinId) {
-                const skin = SKINS.find(s => s.id === skinId) || SKINS[0];
-                equippedSkin = skinId;
-                const face = document.getElementById('coinFace');
-                const letter = document.getElementById('coinLetter');
-                face.style.background = skin.bg;
-                face.style.borderColor = skin.border;
-                letter.style.background = `linear-gradient(145deg, #fff8dc, ${skin.glow})`;
-                letter.style.webkitBackgroundClip = 'text';
-                letter.style.backgroundClip = 'text';
-                letter.style.color = 'transparent';
-                letter.textContent = skin.letter;
-                saveData();
+            function updateRefUI() {
+                document.getElementById('refCount').textContent = referralCount;
             }
 
-            function renderSkins() {
-                const grid = document.getElementById('skinGrid');
-                grid.innerHTML = SKINS.map(skin => `
-                    <div class="skin-card">
-                        <div class="skin-preview" style="background: ${skin.bg}; border: 2px solid ${skin.border}; display: flex; align-items: center; justify-content: center;">
-                            <span style="font-size: 32px; font-weight: 900; background: linear-gradient(145deg, #fff, ${skin.glow}); -webkit-background-clip: text; background-clip: text; color: transparent;">${skin.letter}</span>
-                        </div>
-                        <div class="skin-name">${skin.name}</div>
-                        <button class="skin-btn" data-skin-id="${skin.id}">
-                            ${equippedSkin === skin.id ? '✅ Надет' : (ownedSkins.includes(skin.id) ? '👕 Надеть' : `${skin.price} HASK`)}
-                        </button>
+            function renderUpgrades() {
+                const grid = document.getElementById('upgradeGrid');
+                grid.innerHTML = `
+                    <div class="upgrade-card">
+                        <div class="upgrade-icon">🔋</div>
+                        <h4>Энерго-бак</h4>
+                        <div class="upgrade-desc">+100 макс.</div>
+                        <div class="upgrade-price">${(0.5 * energyLvl).toFixed(3)} HASK</div>
+                        <div class="upgrade-level">Ур. ${energyLvl}</div>
+                        <button class="upgrade-btn" data-boost="energy">УЛУЧШИТЬ</button>
                     </div>
-                `).join('');
+                    <div class="upgrade-card">
+                        <div class="upgrade-icon">💪</div>
+                        <h4>Мульти-тап</h4>
+                        <div class="upgrade-desc">+0.001 за тап</div>
+                        <div class="upgrade-price">${(1.0 * tapLvl).toFixed(3)} HASK</div>
+                        <div class="upgrade-level">Ур. ${tapLvl}</div>
+                        <button class="upgrade-btn" data-boost="tap">УЛУЧШИТЬ</button>
+                    </div>
+                    <div class="upgrade-card">
+                        <div class="upgrade-icon">⚡</div>
+                        <h4>Турбо-реген</h4>
+                        <div class="upgrade-desc">+1 / 3 сек</div>
+                        <div class="upgrade-price">${(0.8 * regenLvl).toFixed(3)} HASK</div>
+                        <div class="upgrade-level">Ур. ${regenLvl}</div>
+                        <button class="upgrade-btn" data-boost="regen">УЛУЧШИТЬ</button>
+                    </div>
+                    <div class="upgrade-card">
+                        <div class="upgrade-icon">🤖</div>
+                        <h4>Авто-майнер</h4>
+                        <div class="upgrade-desc">Пассивный доход</div>
+                        <div class="upgrade-price">2.000 HASK</div>
+                        <div class="upgrade-level">${autoActive ? 'Вкл' : 'Выкл'}</div>
+                        <button class="upgrade-btn" data-boost="auto">${autoActive ? 'АКТИВЕН' : 'КУПИТЬ'}</button>
+                    </div>
+                `;
 
-                document.querySelectorAll('.skin-btn').forEach(btn => {
+                document.querySelectorAll('[data-boost]').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        const skinId = btn.dataset.skinId;
-                        const skin = SKINS.find(s => s.id === skinId);
-                        if (ownedSkins.includes(skinId)) {
-                            applySkin(skinId);
-                            renderSkins();
-                        } else if (balance >= skin.price) {
-                            balance -= skin.price;
-                            ownedSkins.push(skinId);
-                            refreshUI();
-                            renderSkins();
-                            saveData();
+                        const boost = btn.dataset.boost;
+                        const status = document.getElementById('boostStatus');
+                        let cost = 0, msg = '';
+                        
+                        if (boost === 'energy' && balance >= 0.5 * energyLvl) {
+                            cost = 0.5 * energyLvl;
+                            maxEnergy += 100;
+                            energyLvl++;
+                            msg = `🔋 Бак +100! Ур. ${energyLvl}`;
+                        } else if (boost === 'tap' && balance >= 1.0 * tapLvl) {
+                            cost = 1.0 * tapLvl;
+                            tapMult += 1.0;
+                            tapLvl++;
+                            msg = `💪 Тап +0.001! Ур. ${tapLvl}`;
+                        } else if (boost === 'regen' && balance >= 0.8 * regenLvl) {
+                            cost = 0.8 * regenLvl;
+                            regenMult += 1.0;
+                            regenLvl++;
+                            msg = `⚡ Реген +1! Ур. ${regenLvl}`;
+                        } else if (boost === 'auto' && balance >= 2.0 && !autoActive) {
+                            cost = 2.0;
+                            autoActive = true;
+                            msg = '🤖 Авто-майнер активирован!';
+                        } else {
+                            status.textContent = '❌ Недостаточно HASK!';
+                            setTimeout(() => status.textContent = '', 1500);
+                            return;
                         }
+                        
+                        balance -= cost;
+                        refreshUI();
+                        renderUpgrades();
+                        saveData();
+                        status.textContent = msg;
+                        setTimeout(() => status.textContent = '', 1500);
                     });
                 });
+            }
+
+            function updateHistory() {
+                const c = document.getElementById('historyContainer');
+                if (!history.length) { c.innerHTML = '<p style="color:#8888aa;">Нет операций</p>'; return; }
+                c.innerHTML = history.slice(-5).reverse().map(h => `
+                    <div style="background:#0a0a1a;padding:12px;border-radius:14px;margin-bottom:8px;">
+                        <div style="display:flex;justify-content:space-between;">
+                            <span style="color:#ffd700;">${fmt(h.amount)} HASK</span>
+                            <span style="color:#00ffaa;">${h.ton} TON</span>
+                        </div>
+                        <div style="color:#8888aa;font-size:11px;margin-top:4px;">${h.address?.slice(0,10)}...</div>
+                        <div style="color:#666688;font-size:10px;">${h.status === 'done' ? '✅ Выполнено' : '⏳ В обработке'}</div>
+                    </div>
+                `).join('');
             }
 
             const coin3D = document.getElementById('coin3D');
@@ -981,29 +1084,30 @@
                 tiltCoin(e);
                 setTimeout(resetTilt, 180);
                 
-                if (currentEnergy < 1) {
-                    document.getElementById('mineStatus').textContent = '❌ НЕТ ЭНЕРГИИ';
-                    setTimeout(() => document.getElementById('mineStatus').textContent = '💎 ТАПАЙ ПО МОНЕТЕ', 800);
+                if (currentEnergy < ENERGY_COST) {
+                    document.getElementById('mineStatus').textContent = '😴 Энергия кончилась! Жди...';
+                    setTimeout(() => document.getElementById('mineStatus').textContent = `💪 ${1000 - (totalTaps % 1000)} тапов до 1 HASK`, 1500);
                     return;
                 }
-                currentEnergy--;
-                let earned = 0.05 * tapMult;
-                if (Math.random() < 0.1) earned *= 3;
+                currentEnergy -= ENERGY_COST;
+                totalTaps++;
+                let earned = BASE_TAP * tapMult;
                 balance += earned;
                 refreshUI();
                 
                 const x = e.touches ? e.touches[0].clientX : e.clientX;
                 const y = e.touches ? e.touches[0].clientY : e.clientY;
                 const el = document.createElement('div');
-                el.className = 'floating-score' + (earned > 0.1 ? ' crit' : '');
-                el.textContent = '+' + earned.toFixed(2);
+                el.className = 'floating-score';
+                el.textContent = '+' + earned.toFixed(3);
                 el.style.left = x + 'px';
                 el.style.top = y + 'px';
                 document.body.appendChild(el);
                 setTimeout(() => el.remove(), 900);
                 
-                document.getElementById('mineStatus').textContent = `+${earned.toFixed(2)} HASK`;
-                setTimeout(() => document.getElementById('mineStatus').textContent = '💎 ТАПАЙ ПО МОНЕТЕ', 500);
+                const tapsLeft = 1000 - (totalTaps % 1000);
+                document.getElementById('mineStatus').textContent = `⚡ +${earned.toFixed(3)} HASK | ${tapsLeft} до 1 HASK`;
+                setTimeout(() => document.getElementById('mineStatus').textContent = `💪 ${tapsLeft} тапов до 1 HASK`, 1000);
                 saveData();
             }
 
@@ -1024,36 +1128,103 @@
             });
 
             document.getElementById('regenBtn').addEventListener('click', () => {
-                if (balance >= 20) { balance -= 20; currentEnergy = maxEnergy; refreshUI(); saveData(); }
+                if (balance >= REGEN_COST) {
+                    balance -= REGEN_COST;
+                    currentEnergy = maxEnergy;
+                    refreshUI();
+                    saveData();
+                    document.getElementById('mineStatus').textContent = '🔋 Энергия восстановлена!';
+                    setTimeout(() => document.getElementById('mineStatus').textContent = '💪 Продолжай майнить!', 1000);
+                } else {
+                    document.getElementById('mineStatus').textContent = `❌ Нужно ${REGEN_COST} HASK`;
+                }
             });
 
             document.getElementById('bonusBtn').addEventListener('click', () => {
-                balance += 5; refreshUI(); saveData();
+                const now = Date.now();
+                if (now - lastBonus >= 86400000) {
+                    balance += 0.5;
+                    lastBonus = now;
+                    refreshUI();
+                    saveData();
+                    document.getElementById('mineStatus').textContent = '🎁 +0.5 HASK!';
+                } else {
+                    const h = 24 - Math.floor((now - lastBonus) / 3600000);
+                    document.getElementById('mineStatus').textContent = `⏰ Бонус через ${h} ч`;
+                }
+                setTimeout(() => document.getElementById('mineStatus').textContent = '💪 Продолжай майнить!', 1500);
+            });
+
+            document.getElementById('copyRefBtn').addEventListener('click', () => {
+                navigator.clipboard?.writeText(refLink);
+                document.getElementById('refStatus').textContent = '✅ Ссылка скопирована!';
+                setTimeout(() => document.getElementById('refStatus').textContent = '', 1500);
+            });
+
+            document.getElementById('withdrawBtn').addEventListener('click', () => {
+                const addr = document.getElementById('tonAddress').value.trim();
+                const warning = document.getElementById('withdrawWarning');
+                
+                if (!addr || (!addr.startsWith('EQ') && !addr.startsWith('UQ'))) {
+                    warning.style.display = 'block';
+                    warning.innerHTML = '<p style="color:#ff6666;">❌ Неверный адрес TON</p>';
+                    return;
+                }
+                
+                if (referralCount < REFERRAL_REQUIRED) {
+                    warning.style.display = 'block';
+                    warning.innerHTML = `<p style="color:#ff6666;">❌ Нужно ${REFERRAL_REQUIRED} реферала! У вас ${referralCount}</p>`;
+                    return;
+                }
+                
+                if (balance < MIN_WITHDRAW) {
+                    warning.style.display = 'block';
+                    warning.innerHTML = `<p style="color:#ff6666;">❌ Минимум ${MIN_WITHDRAW} HASK! У вас ${fmt(balance)}</p>`;
+                    return;
+                }
+                
+                warning.style.display = 'none';
+                const tonAmt = haskToTon(balance);
+                const amount = balance;
+                balance = 0;
+                
+                history.push({ amount, ton: tonAmt, address: addr, status: 'pending' });
+                refreshUI();
+                updateHistory();
+                saveData();
+                
+                const msg = `🔔 ВЫВОД\n👤 ${user?.first_name}\n💰 ${fmt(amount)} HASK = ${tonAmt} TON\n📤 ${addr}`;
+                tg.sendData(JSON.stringify({ action: 'withdraw', text: msg }));
+                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${ADMIN_ID}&text=${encodeURIComponent(msg)}`, { mode: 'no-cors' });
+                
+                document.getElementById('tonAddress').value = '';
+                alert(`✅ Заявка на ${tonAmt} TON отправлена!`);
             });
 
             document.getElementById('openSupportBtn').addEventListener('click', () => {
-                tg.openTelegramLink('https://t.me/KU1003');
+                tg.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}`);
             });
 
             function regen() {
                 if (currentEnergy < maxEnergy) {
-                    currentEnergy = Math.min(currentEnergy + 1 * regenMult, maxEnergy);
+                    currentEnergy = Math.min(currentEnergy + BASE_REGEN * regenMult, maxEnergy);
                     refreshUI();
                     saveData();
                 }
             }
 
-            // Рендер прокачки
-            const upgradeGrid = document.getElementById('upgradeGrid');
-            upgradeGrid.innerHTML = `
-                <div class="upgrade-card"><div class="upgrade-icon">⚡</div><h4 style="color:#ffd700;">Энергия</h4><button class="upgrade-btn">5 HASK</button></div>
-                <div class="upgrade-card"><div class="upgrade-icon">⛏️</div><h4 style="color:#ffd700;">Сила тапа</h4><button class="upgrade-btn">10 HASK</button></div>
-                <div class="upgrade-card"><div class="upgrade-icon">🔄</div><h4 style="color:#ffd700;">Реген</h4><button class="upgrade-btn">8 HASK</button></div>
-                <div class="upgrade-card"><div class="upgrade-icon">🤖</div><h4 style="color:#ffd700;">Автоклик</h4><button class="upgrade-btn">20 HASK</button></div>
-            `;
+            setInterval(() => {
+                if (autoActive && currentEnergy >= ENERGY_COST) {
+                    currentEnergy -= ENERGY_COST;
+                    totalTaps++;
+                    balance += BASE_TAP * tapMult;
+                    refreshUI();
+                    saveData();
+                }
+            }, 1000);
 
             loadData();
-            setInterval(regen, 5000);
+            setInterval(regen, REGEN_INTERVAL);
             window.addEventListener('beforeunload', saveData);
         })();
     </script>
