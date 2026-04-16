@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>HASKOIN · Реалистичный Майнинг</title>
+    <title>HASKOIN · Надёжное сохранение</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -539,6 +539,29 @@
             flex-shrink: 0;
         }
 
+        /* ИНДИКАТОР СОХРАНЕНИЯ */
+        .save-indicator {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(16, 185, 129, 0.95);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 700;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .save-indicator.show {
+            opacity: 1;
+        }
+
         /* НИЖНЯЯ ПАНЕЛЬ */
         .bottom-nav {
             background: linear-gradient(0deg, rgba(10, 10, 25, 0.98), rgba(20, 20, 45, 0.9));
@@ -713,6 +736,9 @@
     </div>
     <div class="cyber-grid"></div>
 
+    <!-- ИНДИКАТОР СОХРАНЕНИЯ -->
+    <div class="save-indicator" id="saveIndicator">💾 Сохранено</div>
+
     <div class="app">
         <div class="page-content">
             <!-- МАЙНИНГ -->
@@ -777,9 +803,9 @@
                     <div class="coin-container">
                         <div class="coin-aura"></div>
                         <div class="coin-3d" id="coin3D">
-                            <div class="coin-face" id="coinFace" style="background: radial-gradient(circle at 30% 35%, #a0a0a0, #606060, #303030); border-color: #888888;">
+                            <div class="coin-face" style="background: radial-gradient(circle at 30% 35%, #a0a0a0, #606060, #303030); border-color: #888888;">
                                 <div class="coin-shine"></div>
-                                <div class="coin-letter" id="coinLetter" style="background: linear-gradient(145deg, #e0e0e0, #909090); -webkit-background-clip: text; background-clip: text; color: transparent;">H</div>
+                                <div class="coin-letter" style="background: linear-gradient(145deg, #e0e0e0, #909090); -webkit-background-clip: text; background-clip: text; color: transparent;">H</div>
                                 <div class="coin-tap-label">MINE</div>
                             </div>
                         </div>
@@ -806,17 +832,20 @@
                 <div class="section-title">👥 РЕФЕРАЛЫ</div>
                 <div class="ton-card">
                     <div class="ref-link-box">
-                        <div style="color:#ffd700;margin-bottom:8px;">🔗 Ваша ссылка</div>
+                        <div style="color:#ffd700;margin-bottom:8px;">🔗 Ваша реферальная ссылка</div>
                         <div class="ref-link" id="refLink">Загрузка...</div>
                         <button class="game-btn" id="copyRefBtn" style="margin-top:12px;width:100%;">📋 КОПИРОВАТЬ</button>
                     </div>
+                    
                     <div style="color:#00ffff;margin-bottom:12px;text-align:center;">
-                        👥 Рефералов: <span id="refCount">0</span> / 3
+                        👥 Приглашено: <span id="refCount">0</span> / 3
                     </div>
+                    
                     <div class="warning-box">
                         <p style="color:#ff6666;font-size:13px;margin-bottom:8px;">⚠️ УСЛОВИЯ ВЫВОДА</p>
-                        <p style="color:#aaaacc;font-size:12px;">• Минимум 3 реферала<br>• Баланс от 100 HASK<br>• Только для реальных игроков</p>
+                        <p style="color:#aaaacc;font-size:12px;">• Минимум 3 реферала<br>• Баланс от 100 HASK</p>
                     </div>
+                    
                     <div id="refStatus" style="color:#00ffaa;font-size:12px;text-align:center;"></div>
                 </div>
             </div>
@@ -872,15 +901,14 @@
             const ADMIN_ID = '8445377034';
             const SUPPORT_USERNAME = 'KU1003';
             
-            // НОВЫЕ ПАРАМЕТРЫ
-            const BASE_TAP = 0.001; // 0.001 HASK за тап
+            const BASE_TAP = 0.001;
             const BASE_MAX_ENERGY = 500;
             const ENERGY_COST = 1;
             const BASE_REGEN = 1;
-            const REGEN_INTERVAL = 3000; // 3 секунды
-            const REGEN_COST = 0.5; // 0.5 HASK за полное восстановление
-            const MIN_WITHDRAW = 100; // 100 HASK
-            const TON_RATE = 0.5 / 100; // 100 HASK = 0.5 TON
+            const REGEN_INTERVAL = 3000;
+            const REGEN_COST = 0.5;
+            const MIN_WITHDRAW = 100;
+            const TON_RATE = 0.5 / 100;
             const REFERRAL_REQUIRED = 3;
 
             let balance = 0.000;
@@ -895,10 +923,9 @@
             let lastBonus = 0;
             let history = [];
             let referralCount = 0;
-            let referrals = [];
             
-            const userId = tg.initDataUnsafe?.user?.id || 'demo';
-            const STORAGE_KEY = `haskoin_real_${userId}`;
+            const userId = tg.initDataUnsafe?.user?.id?.toString() || 'demo';
+            const STORAGE_KEY = `haskoin_save_${userId}`;
 
             const user = tg.initDataUnsafe?.user;
             if (user) {
@@ -906,24 +933,39 @@
                 document.getElementById('avatar').textContent = user.first_name?.charAt(0) || 'H';
             }
 
-            // Генерация реферальной ссылки
             const refLink = `https://t.me/HaskoinBot?start=${userId}`;
             document.getElementById('refLink').textContent = refLink;
 
             function fmt(n) { return n.toFixed(3).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
             function haskToTon(h) { return ((h / 100) * 0.5).toFixed(3); }
 
-            function saveData() {
-                const data = { balance, maxEnergy, currentEnergy, tapMult, regenMult, autoActive, totalTaps, energyLvl, tapLvl, regenLvl, lastBonus, history, referralCount, referrals };
-                tg.CloudStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            // ========== ИНДИКАТОР СОХРАНЕНИЯ ==========
+            function showSaveIndicator() {
+                const indicator = document.getElementById('saveIndicator');
+                indicator.classList.add('show');
+                setTimeout(() => indicator.classList.remove('show'), 1000);
             }
 
+            // ========== НАДЁЖНОЕ СОХРАНЕНИЕ ==========
+            function saveData() {
+                const data = {
+                    balance, maxEnergy, currentEnergy, tapMult, regenMult, autoActive,
+                    totalTaps, energyLvl, tapLvl, regenLvl, lastBonus, history, referralCount
+                };
+                tg.CloudStorage.setItem(STORAGE_KEY, JSON.stringify(data), (err, success) => {
+                    if (success) showSaveIndicator();
+                    console.log('Saved:', { balance, lastBonus });
+                });
+            }
+
+            // ========== ЗАГРУЗКА ДАННЫХ ==========
             function loadData() {
                 tg.CloudStorage.getItem(STORAGE_KEY, (err, val) => {
+                    let loaded = false;
                     if (!err && val) {
                         try {
                             const d = JSON.parse(val);
-                            balance = d.balance || 0.000;
+                            balance = d.balance ?? 0.000;
                             maxEnergy = d.maxEnergy || BASE_MAX_ENERGY;
                             currentEnergy = d.currentEnergy ?? maxEnergy;
                             tapMult = d.tapMult || 1.0;
@@ -936,21 +978,49 @@
                             lastBonus = d.lastBonus || 0;
                             history = d.history || [];
                             referralCount = d.referralCount || 0;
-                            referrals = d.referrals || [];
-                        } catch(e) {}
+                            loaded = true;
+                            console.log('Loaded:', { balance, lastBonus });
+                        } catch(e) {
+                            console.error('Parse error:', e);
+                        }
                     }
                     
-                    // Проверка реферала при запуске
+                    // Проверка стартового параметра (реферал)
                     const startParam = tg.initDataUnsafe?.start_param;
-                    if (startParam && startParam !== userId && !referrals.includes(startParam)) {
-                        // Отправляем уведомление о новом реферале
-                        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${startParam}&text=🎉 У вас новый реферал!`, { mode: 'no-cors' });
+                    if (startParam && startParam !== userId) {
+                        // Загружаем глобальные рефералы
+                        tg.CloudStorage.getItem('haskoin_global_refs', (err2, globalVal) => {
+                            let refs = {};
+                            if (!err2 && globalVal) {
+                                try { refs = JSON.parse(globalVal); } catch(e) {}
+                            }
+                            if (!refs[startParam]) refs[startParam] = [];
+                            if (!refs[startParam].includes(userId)) {
+                                refs[startParam].push(userId);
+                                tg.CloudStorage.setItem('haskoin_global_refs', JSON.stringify(refs));
+                            }
+                        });
                     }
                     
-                    refreshUI();
-                    renderUpgrades();
-                    updateHistory();
-                    updateRefUI();
+                    // Загружаем количество рефералов
+                    tg.CloudStorage.getItem('haskoin_global_refs', (err3, globalVal3) => {
+                        if (!err3 && globalVal3) {
+                            try {
+                                const refs = JSON.parse(globalVal3);
+                                referralCount = (refs[userId] || []).length;
+                            } catch(e) {}
+                        }
+                        refreshUI();
+                        renderUpgrades();
+                        updateHistory();
+                        updateRefUI();
+                    });
+                    
+                    if (!loaded) {
+                        refreshUI();
+                        renderUpgrades();
+                        updateHistory();
+                    }
                 });
             }
 
@@ -1057,7 +1127,6 @@
                             <span style="color:#00ffaa;">${h.ton} TON</span>
                         </div>
                         <div style="color:#8888aa;font-size:11px;margin-top:4px;">${h.address?.slice(0,10)}...</div>
-                        <div style="color:#666688;font-size:10px;">${h.status === 'done' ? '✅ Выполнено' : '⏳ В обработке'}</div>
                     </div>
                 `).join('');
             }
@@ -1085,7 +1154,7 @@
                 setTimeout(resetTilt, 180);
                 
                 if (currentEnergy < ENERGY_COST) {
-                    document.getElementById('mineStatus').textContent = '😴 Энергия кончилась! Жди...';
+                    document.getElementById('mineStatus').textContent = '😴 Энергия кончилась!';
                     setTimeout(() => document.getElementById('mineStatus').textContent = `💪 ${1000 - (totalTaps % 1000)} тапов до 1 HASK`, 1500);
                     return;
                 }
@@ -1106,7 +1175,7 @@
                 setTimeout(() => el.remove(), 900);
                 
                 const tapsLeft = 1000 - (totalTaps % 1000);
-                document.getElementById('mineStatus').textContent = `⚡ +${earned.toFixed(3)} HASK | ${tapsLeft} до 1 HASK`;
+                document.getElementById('mineStatus').textContent = `⚡ +${earned.toFixed(3)} HASK`;
                 setTimeout(() => document.getElementById('mineStatus').textContent = `💪 ${tapsLeft} тапов до 1 HASK`, 1000);
                 saveData();
             }
@@ -1149,10 +1218,11 @@
                     saveData();
                     document.getElementById('mineStatus').textContent = '🎁 +0.5 HASK!';
                 } else {
-                    const h = 24 - Math.floor((now - lastBonus) / 3600000);
-                    document.getElementById('mineStatus').textContent = `⏰ Бонус через ${h} ч`;
+                    const h = 23 - Math.floor((now - lastBonus) / 3600000);
+                    const m = 59 - Math.floor(((now - lastBonus) % 3600000) / 60000);
+                    document.getElementById('mineStatus').textContent = `⏰ Бонус через ${h}ч ${m}м`;
                 }
-                setTimeout(() => document.getElementById('mineStatus').textContent = '💪 Продолжай майнить!', 1500);
+                setTimeout(() => document.getElementById('mineStatus').textContent = '💪 Продолжай майнить!', 2000);
             });
 
             document.getElementById('copyRefBtn').addEventListener('click', () => {
@@ -1179,7 +1249,7 @@
                 
                 if (balance < MIN_WITHDRAW) {
                     warning.style.display = 'block';
-                    warning.innerHTML = `<p style="color:#ff6666;">❌ Минимум ${MIN_WITHDRAW} HASK! У вас ${fmt(balance)}</p>`;
+                    warning.innerHTML = `<p style="color:#ff6666;">❌ Минимум ${MIN_WITHDRAW} HASK!</p>`;
                     return;
                 }
                 
@@ -1188,7 +1258,7 @@
                 const amount = balance;
                 balance = 0;
                 
-                history.push({ amount, ton: tonAmt, address: addr, status: 'pending' });
+                history.push({ amount, ton: tonAmt, address: addr });
                 refreshUI();
                 updateHistory();
                 saveData();
@@ -1225,7 +1295,16 @@
 
             loadData();
             setInterval(regen, REGEN_INTERVAL);
-            window.addEventListener('beforeunload', saveData);
+            
+            // Сохранение при закрытии
+            window.addEventListener('beforeunload', () => {
+                saveData();
+            });
+            
+            // Сохранение при сворачивании
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) saveData();
+            });
         })();
     </script>
 </body>
