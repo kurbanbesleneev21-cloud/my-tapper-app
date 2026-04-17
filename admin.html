@@ -2,40 +2,795 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HASKOIN Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>HASKOIN · Админ-панель</title>
     <style>
-        body { background: #0a0a1a; color: white; font-family: sans-serif; padding: 20px; }
-        .card { background: #1a1a3e; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #00ffff; }
-        h2 { color: #ffd700; text-align: center; }
-        .stat-val { font-size: 24px; font-weight: bold; color: #00ffff; }
-        button { width: 100%; padding: 12px; background: #ffd700; border: none; border-radius: 8px; font-weight: bold; margin-top: 10px; }
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #0a0a1a;
+            min-height: 100vh;
+            padding: 16px;
+            color: #fff;
+        }
+
+        .admin-container {
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #ffd700;
+            text-align: center;
+            font-size: 26px;
+            margin-bottom: 16px;
+            text-shadow: 0 0 15px #ffd700;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            background: #1a1a3e;
+            padding: 5px;
+            border-radius: 30px;
+            border: 1px solid #00ffff40;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 55px;
+            padding: 10px 4px;
+            background: transparent;
+            border: none;
+            color: #aaaacc;
+            font-weight: 600;
+            font-size: 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(145deg, #00ffff30, #0088ff30);
+            color: #00ffff;
+            border: 1px solid #00ffff80;
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .card {
+            background: #1a1a3e;
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 14px;
+            border: 1px solid #00ffff40;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .card-title {
+            color: #00ffff;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #00ffff20;
+        }
+
+        .stat-label {
+            color: #aaaacc;
+            font-size: 14px;
+        }
+
+        .stat-value {
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .input-group {
+            margin-bottom: 14px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #00ffff;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            background: #0a0a1a;
+            border: 1.5px solid #00ffff40;
+            border-radius: 14px;
+            padding: 12px 14px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 15px #00ffff40;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(145deg, #ffd700, #ffaa00);
+            border: none;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 14px;
+            color: #0a0a1a;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #b8860b;
+            transition: all 0.08s;
+            margin-top: 8px;
+        }
+
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #b8860b;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(145deg, #00ffff, #0088ff);
+            box-shadow: 0 4px 0 #0066cc;
+        }
+
+        .btn-danger {
+            background: linear-gradient(145deg, #ff4444, #cc0000);
+            box-shadow: 0 4px 0 #990000;
+            color: white;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 12px;
+            width: auto;
+        }
+
+        .withdraw-item {
+            background: #0a0a1a;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border: 1px solid #00ffff30;
+        }
+
+        .withdraw-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .withdraw-amount {
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .withdraw-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #ffaa0030; color: #ffaa00; }
+        .status-done { background: #00ffaa30; color: #00ffaa; }
+
+        .player-item {
+            background: #0a0a1a;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border: 1px solid #00ffff30;
+        }
+
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .player-name {
+            color: #00ffff;
+            font-weight: 700;
+        }
+
+        .player-balance {
+            color: #ffd700;
+            font-weight: 700;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #1a1a3e;
+            border-radius: 24px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            border: 2px solid #00ffff;
+        }
+
+        .modal-title {
+            color: #ffd700;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 10px;
+            border-radius: 12px;
+            width: 100%;
+            margin-top: 12px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <h2>Панель управления</h2>
-    
-    <div class="card">
-        <div>Всего игроков:</div>
-        <div class="stat-val" id="totalUsers">Загрузка...</div>
+    <div class="admin-container">
+        <h1>⚡ HASKOIN ADMIN</h1>
+        
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="stats">📊 Статистика</button>
+            <button class="tab-btn" data-tab="game">🎮 Игра</button>
+            <button class="tab-btn" data-tab="boosts">📈 Бусты</button>
+            <button class="tab-btn" data-tab="withdraws">💎 Выводы</button>
+            <button class="tab-btn" data-tab="players">👥 Игроки</button>
+            <button class="tab-btn" data-tab="message">📨 Рассылка</button>
+        </div>
+
+        <!-- СТАТИСТИКА -->
+        <div class="panel active" id="panel-stats">
+            <div class="card">
+                <div class="card-title">📊 Общая статистика</div>
+                <div class="stat-row">
+                    <span class="stat-label">Всего игроков:</span>
+                    <span class="stat-value" id="totalUsers">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Активных за 24ч:</span>
+                    <span class="stat-value" id="activeUsers24h">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Всего HASK в игре:</span>
+                    <span class="stat-value" id="totalHask">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Выведено TON:</span>
+                    <span class="stat-value" id="totalWithdrawnTon">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Заявок на вывод:</span>
+                    <span class="stat-value" id="pendingWithdraws">0</span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">🔄 Быстрые действия</div>
+                <button class="btn btn-secondary" onclick="refreshAllStats()">🔄 Обновить статистику</button>
+                <button class="btn btn-danger" onclick="resetAllData()" style="margin-top:10px;">⚠️ Сбросить ВСЕ данные</button>
+            </div>
+        </div>
+
+        <!-- НАСТРОЙКИ ИГРЫ -->
+        <div class="panel" id="panel-game">
+            <div class="card">
+                <div class="card-title">🎮 Основные параметры</div>
+                <div class="input-group">
+                    <label>💰 Награда за тап (HASK)</label>
+                    <input type="number" id="tapReward" step="0.01" value="0.05">
+                </div>
+                <div class="input-group">
+                    <label>🔋 Максимальная энергия</label>
+                    <input type="number" id="maxEnergy" value="500">
+                </div>
+                <div class="input-group">
+                    <label>🐢 Регенерация (ед. / сек)</label>
+                    <input type="number" id="regenRate" step="0.1" value="0.33">
+                </div>
+                <div class="input-group">
+                    <label>💎 Курс TON (HASK за 1 TON)</label>
+                    <input type="number" id="tonRate" value="200">
+                </div>
+                <div class="input-group">
+                    <label>👥 Минимум рефералов для вывода</label>
+                    <input type="number" id="minReferrals" value="3">
+                </div>
+                <div class="input-group">
+                    <label>💰 Минимальный вывод (HASK)</label>
+                    <input type="number" id="minWithdraw" value="100">
+                </div>
+                <button class="btn" onclick="saveGameSettings()">💾 Сохранить настройки</button>
+            </div>
+        </div>
+
+        <!-- БУСТЫ -->
+        <div class="panel" id="panel-boosts">
+            <div class="card">
+                <div class="card-title">📈 Энерго-бак</div>
+                <div class="input-group">
+                    <label>Базовая цена (HASK)</label>
+                    <input type="number" id="energyBaseCost" step="0.1" value="0.5">
+                </div>
+                <div class="input-group">
+                    <label>Прирост энергии</label>
+                    <input type="number" id="energyIncrease" value="100">
+                </div>
+                <div class="input-group">
+                    <label>Множитель цены за уровень</label>
+                    <input type="number" id="energyCostMult" step="0.1" value="1.0">
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">💪 Мульти-тап</div>
+                <div class="input-group">
+                    <label>Базовая цена (HASK)</label>
+                    <input type="number" id="tapBaseCost" step="0.1" value="1.0">
+                </div>
+                <div class="input-group">
+                    <label>Прирост награды</label>
+                    <input type="number" id="tapIncrease" step="0.01" value="0.05">
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">⚡ Турбо-реген</div>
+                <div class="input-group">
+                    <label>Базовая цена (HASK)</label>
+                    <input type="number" id="regenBaseCost" step="0.1" value="0.8">
+                </div>
+                <div class="input-group">
+                    <label>Прирост регенерации</label>
+                    <input type="number" id="regenIncrease" step="0.1" value="1.0">
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">🤖 Авто-майнер</div>
+                <div class="input-group">
+                    <label>Цена (HASK)</label>
+                    <input type="number" id="autoCost" step="0.1" value="2.0">
+                </div>
+            </div>
+            <button class="btn" onclick="saveBoostSettings()">💾 Сохранить бусты</button>
+        </div>
+
+        <!-- ЗАЯВКИ НА ВЫВОД -->
+        <div class="panel" id="panel-withdraws">
+            <div class="card">
+                <div class="card-title">💎 Заявки на вывод</div>
+                <div id="withdrawsList">
+                    <p style="color:#aaaacc;text-align:center;">Загрузка...</p>
+                </div>
+                <button class="btn btn-secondary" onclick="loadWithdraws()">🔄 Обновить</button>
+            </div>
+        </div>
+
+        <!-- ИГРОКИ -->
+        <div class="panel" id="panel-players">
+            <div class="card">
+                <div class="card-title">👥 Управление игроками</div>
+                <div class="input-group">
+                    <label>🔍 Поиск по ID или имени</label>
+                    <input type="text" id="playerSearch" placeholder="Введите ID или имя...">
+                </div>
+                <button class="btn btn-secondary" onclick="searchPlayer()">🔍 Найти</button>
+                <div id="playersList" style="margin-top:16px;">
+                    <p style="color:#aaaacc;text-align:center;">Введите запрос для поиска</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- РАССЫЛКА -->
+        <div class="panel" id="panel-message">
+            <div class="card">
+                <div class="card-title">📨 Рассылка сообщений</div>
+                <div class="input-group">
+                    <label>Текст сообщения</label>
+                    <textarea id="broadcastMessage" rows="4" placeholder="Введите сообщение для всех игроков..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label>🏷️ Кнопка (опционально)</label>
+                    <input type="text" id="broadcastButton" placeholder="Текст кнопки">
+                </div>
+                <div class="input-group">
+                    <label>🔗 Ссылка кнопки (опционально)</label>
+                    <input type="text" id="broadcastLink" placeholder="https://...">
+                </div>
+                <button class="btn" onclick="sendBroadcast()">📤 Отправить всем</button>
+                <button class="btn btn-secondary" onclick="sendTestBroadcast()" style="margin-top:8px;">🧪 Тест (только мне)</button>
+            </div>
+        </div>
     </div>
 
-    <div class="card">
-        <div>Заявок на вывод:</div>
-        <div class="stat-val" id="withdrawRequests">0</div>
-        <button onclick="viewWithdraws()">Проверить выплаты</button>
-    </div>
-
-    <div class="card">
-        <div>Рассылка игрокам:</div>
-        <textarea id="msg" style="width:100%; border-radius:8px; margin-top:5px;" rows="3"></textarea>
-        <button style="background: #00ffaa;" onclick="sendMessage()">Отправить сообщение</button>
+    <!-- МОДАЛЬНОЕ ОКНО -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-title" id="modalTitle">Информация</div>
+            <div id="modalBody">Содержимое</div>
+            <button class="close-btn" onclick="closeModal()">Закрыть</button>
+        </div>
     </div>
 
     <script>
-        // Сюда мы добавим логику связи с твоим Backend в Railway
-        function viewWithdraws() { alert('Список пуст'); }
-        function sendMessage() { alert('Функция в разработке'); }
+        const BOT_TOKEN = '8672019950:AAF6HWX4zsz-CDWdXZGAAQctYdjfI8oaYWs';
+        const ADMIN_ID = '8445377034';
+        
+        // Глобальные настройки (загружаются из CloudStorage)
+        let globalSettings = {
+            tapReward: 0.05,
+            maxEnergy: 500,
+            regenRate: 0.33,
+            tonRate: 200,
+            minReferrals: 3,
+            minWithdraw: 100,
+            boosts: {
+                energy: { baseCost: 0.5, increase: 100, costMult: 1.0 },
+                tap: { baseCost: 1.0, increase: 0.05 },
+                regen: { baseCost: 0.8, increase: 1.0 },
+                auto: { cost: 2.0 }
+            }
+        };
+
+        // ========== ИНИЦИАЛИЗАЦИЯ ==========
+        function init() {
+            loadGlobalSettings();
+            loadStats();
+            setupTabs();
+        }
+
+        function setupTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(`panel-${btn.dataset.tab}`).classList.add('active');
+                    
+                    if (btn.dataset.tab === 'stats') loadStats();
+                    if (btn.dataset.tab === 'withdraws') loadWithdraws();
+                });
+            });
+        }
+
+        // ========== ЗАГРУЗКА НАСТРОЕК ==========
+        function loadGlobalSettings() {
+            // Загружаем из localStorage (для админки)
+            const saved = localStorage.getItem('haskoin_global_settings');
+            if (saved) {
+                try {
+                    globalSettings = JSON.parse(saved);
+                } catch(e) {}
+            }
+            
+            // Заполняем поля
+            document.getElementById('tapReward').value = globalSettings.tapReward;
+            document.getElementById('maxEnergy').value = globalSettings.maxEnergy;
+            document.getElementById('regenRate').value = globalSettings.regenRate;
+            document.getElementById('tonRate').value = globalSettings.tonRate;
+            document.getElementById('minReferrals').value = globalSettings.minReferrals;
+            document.getElementById('minWithdraw').value = globalSettings.minWithdraw;
+            
+            document.getElementById('energyBaseCost').value = globalSettings.boosts.energy.baseCost;
+            document.getElementById('energyIncrease').value = globalSettings.boosts.energy.increase;
+            document.getElementById('energyCostMult').value = globalSettings.boosts.energy.costMult;
+            
+            document.getElementById('tapBaseCost').value = globalSettings.boosts.tap.baseCost;
+            document.getElementById('tapIncrease').value = globalSettings.boosts.tap.increase;
+            
+            document.getElementById('regenBaseCost').value = globalSettings.boosts.regen.baseCost;
+            document.getElementById('regenIncrease').value = globalSettings.boosts.regen.increase;
+            
+            document.getElementById('autoCost').value = globalSettings.boosts.auto.cost;
+        }
+
+        function saveGameSettings() {
+            globalSettings.tapReward = parseFloat(document.getElementById('tapReward').value);
+            globalSettings.maxEnergy = parseInt(document.getElementById('maxEnergy').value);
+            globalSettings.regenRate = parseFloat(document.getElementById('regenRate').value);
+            globalSettings.tonRate = parseInt(document.getElementById('tonRate').value);
+            globalSettings.minReferrals = parseInt(document.getElementById('minReferrals').value);
+            globalSettings.minWithdraw = parseInt(document.getElementById('minWithdraw').value);
+            
+            saveAllSettings();
+            showModal('✅ Успех', 'Настройки игры сохранены!');
+        }
+
+        function saveBoostSettings() {
+            globalSettings.boosts.energy.baseCost = parseFloat(document.getElementById('energyBaseCost').value);
+            globalSettings.boosts.energy.increase = parseInt(document.getElementById('energyIncrease').value);
+            globalSettings.boosts.energy.costMult = parseFloat(document.getElementById('energyCostMult').value);
+            
+            globalSettings.boosts.tap.baseCost = parseFloat(document.getElementById('tapBaseCost').value);
+            globalSettings.boosts.tap.increase = parseFloat(document.getElementById('tapIncrease').value);
+            
+            globalSettings.boosts.regen.baseCost = parseFloat(document.getElementById('regenBaseCost').value);
+            globalSettings.boosts.regen.increase = parseFloat(document.getElementById('regenIncrease').value);
+            
+            globalSettings.boosts.auto.cost = parseFloat(document.getElementById('autoCost').value);
+            
+            saveAllSettings();
+            showModal('✅ Успех', 'Настройки бустов сохранены!');
+        }
+
+        function saveAllSettings() {
+            localStorage.setItem('haskoin_global_settings', JSON.stringify(globalSettings));
+            // Также сохраняем в CloudStorage через Telegram Web App API
+            if (window.Telegram?.WebApp) {
+                window.Telegram.WebApp.CloudStorage.setItem('haskoin_global_settings', JSON.stringify(globalSettings));
+            }
+        }
+
+        // ========== СТАТИСТИКА ==========
+        function loadStats() {
+            // Загружаем из localStorage статистику
+            const stats = JSON.parse(localStorage.getItem('haskoin_stats') || '{}');
+            document.getElementById('totalUsers').textContent = stats.totalUsers || '0';
+            document.getElementById('activeUsers24h').textContent = stats.activeUsers24h || '0';
+            document.getElementById('totalHask').textContent = (stats.totalHask || 0).toFixed(2);
+            document.getElementById('totalWithdrawnTon').textContent = (stats.totalWithdrawnTon || 0).toFixed(3);
+            
+            const withdraws = JSON.parse(localStorage.getItem('haskoin_withdraws') || '[]');
+            const pending = withdraws.filter(w => w.status === 'pending').length;
+            document.getElementById('pendingWithdraws').textContent = pending;
+        }
+
+        function refreshAllStats() {
+            loadStats();
+            showModal('🔄 Обновлено', 'Статистика обновлена!');
+        }
+
+        function resetAllData() {
+            if (confirm('⚠️ ВНИМАНИЕ! Все данные игроков будут удалены! Продолжить?')) {
+                if (confirm('ТОЧНО? Это действие нельзя отменить!')) {
+                    localStorage.removeItem('haskoin_stats');
+                    localStorage.removeItem('haskoin_withdraws');
+                    localStorage.removeItem('haskoin_players');
+                    loadStats();
+                    showModal('✅ Сброшено', 'Все данные удалены!');
+                }
+            }
+        }
+
+        // ========== ЗАЯВКИ НА ВЫВОД ==========
+        function loadWithdraws() {
+            const withdraws = JSON.parse(localStorage.getItem('haskoin_withdraws') || '[]');
+            const container = document.getElementById('withdrawsList');
+            
+            if (withdraws.length === 0) {
+                container.innerHTML = '<p style="color:#aaaacc;text-align:center;">Нет заявок</p>';
+                return;
+            }
+            
+            container.innerHTML = withdraws.slice(-10).reverse().map((w, i) => `
+                <div class="withdraw-item">
+                    <div class="withdraw-header">
+                        <span class="withdraw-amount">${w.amount} HASK = ${w.ton} TON</span>
+                        <span class="withdraw-status ${w.status === 'pending' ? 'status-pending' : 'status-done'}">
+                            ${w.status === 'pending' ? '⏳ В обработке' : '✅ Выполнено'}
+                        </span>
+                    </div>
+                    <div style="color:#aaaacc;font-size:12px;margin-bottom:6px;">
+                        👤 ${w.userName || 'Игрок'} (ID: ${w.userId})<br>
+                        📤 ${w.address}<br>
+                        📅 ${w.date}
+                    </div>
+                    ${w.status === 'pending' ? `
+                        <div class="action-buttons">
+                            <button class="btn-small btn-secondary" onclick="markWithdrawDone(${i})">✅ Выполнить</button>
+                            <button class="btn-small btn-danger" onclick="rejectWithdraw(${i})">❌ Отклонить</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function markWithdrawDone(index) {
+            const withdraws = JSON.parse(localStorage.getItem('haskoin_withdraws') || '[]');
+            const reversed = withdraws.slice(-10).reverse();
+            const target = reversed[index];
+            
+            const originalIndex = withdraws.findIndex(w => 
+                w.userId === target.userId && w.date === target.date
+            );
+            
+            if (originalIndex !== -1) {
+                withdraws[originalIndex].status = 'done';
+                localStorage.setItem('haskoin_withdraws', JSON.stringify(withdraws));
+                loadWithdraws();
+                showModal('✅ Выполнено', 'Заявка отмечена как выполненная!');
+            }
+        }
+
+        function rejectWithdraw(index) {
+            const withdraws = JSON.parse(localStorage.getItem('haskoin_withdraws') || '[]');
+            const reversed = withdraws.slice(-10).reverse();
+            const target = reversed[index];
+            
+            const originalIndex = withdraws.findIndex(w => 
+                w.userId === target.userId && w.date === target.date
+            );
+            
+            if (originalIndex !== -1) {
+                // Возвращаем средства игроку
+                const players = JSON.parse(localStorage.getItem('haskoin_players') || '{}');
+                if (players[target.userId]) {
+                    players[target.userId].balance = (players[target.userId].balance || 0) + target.amount;
+                    localStorage.setItem('haskoin_players', JSON.stringify(players));
+                }
+                
+                withdraws.splice(originalIndex, 1);
+                localStorage.setItem('haskoin_withdraws', JSON.stringify(withdraws));
+                loadWithdraws();
+                showModal('❌ Отклонено', 'Средства возвращены игроку!');
+            }
+        }
+
+        // ========== ПОИСК ИГРОКА ==========
+        function searchPlayer() {
+            const query = document.getElementById('playerSearch').value.trim().toLowerCase();
+            const players = JSON.parse(localStorage.getItem('haskoin_players') || '{}');
+            const container = document.getElementById('playersList');
+            
+            if (!query) {
+                container.innerHTML = '<p style="color:#aaaacc;text-align:center;">Введите ID или имя</p>';
+                return;
+            }
+            
+            const found = Object.entries(players).filter(([id, data]) => 
+                id.toLowerCase().includes(query) || 
+                (data.name && data.name.toLowerCase().includes(query))
+            );
+            
+            if (found.length === 0) {
+                container.innerHTML = '<p style="color:#aaaacc;text-align:center;">Игрок не найден</p>';
+                return;
+            }
+            
+            container.innerHTML = found.map(([id, data]) => `
+                <div class="player-item">
+                    <div class="player-header">
+                        <span class="player-name">${data.name || 'Игрок'}</span>
+                        <span class="player-balance">${(data.balance || 0).toFixed(2)} HASK</span>
+                    </div>
+                    <div style="color:#aaaacc;font-size:12px;margin-bottom:8px;">
+                        🆔 ${id}<br>
+                        👥 Рефералов: ${data.referralCount || 0}<br>
+                        ⚡ Энергия: ${data.currentEnergy || 0}/${data.maxEnergy || 500}
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn-small btn-secondary" onclick="editPlayer('${id}')">✏️ Изменить</button>
+                        <button class="btn-small btn-danger" onclick="banPlayer('${id}')">🚫 Бан</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function editPlayer(userId) {
+            const players = JSON.parse(localStorage.getItem('haskoin_players') || '{}');
+            const player = players[userId];
+            
+            if (!player) return;
+            
+            const newBalance = prompt('Новый баланс (HASK):', player.balance);
+            if (newBalance !== null) {
+                player.balance = parseFloat(newBalance) || 0;
+                localStorage.setItem('haskoin_players', JSON.stringify(players));
+                searchPlayer();
+                showModal('✅ Изменено', `Баланс игрока обновлён!`);
+            }
+        }
+
+        function banPlayer(userId) {
+            if (confirm('Забанить игрока? Он не сможет заходить в бот.')) {
+                const players = JSON.parse(localStorage.getItem('haskoin_players') || '{}');
+                if (players[userId]) {
+                    players[userId].banned = true;
+                    localStorage.setItem('haskoin_players', JSON.stringify(players));
+                    searchPlayer();
+                    showModal('🚫 Забанен', 'Игрок заблокирован!');
+                }
+            }
+        }
+
+        // ========== РАССЫЛКА ==========
+        function sendBroadcast() {
+            const message = document.getElementById('broadcastMessage').value.trim();
+            const button = document.getElementById('broadcastButton').value.trim();
+            const link = document.getElementById('broadcastLink').value.trim();
+            
+            if (!message) {
+                showModal('❌ Ошибка', 'Введите текст сообщения!');
+                return;
+            }
+            
+            // Сохраняем рассылку
+            const broadcast = { message, button, link, date: new Date().toISOString() };
+            localStorage.setItem('haskoin_broadcast', JSON.stringify(broadcast));
+            
+            showModal('📤 Отправлено', 'Рассылка сохранена и будет доставлена игрокам!');
+            document.getElementById('broadcastMessage').value = '';
+            document.getElementById('broadcastButton').value = '';
+            document.getElementById('broadcastLink').value = '';
+        }
+
+        function sendTestBroadcast() {
+            const message = document.getElementById('broadcastMessage').value.trim() || 'Тестовое сообщение';
+            
+            // Отправляем через Telegram API
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: ADMIN_ID,
+                    text: `🧪 ТЕСТ РАССЫЛКИ\n\n${message}`
+                })
+            });
+            
+            showModal('🧪 Тест', 'Тестовое сообщение отправлено вам!');
+        }
+
+        // ========== МОДАЛЬНОЕ ОКНО ==========
+        function showModal(title, body) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').textContent = body;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // Закрытие по клику вне модалки
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // Инициализация
+        init();
     </script>
 </body>
 </html>
