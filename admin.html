@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HASKOIN Admin</title>
+    <style>
+        body { background: #0a0a1a; color: white; font-family: sans-serif; padding: 20px; }
+        .card { background: #1a1a3e; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #00ffff; }
+        h2 { color: #ffd700; text-align: center; }
+        .stat-val { font-size: 24px; font-weight: bold; color: #00ffff; }
+        button { width: 100%; padding: 12px; background: #ffd700; border: none; border-radius: 8px; font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Панель управления</h2>
+    
+    <div class="card">
+        <div>Всего игроков:</div>
+        <div class="stat-val" id="totalUsers">Загрузка...</div>
+    </div>
+
+    <div class="card">
+        <div>Заявок на вывод:</div>
+        <div class="stat-val" id="withdrawRequests">0</div>
+        <button onclick="viewWithdraws()">Проверить выплаты</button>
+    </div>
+
+    <div class="card">
+        <div>Рассылка игрокам:</div>
+        <textarea id="msg" style="width:100%; border-radius:8px; margin-top:5px;" rows="3"></textarea>
+        <button style="background: #00ffaa;" onclick="sendMessage()">Отправить сообщение</button>
+    </div>
+
+    <script>
+        // Сюда мы добавим логику связи с твоим Backend в Railway
+        function viewWithdraws() { alert('Список пуст'); }
+        function sendMessage() { alert('Функция в разработке'); }
+    </script>
+</body>
+</html>
