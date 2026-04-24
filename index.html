@@ -1,85 +1,280 @@
-:root {
-    --bg: #0b0f1a;
-    --card: rgba(20, 25, 45, 0.85);
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NovaTON Miner</title>
 
-    --accent: #7b61ff;
-    --accent2: #5f9cff;
-
-    --glow: rgba(123, 97, 255, 0.5);
-
-    --text: #ffffff;
-    --text-dim: #8b94b2;
-
-    --border: rgba(123, 97, 255, 0.2);
-
-    --btn: linear-gradient(135deg, #7b61ff, #5f9cff);
-    --btn-glow: 0 0 25px rgba(123, 97, 255, 0.4);
-
-    --success: #00e0a4;
-    --warning: #ffb347;
-    --danger: #ff4d6a;
-}
-<div class="miner-circle">
-    <div class="circle-inner">
-        <div class="circle-text">MINING</div>
-        <div class="circle-balance" id="circle-balance">0.000000</div>
-        <div class="circle-ton">TON</div>
-    </div>
-</div>
-.miner-circle {
-    width: 260px;
-    height: 260px;
-    margin: 10px auto 20px;
-    border-radius: 50%;
-    position: relative;
-    background: radial-gradient(circle, rgba(123,97,255,0.15), transparent 70%);
+<style>
+:root{
+    --bg:#0b0f1a;
+    --card:rgba(20,25,45,0.9);
+    --accent:#7b61ff;
+    --accent2:#5f9cff;
+    --text:#fff;
+    --text-dim:#8b94b2;
+    --border:rgba(123,97,255,0.2);
 }
 
-.miner-circle::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    border: 3px solid transparent;
-    background: linear-gradient(45deg, #7b61ff, #5f9cff) border-box;
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:sans-serif;
+    display:flex;
+    justify-content:center;
+}
+
+.app{
+    width:100%;
+    max-width:420px;
+    padding:15px;
+}
+
+/* HEADER */
+.header{
+    text-align:center;
+    margin-bottom:10px;
+}
+
+.logo{
+    font-size:1.6rem;
+    font-weight:800;
+    background:linear-gradient(135deg,#7b61ff,#5f9cff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+/* CARD */
+.card{
+    background:var(--card);
+    border-radius:20px;
+    padding:15px;
+    margin-bottom:15px;
+    border:1px solid var(--border);
+}
+
+/* CIRCLE */
+.miner-circle{
+    width:240px;
+    height:240px;
+    margin:10px auto;
+    border-radius:50%;
+    position:relative;
+}
+
+.miner-circle::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    border:3px solid transparent;
+    background:linear-gradient(45deg,#7b61ff,#5f9cff) border-box;
     -webkit-mask:
         linear-gradient(#000 0 0) padding-box,
         linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-            mask-composite: exclude;
-    animation: spin 6s linear infinite;
+    -webkit-mask-composite:xor;
+    animation:spin 6s linear infinite;
 }
 
-@keyframes spin {
-    100% { transform: rotate(360deg); }
+@keyframes spin{
+    100%{transform:rotate(360deg)}
 }
 
-.circle-inner {
-    position: absolute;
-    inset: 15px;
-    border-radius: 50%;
-    background: rgba(10, 15, 30, 0.9);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    box-shadow: inset 0 0 30px rgba(123,97,255,0.2);
+.circle-inner{
+    position:absolute;
+    inset:12px;
+    border-radius:50%;
+    background:#0b0f1a;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
 }
 
-.circle-text {
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    color: var(--text-dim);
+.circle-balance{
+    font-size:1.8rem;
+    font-weight:800;
 }
 
-.circle-balance {
-    font-size: 2rem;
-    font-weight: 800;
-    margin: 5px 0;
+.circle-ton{
+    color:var(--accent);
 }
 
-.circle-ton {
-    font-size: 0.9rem;
-    color: var(--accent);
+/* BUTTON */
+.btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:15px;
+    font-weight:700;
+    margin-top:10px;
+    background:linear-gradient(135deg,#7b61ff,#5f9cff);
+    color:#fff;
 }
-document.getElementById('circle-balance').textContent = pending.toFixed(6);
+
+/* NAV */
+.nav{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    max-width:420px;
+    display:flex;
+    justify-content:space-around;
+    background:#0b0f1a;
+    padding:10px;
+    border-top:1px solid var(--border);
+}
+
+.nav button{
+    background:none;
+    border:none;
+    color:var(--text-dim);
+}
+
+.nav .active{
+    color:var(--accent);
+}
+
+/* SECTIONS */
+.section{display:none}
+.section.active{display:block}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="header">
+<div class="logo">NovaTON Miner</div>
+</div>
+
+<!-- MINE -->
+<div class="section active" id="mine">
+
+<div class="card">
+
+<div class="miner-circle">
+<div class="circle-inner">
+<div>MINING</div>
+<div class="circle-balance" id="circle">0.000000</div>
+<div class="circle-ton">TON</div>
+</div>
+</div>
+
+<div>⚡ Power: <span id="power">0</span></div>
+
+</div>
+
+<button class="btn" id="claim">CLAIM 0</button>
+
+</div>
+
+<!-- POWER -->
+<div class="section" id="powerSec">
+<div class="card">
+<button class="btn" onclick="buy(100)">Buy 100 Power</button>
+<button class="btn" onclick="buy(500)">Buy 500 Power</button>
+</div>
+</div>
+
+<!-- WITHDRAW -->
+<div class="section" id="withdraw">
+<div class="card">
+Баланс: <span id="balance">0</span>
+<input id="addr" placeholder="wallet">
+<button class="btn" onclick="withdraw()">Withdraw</button>
+</div>
+</div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav">
+<button onclick="tab('mine')" class="active">Mine</button>
+<button onclick="tab('powerSec')">Power</button>
+<button onclick="tab('withdraw')">Withdraw</button>
+</div>
+
+<script>
+
+let state={
+    power:10,
+    balance:0,
+    pending:0,
+    last:Date.now()
+}
+
+const RATE=0.000001;
+
+/* LOAD */
+if(localStorage.data){
+    state=JSON.parse(localStorage.data)
+}
+
+/* SAVE */
+function save(){
+    localStorage.data=JSON.stringify(state)
+}
+
+/* MINING */
+function update(){
+    let now=Date.now()
+    let sec=(now-state.last)/1000
+
+    let earn=(state.power*RATE)/86400*sec
+
+    state.pending+=earn
+    state.last=now
+
+    save()
+
+    document.getElementById("circle").innerText=state.pending.toFixed(6)
+    document.getElementById("power").innerText=state.power
+    document.getElementById("balance").innerText=state.balance.toFixed(6)
+
+    document.getElementById("claim").innerText="CLAIM "+state.pending.toFixed(6)
+}
+
+setInterval(update,2000)
+
+/* CLAIM */
+document.getElementById("claim").onclick=()=>{
+    state.balance+=state.pending
+    state.pending=0
+    save()
+}
+
+/* BUY */
+function buy(p){
+    state.power+=p
+    save()
+}
+
+/* WITHDRAW */
+function withdraw(){
+    if(state.balance<0.1){
+        alert("min 0.1")
+        return
+    }
+
+    state.balance=0
+    save()
+    alert("sent (demo)")
+}
+
+/* TABS */
+function tab(id){
+    document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"))
+    document.getElementById(id).classList.add("active")
+}
+
+update()
+
+</script>
+
+</body>
+</html>
