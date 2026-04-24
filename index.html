@@ -1,280 +1,782 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NovaTON Miner</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AstroTON Miner</title>
+    <style>
+        :root {
+            --bg: #0a0515;
+            --accent-gold: #fbbf24;
+            --accent-violet: #a78bfa;
+            --accent-cyan: #22d3ee;
+            --card-bg: rgba(20, 15, 40, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #e2e8f0;
+            --dim: #94a3b8;
+        }
 
-<style>
-:root{
-    --bg:#0b0f1a;
-    --card:rgba(20,25,45,0.9);
-    --accent:#7b61ff;
-    --accent2:#5f9cff;
-    --text:#fff;
-    --text-dim:#8b94b2;
-    --border:rgba(123,97,255,0.2);
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-*{margin:0;padding:0;box-sizing:border-box}
+        body {
+            background: var(--bg);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
 
-body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:sans-serif;
-    display:flex;
-    justify-content:center;
-}
+        /* Звёздный фон */
+        #stars-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
 
-.app{
-    width:100%;
-    max-width:420px;
-    padding:15px;
-}
+        .app {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 450px;
+            padding: 15px 15px 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
-/* HEADER */
-.header{
-    text-align:center;
-    margin-bottom:10px;
-}
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 5px;
+        }
 
-.logo{
-    font-size:1.6rem;
-    font-weight:800;
-    background:linear-gradient(135deg,#7b61ff,#5f9cff);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-}
+        .logo {
+            font-size: 2.1rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #fbbf24, #a78bfa, #22d3ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.4));
+            line-height: 1.2;
+        }
 
-/* CARD */
-.card{
-    background:var(--card);
-    border-radius:20px;
-    padding:15px;
-    margin-bottom:15px;
-    border:1px solid var(--border);
-}
+        .subtitle {
+            font-size: 0.85rem;
+            color: #a78bfa;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 4px;
+            opacity: 0.8;
+        }
 
-/* CIRCLE */
-.miner-circle{
-    width:240px;
-    height:240px;
-    margin:10px auto;
-    border-radius:50%;
-    position:relative;
-}
+        /* Карточки */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
 
-.miner-circle::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    border-radius:50%;
-    border:3px solid transparent;
-    background:linear-gradient(45deg,#7b61ff,#5f9cff) border-box;
-    -webkit-mask:
-        linear-gradient(#000 0 0) padding-box,
-        linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;
-    animation:spin 6s linear infinite;
-}
+        .section {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeSlide 0.3s ease;
+        }
 
-@keyframes spin{
-    100%{transform:rotate(360deg)}
-}
+        .section.active {
+            display: flex;
+        }
 
-.circle-inner{
-    position:absolute;
-    inset:12px;
-    border-radius:50%;
-    background:#0b0f1a;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-}
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-.circle-balance{
-    font-size:1.8rem;
-    font-weight:800;
-}
+        /* ========== MINE SCREEN (КОСМИЧЕСКИЙ КРУГ) ========== */
+        .cosmic-circle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0 30px;
+            position: relative;
+            width: 280px;
+            height: 280px;
+            align-self: center;
+        }
 
-.circle-ton{
-    color:var(--accent);
-}
+        .cosmic-circle {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
 
-/* BUTTON */
-.btn{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:15px;
-    font-weight:700;
-    margin-top:10px;
-    background:linear-gradient(135deg,#7b61ff,#5f9cff);
-    color:#fff;
-}
+        /* Вращающиеся кольца */
+        .ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            transform-origin: center center;
+            pointer-events: none;
+            box-shadow: 0 0 15px currentColor;
+        }
 
-/* NAV */
-.nav{
-    position:fixed;
-    bottom:0;
-    width:100%;
-    max-width:420px;
-    display:flex;
-    justify-content:space-around;
-    background:#0b0f1a;
-    padding:10px;
-    border-top:1px solid var(--border);
-}
+        .ring-1 {
+            width: 260px;
+            height: 260px;
+            margin: -130px 0 0 -130px;
+            border-top-color: rgba(251, 191, 36, 0.8);
+            border-right-color: rgba(251, 191, 36, 0.3);
+            animation: spin 12s linear infinite;
+        }
 
-.nav button{
-    background:none;
-    border:none;
-    color:var(--text-dim);
-}
+        .ring-2 {
+            width: 220px;
+            height: 220px;
+            margin: -110px 0 0 -110px;
+            border-left-color: rgba(168, 85, 247, 0.7);
+            border-bottom-color: rgba(168, 85, 247, 0.3);
+            animation: spin-reverse 8s linear infinite;
+        }
 
-.nav .active{
-    color:var(--accent);
-}
+        .ring-3 {
+            width: 180px;
+            height: 180px;
+            margin: -90px 0 0 -90px;
+            border-top-color: rgba(34, 211, 238, 0.7);
+            border-left-color: rgba(34, 211, 238, 0.2);
+            animation: spin 15s linear infinite;
+        }
 
-/* SECTIONS */
-.section{display:none}
-.section.active{display:block}
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes spin-reverse {
+            to { transform: rotate(-360deg); }
+        }
 
-</style>
+        /* Центральная сфера */
+        .center-sphere {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 140px;
+            height: 140px;
+            margin: -70px 0 0 -70px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #fbbf24, #a855f7, #0e0520);
+            box-shadow: 0 0 60px rgba(168, 85, 247, 0.6), 0 0 120px rgba(251, 191, 36, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 2;
+            animation: pulse-glow 3s ease-in-out infinite;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 40px rgba(168,85,247,0.5), 0 0 80px rgba(251,191,36,0.2); }
+            50% { box-shadow: 0 0 80px rgba(168,85,247,0.8), 0 0 140px rgba(251,191,36,0.4); }
+        }
+
+        .crystal-icon {
+            font-size: 2.8rem;
+            filter: drop-shadow(0 0 15px #fbbf24);
+        }
+
+        .balance-in-circle {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+            margin-top: 2px;
+        }
+
+        .power-in-circle {
+            font-size: 0.8rem;
+            color: #a78bfa;
+            font-weight: 600;
+            background: rgba(0,0,0,0.4);
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-top: 5px;
+        }
+
+        /* Статус майнинга */
+        .mining-status-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #22d3ee;
+            font-size: 1rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #22d3ee;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #22d3ee;
+            animation: status-pulse 1.5s infinite;
+        }
+
+        @keyframes status-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .earning-rate {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* Кнопка CLAIM */
+        .claim-btn {
+            background: linear-gradient(135deg, #fbbf24, #a855f7);
+            border: none;
+            color: #0a0515;
+            font-weight: 800;
+            font-size: 1.2rem;
+            padding: 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(251,191,36,0.4);
+            transition: all 0.2s;
+            letter-spacing: 1px;
+        }
+
+        .claim-btn:active { transform: scale(0.96); }
+        .claim-btn:disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        /* ========== POWER SHOP ========== */
+        .amount-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .amount-option {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 700;
+        }
+        .amount-option.selected {
+            border-color: #fbbf24;
+            background: rgba(251,191,36,0.08);
+            box-shadow: 0 0 20px rgba(251,191,36,0.2);
+        }
+        .bonus-tag { font-size: 0.7rem; color: #fbbf24; margin-top: 4px; }
+
+        /* ========== TASKS ========== */
+        .task-group-title {
+            color: #a78bfa;
+            font-size: 0.8rem;
+            letter-spacing: 1.5px;
+            margin: 15px 0 10px;
+            font-weight: 700;
+        }
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            gap: 10px;
+        }
+        .task-info { flex: 1; }
+        .task-name { font-weight: 600; }
+        .task-desc { font-size: 0.75rem; color: var(--dim); }
+        .task-reward { color: #fbbf24; font-weight: 700; }
+
+        .btn-sm {
+            background: linear-gradient(135deg, #a78bfa, #7c3aed);
+            border: none;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .btn-sm:active { opacity: 0.8; }
+
+        /* ========== TEAM ========== */
+        .invite-box {
+            background: rgba(168,85,247,0.08);
+            border: 1px dashed #a78bfa;
+            border-radius: 16px;
+            padding: 16px;
+            word-break: break-all;
+            font-size: 0.85rem;
+            color: #a78bfa;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        /* ========== WITHDRAW ========== */
+        .input-field {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 14px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            margin: 8px 0 15px;
+            transition: 0.2s;
+        }
+        .input-field:focus { border-color: #fbbf24; }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #fbbf24, #a855f7);
+            border: none;
+            border-radius: 18px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #0a0515;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }
+        .btn-outline {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 2px solid #a78bfa;
+            color: #a78bfa;
+            border-radius: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        /* Навигация */
+        .tab-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 450px;
+            background: rgba(10,5,21,0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 10px 12px;
+            border-top: 1px solid var(--border);
+            z-index: 50;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 14px;
+            transition: 0.2s;
+        }
+        .tab-btn.active { color: #fbbf24; background: rgba(251,191,36,0.1); }
+        .tab-btn .icon { font-size: 1.3rem; }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fbbf24;
+            color: #0a0515;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-weight: 800;
+            z-index: 200;
+            animation: slideDown 0.3s ease, fadeOut 0.3s 1.7s ease forwards;
+        }
+        @keyframes slideDown {
+            from { transform: translateX(-50%) translateY(-80px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        @keyframes fadeOut { to { opacity: 0; } }
+    </style>
 </head>
-
 <body>
+    <canvas id="stars-canvas"></canvas>
+    <div class="app">
+        <div class="header">
+            <div class="logo">✨ AstroTON Miner</div>
+            <div class="subtitle">Passive TON Mining</div>
+        </div>
 
-<div class="app">
+        <!-- Раздел MINE -->
+        <div class="section active" id="section-mine">
+            <div class="cosmic-circle-container">
+                <div class="cosmic-circle">
+                    <div class="ring ring-1"></div>
+                    <div class="ring ring-2"></div>
+                    <div class="ring ring-3"></div>
+                    <div class="center-sphere">
+                        <span class="crystal-icon">💎</span>
+                        <span class="balance-in-circle" id="circle-balance">0.000</span>
+                        <span class="power-in-circle" id="circle-power">⚡ 10 POWER</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mining-status-line">
+                <span class="status-dot"></span>
+                <span id="mining-status-text">Майнинг активен</span>
+            </div>
+            <div class="earning-rate" id="earning-rate">0.000 TON / день</div>
+            <button class="claim-btn" id="claim-btn" disabled>💎 CLAIM 0.000000 TON</button>
+            <button class="btn-outline" onclick="switchTab('power')">⚡ Пополнить POWER</button>
+        </div>
 
-<div class="header">
-<div class="logo">NovaTON Miner</div>
-</div>
+        <!-- POWER SHOP -->
+        <div class="section" id="section-power">
+            <div class="card">
+                <div style="font-weight:800; font-size:1.2rem; margin-bottom:10px;">⚡ Power Shop</div>
+                <p style="color:var(--dim); margin-bottom:15px;">Больше POWER – больше пассивный доход</p>
+                <div class="amount-grid" id="amount-grid">
+                    <div class="amount-option selected" data-tons="1" data-power="100">1 TON <br><small>100 POWER</small></div>
+                    <div class="amount-option" data-tons="5" data-power="500">5 TON <br><small>500 POWER</small></div>
+                    <div class="amount-option" data-tons="10" data-power="1000">10 TON <br><small>1000 POWER</small></div>
+                    <div class="amount-option" data-tons="15" data-power="1500" data-bonus="50">15 TON <br><small>1500 POWER</small><div class="bonus-tag">+50%</div></div>
+                    <div class="amount-option" data-tons="25" data-power="2500" data-bonus="75">25 TON <br><small>2500 POWER</small><div class="bonus-tag">+75%</div></div>
+                    <div class="amount-option" data-tons="50" data-power="5000" data-bonus="100">50 TON <br><small>5000 POWER</small><div class="bonus-tag">+100%</div></div>
+                    <div class="amount-option" data-tons="100" data-power="10000" data-bonus="150">100 TON <br><small>10000 POWER</small><div class="bonus-tag">+150%</div></div>
+                </div>
+                <p style="margin:15px 0; font-size:0.9rem;">Вы получите: <strong id="power-preview" style="color:#fbbf24;">100 POWER</strong><span id="bonus-preview" style="color:#fbbf24;"></span></p>
+                <button class="btn-primary" id="buy-power-btn">💳 Оплатить 1 TON</button>
+            </div>
+        </div>
 
-<!-- MINE -->
-<div class="section active" id="mine">
+        <!-- TASKS -->
+        <div class="section" id="section-tasks">
+            <div class="card">
+                <div style="font-weight:800; font-size:1.2rem;">📋 Задания <span style="color:var(--dim);">(<span id="tasks-completed">0</span>/12)</span></div>
+                <div class="task-group-title">🌐 СОЦИАЛЬНЫЕ <span id="social-count">0/3</span></div>
+                <div class="task-item"><div class="task-info"><div class="task-name">Stars Birds</div><div class="task-desc">Сообщество</div></div><span class="task-reward">+5</span><button class="btn-sm task-join" data-task="stars_birds">Join</button></div>
+                <div class="task-item"><div class="task-info"><div class="task-name">AstroTON News</div><div class="task-desc">Официальный канал</div></div><span class="task-reward">+5</span><button class="btn-sm task-join" data-task="news">Join</button></div>
+                <div class="task-item"><div class="task-info"><div class="task-name">AstroTON Payouts</div><div class="task-desc">Канал выплат</div></div><span class="task-reward">+5</span><button class="btn-sm task-join" data-task="payouts">Join</button></div>
+                <div class="task-group-title">🤝 КОЛЛАБОРАЦИИ <span id="collab-count">0/2</span></div>
+                <div class="task-item"><div class="task-info"><div class="task-name">Dog's Er</div><div class="task-desc">Партнёр</div></div><span class="task-reward">+5</span><button class="btn-sm task-join" data-task="dogs_er">Join</button></div>
+                <div class="task-item"><div class="task-info"><div class="task-name">Crypto Gem</div><div class="task-desc">Партнёр</div></div><span class="task-reward">+5</span><button class="btn-sm task-join" data-task="crypto_gem">Join</button></div>
+            </div>
+        </div>
 
-<div class="card">
+        <!-- TEAM -->
+        <div class="section" id="section-team">
+            <div class="card">
+                <div style="font-weight:800; font-size:1.2rem;">👥 Друзья</div>
+                <div style="display:flex; justify-content:space-between; margin-top:15px;"><span>+1 POWER за друга</span><span style="color:#fbbf24;">15% комиссия</span></div>
+                <div style="display:flex; justify-content:space-between; margin:10px 0;"><span>👥 Друзей:</span><span id="friends-count">0</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>⚡ POWER:</span><span id="friends-power">0</span></div>
+                <div style="display:flex; justify-content:space-between; margin:10px 0;"><span>💎 TON комиссия:</span><span id="friends-commission">0.000</span></div>
+                <div class="invite-box" id="invite-link">https://t.me/AstroTONMinerBot?start=user123</div>
+                <button class="btn-primary" onclick="copyInvite()">📋 Копировать ссылку</button>
+                <button class="btn-outline" onclick="shareInvite()">📤 Поделиться</button>
+            </div>
+        </div>
 
-<div class="miner-circle">
-<div class="circle-inner">
-<div>MINING</div>
-<div class="circle-balance" id="circle">0.000000</div>
-<div class="circle-ton">TON</div>
-</div>
-</div>
+        <!-- WITHDRAW -->
+        <div class="section" id="section-withdraw">
+            <div class="card">
+                <div style="font-weight:800; font-size:1.2rem;">💸 Вывод средств</div>
+                <div style="margin:15px 0;"><span style="color:var(--dim);">Баланс:</span> <strong id="withdraw-available">₮ 0.000000 TON</strong></div>
+                <input type="number" class="input-field" id="withdraw-amount" placeholder="Сумма TON" step="0.000001">
+                <input type="text" class="input-field" id="withdraw-wallet" placeholder="EQ... или UQ...">
+                <div style="font-size:0.8rem; color:var(--dim); margin-bottom:10px;">
+                    Комиссия: 0.06 TON · Мин: 0.08 TON · Вы получите: <span id="withdraw-receive">—</span>
+                </div>
+                <button class="btn-primary" id="confirm-withdraw-btn" disabled>✅ Подтвердить вывод</button>
+                <div style="margin-top:20px; font-weight:700;">История</div>
+                <p id="history-empty" style="color:var(--dim);">Нет операций</p>
+                <div id="history-list"></div>
+            </div>
+        </div>
+    </div>
 
-<div>⚡ Power: <span id="power">0</span></div>
+    <nav class="tab-nav">
+        <button class="tab-btn active" data-tab="power">⚡POWER</button>
+        <button class="tab-btn" data-tab="tasks">📋Tasks</button>
+        <button class="tab-btn" data-tab="mine">⛏️Mine</button>
+        <button class="tab-btn" data-tab="team">👥Team</button>
+        <button class="tab-btn" data-tab="withdraw">💸Withdraw</button>
+    </nav>
 
-</div>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        (function() {
+            // Telegram
+            const tg = window.Telegram.WebApp;
+            tg.expand();
+            tg.setBackgroundColor('#0a0515');
 
-<button class="btn" id="claim">CLAIM 0</button>
+            // Состояние
+            let state = {
+                balance: 0,
+                pendingBalance: 0,
+                power: 10,
+                lastUpdate: Date.now(),
+                completedTasks: [],
+                friends: 0,
+                friendsPower: 0,
+                friendsCommission: 0,
+                withdrawHistory: []
+            };
+            const POWER_RATE = 0.000001;
 
-</div>
+            function loadState() {
+                const saved = localStorage.getItem('astro_miner_state');
+                if (saved) { try { state = { ...state, ...JSON.parse(saved) }; } catch(e){} }
+                if (state.power <= 0) state.power = 10;
+            }
+            function saveState() { localStorage.setItem('astro_miner_state', JSON.stringify(state)); }
 
-<!-- POWER -->
-<div class="section" id="powerSec">
-<div class="card">
-<button class="btn" onclick="buy(100)">Buy 100 Power</button>
-<button class="btn" onclick="buy(500)">Buy 500 Power</button>
-</div>
-</div>
+            function updateMining() {
+                const now = Date.now();
+                const days = (now - state.lastUpdate) / (1000*60*60*24);
+                if (days > 0) {
+                    state.pendingBalance += days * state.power * POWER_RATE;
+                    state.lastUpdate = now;
+                    saveState();
+                }
+            }
 
-<!-- WITHDRAW -->
-<div class="section" id="withdraw">
-<div class="card">
-Баланс: <span id="balance">0</span>
-<input id="addr" placeholder="wallet">
-<button class="btn" onclick="withdraw()">Withdraw</button>
-</div>
-</div>
+            function updateUI() {
+                updateMining();
+                const pending = state.pendingBalance;
+                document.getElementById('circle-balance').textContent = state.balance.toFixed(3);
+                document.getElementById('circle-power').textContent = `⚡ ${state.power.toFixed(0)} POWER`;
+                document.getElementById('earning-rate').textContent = (state.power * POWER_RATE).toFixed(6) + ' TON / день';
+                const claimBtn = document.getElementById('claim-btn');
+                claimBtn.textContent = `💎 CLAIM ${pending.toFixed(6)} TON`;
+                claimBtn.disabled = pending <= 0;
 
-</div>
+                document.getElementById('mining-status-text').textContent = state.power > 0 ? '⛏️ Майнинг активен' : '⚠️ Нет POWER';
 
-<!-- NAV -->
-<div class="nav">
-<button onclick="tab('mine')" class="active">Mine</button>
-<button onclick="tab('powerSec')">Power</button>
-<button onclick="tab('withdraw')">Withdraw</button>
-</div>
+                // Tasks
+                const completed = state.completedTasks.length;
+                const social = ['stars_birds','news','payouts'];
+                const collab = ['dogs_er','crypto_gem'];
+                const socDone = social.filter(t=>state.completedTasks.includes(t)).length;
+                const colDone = collab.filter(t=>state.completedTasks.includes(t)).length;
+                document.getElementById('tasks-completed').textContent = completed;
+                document.getElementById('social-count').textContent = socDone+'/3';
+                document.getElementById('collab-count').textContent = colDone+'/2';
+                document.querySelectorAll('.task-join').forEach(b=>{
+                    if(state.completedTasks.includes(b.dataset.task)){ b.textContent='✅'; b.disabled=true; }
+                    else { b.textContent='Join'; b.disabled=false; }
+                });
 
-<script>
+                // Team
+                document.getElementById('friends-count').textContent = state.friends;
+                document.getElementById('friends-power').textContent = state.friendsPower;
+                document.getElementById('friends-commission').textContent = state.friendsCommission.toFixed(3);
 
-let state={
-    power:10,
-    balance:0,
-    pending:0,
-    last:Date.now()
-}
+                // Withdraw
+                document.getElementById('withdraw-available').textContent = `₮ ${state.balance.toFixed(6)} TON`;
+                updateWithdrawPreview();
+                const histList = document.getElementById('history-list');
+                if (state.withdrawHistory.length===0) {
+                    document.getElementById('history-empty').style.display='block';
+                    histList.innerHTML='';
+                } else {
+                    document.getElementById('history-empty').style.display='none';
+                    histList.innerHTML = state.withdrawHistory.map(h=>`<div style="font-size:0.8rem; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05);">${h.amount} TON → ${h.wallet.slice(0,8)}... (${h.date})</div>`).join('');
+                }
+            }
 
-const RATE=0.000001;
+            function updateWithdrawPreview() {
+                const amt = parseFloat(document.getElementById('withdraw-amount').value)||0;
+                const fee=0.06, min=0.08;
+                const receive = Math.max(0, amt-fee);
+                document.getElementById('withdraw-receive').textContent = amt>=min && amt<=state.balance ? receive.toFixed(6)+' TON' : '—';
+                document.getElementById('confirm-withdraw-btn').disabled = !(amt>=min && amt<=state.balance);
+            }
 
-/* LOAD */
-if(localStorage.data){
-    state=JSON.parse(localStorage.data)
-}
+            // CLAIM
+            document.getElementById('claim-btn').addEventListener('click', ()=>{
+                updateMining();
+                const p = state.pendingBalance;
+                if(p<=0) return;
+                state.balance += p;
+                state.pendingBalance = 0;
+                state.lastUpdate = Date.now();
+                saveState();
+                updateUI();
+                showToast(`✅ Заклеймлено ${p.toFixed(6)} TON`);
+            });
 
-/* SAVE */
-function save(){
-    localStorage.data=JSON.stringify(state)
-}
+            // POWER Shop
+            let selTons=1, selPower=100, selBonus=0;
+            document.getElementById('amount-grid').addEventListener('click', e=>{
+                const opt = e.target.closest('.amount-option');
+                if(!opt) return;
+                document.querySelectorAll('.amount-option').forEach(o=>o.classList.remove('selected'));
+                opt.classList.add('selected');
+                selTons=+opt.dataset.tons; selPower=+opt.dataset.power; selBonus=+opt.dataset.bonus||0;
+                const total = selPower + Math.floor(selPower*selBonus/100);
+                document.getElementById('power-preview').textContent = total+' POWER';
+                document.getElementById('bonus-preview').textContent = selBonus>0 ? ` (вкл. +${selBonus}%)` : '';
+                document.getElementById('buy-power-btn').textContent = `💳 Оплатить ${selTons} TON`;
+            });
+            document.getElementById('buy-power-btn').addEventListener('click', ()=>{
+                const total = selPower + Math.floor(selPower*selBonus/100);
+                state.power += total;
+                state.lastUpdate = Date.now();
+                saveState();
+                updateUI();
+                showToast(`⚡ +${total} POWER!`);
+                switchTab('mine');
+            });
 
-/* MINING */
-function update(){
-    let now=Date.now()
-    let sec=(now-state.last)/1000
+            // Tasks
+            document.querySelectorAll('.task-join').forEach(b=>b.addEventListener('click', ()=>{
+                if(state.completedTasks.includes(b.dataset.task)) return;
+                state.completedTasks.push(b.dataset.task);
+                state.power += 5;
+                state.lastUpdate = Date.now();
+                saveState();
+                updateUI();
+                showToast('✅ +5 POWER');
+            }));
 
-    let earn=(state.power*RATE)/86400*sec
+            // Withdraw
+            document.getElementById('withdraw-amount').addEventListener('input', updateWithdrawPreview);
+            document.getElementById('confirm-withdraw-btn').addEventListener('click', ()=>{
+                const amt = parseFloat(document.getElementById('withdraw-amount').value)||0;
+                const wallet = document.getElementById('withdraw-wallet').value.trim();
+                const fee=0.06, min=0.08;
+                if(amt<min || amt>state.balance || !wallet || (!wallet.startsWith('EQ')&&!wallet.startsWith('UQ'))) {
+                    return showToast('❌ Проверьте данные');
+                }
+                const receive = amt - fee;
+                state.balance -= amt;
+                state.withdrawHistory.push({ amount: receive.toFixed(6), wallet, date: new Date().toLocaleString() });
+                saveState();
+                document.getElementById('withdraw-amount').value='';
+                document.getElementById('withdraw-wallet').value='';
+                updateUI();
+                showToast(`💸 Вывод ${receive.toFixed(6)} TON`);
+            });
 
-    state.pending+=earn
-    state.last=now
+            // Team
+            window.copyInvite = ()=> { navigator.clipboard.writeText(document.getElementById('invite-link').textContent).then(()=>showToast('📋 Скопировано!')); };
+            window.shareInvite = ()=> {
+                const link = document.getElementById('invite-link').textContent;
+                if (tg && tg.openTelegramLink) tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Присоединяйся к AstroTON Miner!')}`);
+                else window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Присоединяйся к AstroTON Miner!')}`, '_blank');
+            };
 
-    save()
+            // Табы
+            function switchTab(tab) {
+                document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+                const map = { mine:'section-mine', power:'section-power', tasks:'section-tasks', team:'section-team', withdraw:'section-withdraw' };
+                const sec = document.getElementById(map[tab]);
+                if(sec) sec.classList.add('active');
+                const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+                if(btn) btn.classList.add('active');
+                updateUI();
+            }
+            window.switchTab = switchTab;
+            document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click', ()=>switchTab(b.dataset.tab)));
 
-    document.getElementById("circle").innerText=state.pending.toFixed(6)
-    document.getElementById("power").innerText=state.power
-    document.getElementById("balance").innerText=state.balance.toFixed(6)
+            function showToast(msg) {
+                const old = document.querySelector('.toast'); if(old) old.remove();
+                const t = document.createElement('div'); t.className='toast'; t.textContent=msg;
+                document.body.appendChild(t);
+                setTimeout(()=>t.remove(), 2000);
+            }
 
-    document.getElementById("claim").innerText="CLAIM "+state.pending.toFixed(6)
-}
+            // Звёздный canvas
+            const canvas = document.getElementById('stars-canvas');
+            const ctx = canvas.getContext('2d');
+            let stars = [];
+            function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            function createStars(count=200) {
+                stars = [];
+                for(let i=0;i<count;i++) stars.push({
+                    x: Math.random()*canvas.width,
+                    y: Math.random()*canvas.height,
+                    radius: Math.random()*1.8+0.4,
+                    brightness: Math.random()*0.7+0.3,
+                    speed: Math.random()*0.02+0.005,
+                });
+            }
+            function drawStars() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                stars.forEach(s=>{
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.radius, 0, Math.PI*2);
+                    ctx.fillStyle = `rgba(255,255,255,${s.brightness})`;
+                    ctx.fill();
+                });
+            }
+            function animateStars() {
+                stars.forEach(s=>{
+                    s.brightness += (Math.random()-0.5)*0.02;
+                    s.brightness = Math.max(0.2, Math.min(1, s.brightness));
+                    s.y -= s.speed;
+                    if(s.y < -5) { s.y = canvas.height+5; s.x = Math.random()*canvas.width; }
+                });
+                drawStars();
+                requestAnimationFrame(animateStars);
+            }
+            window.addEventListener('resize', ()=>{ resizeCanvas(); createStars(); });
+            resizeCanvas(); createStars(); animateStars();
 
-setInterval(update,2000)
+            // Обновление
+            setInterval(()=>{ updateMining(); updateUI(); }, 3000);
+            loadState();
+            updateUI();
+            tg.ready();
 
-/* CLAIM */
-document.getElementById("claim").onclick=()=>{
-    state.balance+=state.pending
-    state.pending=0
-    save()
-}
-
-/* BUY */
-function buy(p){
-    state.power+=p
-    save()
-}
-
-/* WITHDRAW */
-function withdraw(){
-    if(state.balance<0.1){
-        alert("min 0.1")
-        return
-    }
-
-    state.balance=0
-    save()
-    alert("sent (demo)")
-}
-
-/* TABS */
-function tab(id){
-    document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"))
-    document.getElementById(id).classList.add("active")
-}
-
-update()
-
-</script>
-
+            if (tg.initDataUnsafe?.user?.id) {
+                document.getElementById('invite-link').textContent = `https://t.me/AstroTONMinerBot?start=${tg.initDataUnsafe.user.id}`;
+            }
+        })();
+    </script>
 </body>
 </html>
