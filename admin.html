@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>TONPulse Admin · Управление игрой</title>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060912;
+  --bg2: #090d1a;
+  --s1: #0e1525;
+  --s2: #131c2e;
+  --s3: #192237;
+  --s4: #1e2a42;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --blue: #3070f0;
+  --blue2: #4d8fff;
+  --blue-g: rgba(48,112,240,0.14);
+  --gold: #f5c518;
+  --gold-g: rgba(245,197,24,0.1);
+  --green: #1edb7a;
+  --green-g: rgba(30,219,122,0.1);
+  --red: #ff4d4d;
+  --red-g: rgba(255,77,77,0.1);
+  --purple: #9b6dff;
+  --text: #dceeff;
+  --text2: #7a94bc;
+  --text3: #3d5270;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { background:var(--bg); font-family:var(--sans); color:var(--text); height:100vh; overflow:hidden; }
+button { cursor:pointer; background:none; border:none; font-family:var(--sans); }
+input, select, textarea { font-family:var(--sans); outline:none; background:var(--s2); border:1px solid var(--border2); color:var(--text); border-radius:10px; padding:11px 13px; font-size:14px; }
+input:focus, select:focus, textarea:focus { border-color:rgba(48,112,240,.5); box-shadow:0 0 0 3px rgba(48,112,240,.08); }
+
+/* Login */
+#loginScreen {
+  position:fixed; inset:0; z-index:9999;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+}
+.login-card {
+  max-width:360px; width:100%;
+  background:var(--s1); border:1px solid var(--border2);
+  border-radius:24px; padding:32px 24px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.5);
+}
+.login-logo { display:flex; align-items:center; gap:12px; margin-bottom:28px; }
+.login-logo-icon {
+  width:48px; height:48px;
+  background:linear-gradient(135deg,#1a48c8,var(--blue));
+  border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px;
+}
+.login-logo-text strong { font-size:20px; font-weight:900; color:var(--text); display:block; }
+.login-logo-text span { font-size:11px; font-weight:700; color:var(--blue2); }
+.login-h { font-size:22px; font-weight:900; margin-bottom:4px; }
+.login-sub { font-size:13px; color:var(--text2); margin-bottom:24px; }
+.lf { margin-bottom:14px; }
+.lf label { font-size:10px; font-weight:800; letter-spacing:1.5px; color:var(--text3); display:block; margin-bottom:6px; }
+.lf input { width:100%; }
+.login-btn {
+  width:100%; background:linear-gradient(135deg,#1848c0,var(--blue));
+  border-radius:12px; padding:15px;
+  font-weight:900; font-size:16px; color:#fff;
+  margin-top:6px;
+}
+.login-err { color:var(--red); font-size:12px; text-align:center; margin-top:10px; display:none; }
+
+/* App */
+#app { display:none; height:100vh; flex-direction:column; }
+
+/* Topbar */
+.topbar {
+  height:58px; padding-top:env(safe-area-inset-top,0);
+  background:rgba(9,13,26,0.95); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; padding:0 16px; gap:12px;
+  flex-shrink:0;
+}
+.menu-btn {
+  width:40px; height:40px; background:var(--s2); border:1px solid var(--border);
+  border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+}
+.menu-btn span { width:18px; height:2px; background:var(--text2); border-radius:2px; transition:.3s; }
+.menu-btn.open span:nth-child(1) { transform:rotate(45deg) translate(4px,4px); }
+.menu-btn.open span:nth-child(2) { opacity:0; }
+.menu-btn.open span:nth-child(3) { transform:rotate(-45deg) translate(4px,-4px); }
+.topbar-logo { display:flex; align-items:center; gap:8px; }
+.topbar-logo .tl-icon {
+  width:32px; height:32px;
+  background:linear-gradient(135deg,#1848c0,var(--blue));
+  border-radius:9px; display:flex; align-items:center; justify-content:center;
+  font-size:14px;
+}
+.topbar-logo .tl-name { font-weight:900; font-size:15px; }
+.topbar-spacer { flex:1; }
+.clock-chip { font-family:var(--mono); font-size:12px; color:var(--text3); }
+
+/* Drawer */
+.drawer-overlay {
+  position:fixed; inset:0; z-index:100;
+  background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);
+  opacity:0; pointer-events:none; transition:opacity .25s;
+}
+.drawer-overlay.open { opacity:1; pointer-events:all; }
+.drawer {
+  position:fixed; top:0; left:0; bottom:0;
+  width:280px; z-index:101;
+  background:var(--bg2); border-right:1px solid var(--border2);
+  transform:translateX(-100%); transition:transform .3s;
+  display:flex; flex-direction:column;
+}
+.drawer.open { transform:translateX(0); }
+.drawer-head {
+  padding:20px 18px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:12px;
+  padding-top:calc(20px + env(safe-area-inset-top,0));
+}
+.drawer-head .dh-icon {
+  width:42px; height:42px;
+  background:linear-gradient(135deg,#1848c0,var(--blue));
+  border-radius:12px; display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+}
+.drawer-head .dh-name { font-weight:900; font-size:16px; }
+.drawer-head .dh-role { font-size:11px; color:var(--green); font-weight:700; margin-top:2px; }
+.drawer-scroll { flex:1; overflow-y:auto; padding:10px; }
+.drawer-section-label {
+  font-size:9px; font-weight:800; letter-spacing:2px; color:var(--text3);
+  padding:8px 8px 4px;
+}
+.nav-btn {
+  display:flex; align-items:center; gap:11px;
+  width:100%; padding:11px 12px; border-radius:12px; margin-bottom:2px;
+  text-align:left; color:var(--text2); font-weight:700; font-size:14px;
+}
+.nav-btn.active { background:var(--blue-g); color:var(--blue2); }
+.nav-btn .nb-icon {
+  width:36px; height:36px; background:var(--s3); border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px;
+}
+.nav-badge {
+  margin-left:auto; background:var(--red); color:#fff;
+  font-size:10px; font-weight:800; padding:2px 6px; border-radius:20px;
+}
+.drawer-footer { padding:12px; border-top:1px solid var(--border); padding-bottom:calc(12px + env(safe-area-inset-bottom,0)); }
+.user-row {
+  display:flex; align-items:center; gap:10px;
+  background:var(--s2); border-radius:12px; padding:10px 12px;
+}
+.user-av {
+  width:34px; height:34px; border-radius:50%;
+  background:linear-gradient(135deg,#1848c0,var(--blue));
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:15px;
+}
+.user-name { font-weight:700; font-size:13px; }
+.user-role { font-size:10px; color:var(--green); font-weight:600; }
+.logout-btn { margin-left:auto; width:32px; height:32px; border-radius:8px; font-size:16px; color:var(--text3); }
+
+/* Content */
+.content { flex:1; overflow-y:auto; overflow-x:hidden; padding-bottom:70px; }
+.page { display:none; animation:pageIn .22s; }
+.page.active { display:block; }
+@keyframes pageIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+.ph { padding:16px 16px 0; display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.ph h2 { font-size:20px; font-weight:900; }
+.ph p { font-size:12px; color:var(--text2); margin-top:2px; }
+
+/* Cards */
+.card { background:var(--s1); border:1px solid var(--border); border-radius:16px; padding:16px; margin:0 16px 12px; }
+.card-title { font-weight:800; font-size:14px; display:flex; align-items:center; gap:8px; margin-bottom:3px; }
+.card-sub { font-size:12px; color:var(--text2); margin-bottom:14px; }
+
+.kpi-scroll { display:flex; gap:10px; overflow-x:auto; padding:0 16px 4px; margin-bottom:12px; }
+.kpi-card {
+  background:var(--s1); border:1px solid var(--border); border-radius:14px;
+  padding:14px; flex-shrink:0; width:140px;
+  position:relative; overflow:hidden;
+}
+.kc-icon { font-size:20px; margin-bottom:8px; }
+.kc-label { font-size:9px; font-weight:800; letter-spacing:1.5px; color:var(--text3); margin-bottom:5px; }
+.kc-val { font-family:var(--mono); font-size:24px; font-weight:700; }
+.kc-unit { font-size:10px; color:var(--text2); margin-top:3px; }
+.kc-delta { display:inline-flex; align-items:center; gap:3px; margin-top:6px; font-size:10px; font-weight:700; padding:2px 7px; border-radius:20px; }
+.up { background:var(--green-g); color:var(--green); }
+.down { background:var(--red-g); color:var(--red); }
+
+.slabel {
+  font-size:10px; font-weight:800; letter-spacing:2px; color:var(--text3);
+  padding:0 16px; margin:8px 0;
+  display:flex; align-items:center; gap:8px;
+}
+.slabel::after { content:''; flex:1; height:1px; background:var(--border); }
+
+.user-card {
+  background:var(--s2); border:1px solid var(--border);
+  border-radius:14px; padding:14px; margin-bottom:8px;
+}
+.uc-top { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.uc-av {
+  width:40px; height:40px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:17px; color:#fff;
+}
+.uc-name { font-weight:700; font-size:14px; }
+.uc-id { font-family:var(--mono); font-size:10px; color:var(--text3); margin-top:2px; }
+.uc-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px; }
+.uc-stat-box { background:var(--s3); border-radius:9px; padding:8px; text-align:center; }
+.uc-stat-val { font-family:var(--mono); font-size:14px; font-weight:700; }
+.uc-stat-lbl { font-size:9px; color:var(--text3); margin-top:2px; }
+.uc-actions { display:flex; gap:7px; }
+
+.badge { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:700; }
+.badge.active { background:var(--green-g); color:var(--green); }
+.badge.blocked { background:var(--red-g); color:var(--red); }
+.badge.pending { background:var(--gold-g); color:var(--gold); }
+.badge::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; }
+
+.btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  padding:10px 16px; border-radius:10px;
+  font-weight:700; font-size:13px; transition:.1s;
+}
+.btn:active { transform:scale(.96); }
+.btn-primary { background:linear-gradient(135deg,#1848c0,var(--blue)); color:#fff; }
+.btn-success { background:linear-gradient(135deg,#0d8a44,var(--green)); color:#000; }
+.btn-danger { background:linear-gradient(135deg,#b02020,var(--red)); color:#fff; }
+.btn-gold { background:linear-gradient(135deg,#c49000,var(--gold)); color:#000; }
+.btn-ghost { background:var(--s3); color:var(--text2); border:1px solid var(--border2); }
+.btn-sm { padding:6px 12px; font-size:12px; }
+.btn-full { width:100%; }
+.btn-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+
+.field { margin-bottom:12px; }
+.fl { display:block; font-size:10px; font-weight:800; letter-spacing:1.5px; color:var(--text3); margin-bottom:6px; }
+.fi { width:100%; }
+.fs { width:100%; padding:11px 13px; cursor:pointer; }
+.ft { width:100%; resize:vertical; min-height:80px; }
+
+.toggle { position:relative; width:44px; height:24px; flex-shrink:0; }
+.toggle input { opacity:0; width:0; height:0; }
+.toggle-sl {
+  position:absolute; inset:0; background:var(--s4);
+  border-radius:30px; cursor:pointer; transition:.2s;
+}
+.toggle-sl::after {
+  content:''; position:absolute; left:3px; top:3px;
+  width:18px; height:18px; background:#fff;
+  border-radius:50%; transition:.2s;
+}
+.toggle input:checked + .toggle-sl { background:var(--blue); }
+.toggle input:checked + .toggle-sl::after { transform:translateX(20px); }
+
+.table-wrap { overflow-x:auto; border-radius:12px; border:1px solid var(--border); }
+table { width:100%; border-collapse:collapse; min-width:500px; }
+th { background:var(--s2); padding:10px 12px; font-size:9px; font-weight:800; letter-spacing:1.5px; color:var(--text3); text-align:left; }
+td { padding:11px 12px; font-size:12px; color:var(--text2); border-bottom:1px solid var(--border); }
+.mono { font-family:var(--mono); }
+
+.prog-mini { height:4px; background:var(--s3); border-radius:4px; overflow:hidden; margin-top:6px; }
+.pm-fill { height:100%; border-radius:4px; transition:width .5s; }
+
+.act-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
+.act-icon { width:30px; height:30px; background:var(--s3); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; }
+.act-msg { font-size:12px; color:var(--text2); flex:1; }
+.act-time { font-family:var(--mono); font-size:10px; color:var(--text3); }
+
+.wd-card { background:var(--s2); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:8px; }
+.wdc-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.wdc-user { font-weight:700; font-size:14px; }
+.wdc-amt { font-family:var(--mono); font-size:14px; font-weight:700; color:var(--gold); }
+.wdc-wallet { font-family:var(--mono); font-size:10px; color:var(--text3); word-break:break-all; }
+.wdc-actions { display:flex; gap:7px; margin-top:10px; }
+
+.task-edit-card { background:var(--s2); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:10px; }
+.tec-head { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.tec-icon { font-size:22px; }
+.tec-name { font-weight:800; font-size:14px; flex:1; }
+.tec-cat { font-size:10px; color:var(--text2); margin-top:2px; }
+
+.search-wrap { padding:0 16px; margin-bottom:10px; position:relative; }
+.search-wrap input { width:100%; padding:10px 14px 10px 38px; }
+.search-wrap::before { content:'🔍'; position:absolute; left:27px; top:50%; transform:translateY(-50%); font-size:14px; pointer-events:none; }
+
+.notif-panel { position:fixed; top:16px; left:16px; right:16px; z-index:9000; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
+.notif {
+  background:var(--s2); border:1px solid var(--border2); border-radius:14px;
+  padding:12px 14px; display:flex; align-items:flex-start; gap:10px;
+  pointer-events:all; animation:slideDown .3s;
+}
+@keyframes slideDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+.notif.out { opacity:0; transform:translateY(-8px); }
+.notif.success { border-color:rgba(30,219,122,.3); }
+.notif.error { border-color:rgba(255,77,77,.3); }
+.notif-icon { font-size:18px; }
+
+.modal-ov {
+  position:fixed; inset:0; z-index:500;
+  background:rgba(0,0,0,0.7); backdrop-filter:blur(6px);
+  display:none; align-items:flex-end; justify-content:center;
+}
+.modal-ov.open { display:flex; }
+.modal {
+  background:var(--s1); border:1px solid var(--border2);
+  border-radius:24px 24px 0 0;
+  padding:20px 20px calc(20px + env(safe-area-inset-bottom,0));
+  width:100%; max-width:480px;
+  max-height:85vh; overflow-y:auto;
+}
+.modal-drag { width:40px; height:4px; background:var(--s4); border-radius:4px; margin:0 auto 16px; }
+.modal-title { font-weight:900; font-size:18px; margin-bottom:4px; }
+.modal-sub { font-size:13px; color:var(--text2); margin-bottom:18px; }
+
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0;
+  height:64px; padding-bottom:env(safe-area-inset-bottom,0);
+  background:rgba(9,13,26,0.97); backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex; z-index:40;
+}
+.bn-item {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  color:var(--text3); font-size:9px; font-weight:800;
+}
+.bn-item.active { color:var(--blue2); }
+.bn-item.active::after { content:''; position:absolute; top:0; left:20%; right:20%; height:2px; background:var(--blue2); border-radius:0 0 4px 4px; }
+.bn-icon { font-size:20px; }
+.bn-badge {
+  position:absolute; top:4px; right:calc(50% - 18px);
+  background:var(--red); color:#fff;
+  font-size:9px; font-weight:800;
+  min-width:16px; height:16px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; padding:0 4px;
+}
+
+.empty { text-align:center; padding:32px 16px; color:var(--text3); }
+.empty .ei { font-size:32px; margin-bottom:8px; }
+
+canvas { width:100%; height:130px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">⚡</div>
+      <div class="login-logo-text"><strong>TONPulse</strong><span>ADMIN PANEL</span></div>
+    </div>
+    <div class="login-h">Добро пожаловать</div>
+    <div class="login-sub">Введите данные для входа</div>
+    <div class="lf">
+      <label>ЛОГИН</label>
+      <input type="text" id="li_user" value="admin" placeholder="admin">
+    </div>
+    <div class="lf">
+      <label>ПАРОЛЬ</label>
+      <input type="password" id="li_pass" placeholder="••••••••">
+    </div>
+    <button class="login-btn" onclick="doLogin()">⚡ Войти</button>
+    <div class="login-err" id="li_err">Неверный логин или пароль</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <button class="menu-btn" id="menuBtn" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
+    <div class="topbar-logo">
+      <div class="tl-icon">⚡</div>
+      <div><div class="tl-name" id="topPageTitle">Дашборд</div><div class="tl-ver">ADMIN v3.0</div></div>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="clock-chip" id="clockEl">00:00</div>
+  </div>
+
+  <div class="drawer-overlay" id="drawerOv" onclick="closeDrawer()"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-head">
+      <div class="dh-icon">⚡</div>
+      <div><div class="dh-name">TONPulse Admin</div><div class="dh-role">● Суперадмин</div></div>
+    </div>
+    <div class="drawer-scroll">
+      <div class="drawer-section-label">ОБЗОР</div>
+      <button class="nav-btn active" data-page="dashboard"><div class="nb-icon">📊</div><span>Дашборд</span></button>
+      <button class="nav-btn" data-page="analytics"><div class="nb-icon">📈</div><span>Аналитика</span></button>
+      <div class="drawer-section-label">УПРАВЛЕНИЕ</div>
+      <button class="nav-btn" data-page="users"><div class="nb-icon">👥</div><span>Пользователи</span><span class="nav-badge" id="userBadge">0</span></button>
+      <button class="nav-btn" data-page="withdrawals"><div class="nb-icon">💸</div><span>Выводы</span><span class="nav-badge" id="wdBadge">0</span></button>
+      <button class="nav-btn" data-page="tasks"><div class="nb-icon">📋</div><span>Задания</span></button>
+      <div class="drawer-section-label">НАСТРОЙКИ</div>
+      <button class="nav-btn" data-page="mining"><div class="nb-icon">⛏️</div><span>Майнинг</span></button>
+      <button class="nav-btn" data-page="buttons"><div class="nb-icon">🔘</div><span>Кнопки</span></button>
+      <button class="nav-btn" data-page="notifications"><div class="nb-icon">🔔</div><span>Уведомления</span></button>
+    </div>
+    <div class="drawer-footer">
+      <div class="user-row">
+        <div class="user-av">A</div>
+        <div><div class="user-name">Admin</div><div class="user-role">● Суперадмин</div></div>
+        <button class="logout-btn" onclick="doLogout()">⎋</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Dashboard -->
+    <div class="page active" id="page_dashboard">
+      <div class="ph"><div><h2>Дашборд</h2><p>Статистика в реальном времени</p></div><button class="btn btn-ghost btn-sm" onclick="refreshDash()">↻</button></div>
+      <div class="kpi-scroll">
+        <div class="kpi-card"><div class="kc-icon">👥</div><div class="kc-label">ПОЛЬЗОВАТЕЛИ</div><div class="kc-val" id="kpi_users">0</div><div class="kc-unit">зарегистрировано</div></div>
+        <div class="kpi-card"><div class="kc-icon">⚡</div><div class="kc-label">ОБЩИЙ POWER</div><div class="kc-val" id="kpi_power">0</div><div class="kc-unit">в системе</div></div>
+        <div class="kpi-card"><div class="kc-icon">💰</div><div class="kc-label">ВСЕГО ВЫВЕДЕНО</div><div class="kc-val" id="kpi_paid">0.000</div><div class="kc-unit">TON</div></div>
+        <div class="kpi-card"><div class="kc-icon">⏳</div><div class="kc-label">ЗАЯВКИ</div><div class="kc-val" id="kpi_pend">0</div><div class="kc-unit">ожидают</div></div>
+      </div>
+      <div class="card"><div class="card-title">📈 Активность</div><canvas id="dashChart"></canvas></div>
+      <div class="slabel">🏆 ТОП МАЙНЕРЫ</div>
+      <div class="card" id="topList"></div>
+      <div class="slabel">📋 ПОСЛЕДНИЕ СОБЫТИЯ</div>
+      <div class="card" id="actList"></div>
+    </div>
+
+    <!-- Analytics -->
+    <div class="page" id="page_analytics">
+      <div class="ph"><div><h2>Аналитика</h2><p>Детальная статистика</p></div></div>
+      <div class="card"><div class="card-title">📊 Распределение POWER</div><div id="powerDist"></div></div>
+      <div class="card"><div class="card-title">📋 История выводов</div><div class="table-wrap"><table><thead><tr><th>Пользователь</th><th>Сумма</th><th>Статус</th><th>Дата</th></tr></thead><tbody id="wdHistBody"></tbody></table></div></div>
+    </div>
+
+    <!-- Users -->
+    <div class="page" id="page_users">
+      <div class="ph"><div><h2>Пользователи</h2><p>Управление аккаунтами</p></div><button class="btn btn-primary btn-sm" onclick="openModal('addUser')">+ Добавить</button></div>
+      <div class="search-wrap"><input type="text" id="userSearch" placeholder="Поиск..." oninput="filterUsers()"></div>
+      <div style="padding:0 16px 10px"><select class="fs" id="userFilter" style="width:100%" onchange="filterUsers()"><option value="all">Все статусы</option><option value="active">Активные</option><option value="blocked">Заблокированные</option></select></div>
+      <div id="usersList" style="padding:0 16px"></div>
+    </div>
+
+    <!-- Withdrawals -->
+    <div class="page" id="page_withdrawals">
+      <div class="ph"><div><h2>Заявки на вывод</h2><p>Управление выплатами</p></div><button class="btn btn-success btn-sm" onclick="approveAll()">✓ Все</button></div>
+      <div class="card">
+        <div class="card-title">⚙️ Лимиты</div>
+        <div class="field"><label class="fl">МИНИМУМ ВЫВОДА (TON)</label><input type="number" class="fi" id="cfg_minWd" value="0.08" step="0.01"></div>
+        <div class="field"><label class="fl">КОМИССИЯ (TON)</label><input type="number" class="fi" id="cfg_fee" value="0.005" step="0.001"></div>
+      </div>
+      <div class="slabel">ЗАЯВКИ</div>
+      <div id="wdList" style="padding:0 16px"></div>
+    </div>
+
+    <!-- Tasks -->
+    <div class="page" id="page_tasks">
+      <div class="ph"><div><h2>Задания</h2><p>Миссии и награды</p></div><button class="btn btn-primary btn-sm" onclick="openModal('addTask')">+ Добавить</button></div>
+      <div id="taskList" style="padding:0 16px"></div>
+    </div>
+
+    <!-- Mining -->
+    <div class="page" id="page_mining">
+      <div class="ph"><div><h2>Майнинг</h2><p>Скорость и начисления</p></div></div>
+      <div class="card">
+        <div class="card-title">⚡ Скорость майнинга</div>
+        <div class="field"><label class="fl">ДНЕВНОЙ ПРОЦЕНТ (%)</label><input type="number" class="fi" id="cfg_miningRate" value="0.14" step="0.01"></div>
+        <div class="field"><label class="fl">СТАРТОВЫЙ POWER</label><input type="number" class="fi" id="cfg_startPower" value="10"></div>
+        <div class="field"><label class="fl">БОНУС ЗА РЕФЕРАЛА (POWER)</label><input type="number" class="fi" id="cfg_refBonus" value="1"></div>
+        <div class="btn-row"><button class="btn btn-primary btn-full" onclick="saveMiningSettings()">💾 Сохранить</button></div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="page" id="page_buttons">
+      <div class="ph"><div><h2>Кнопки</h2><p>Настройка текста и цветов</p></div></div>
+      <div id="btnList" style="padding:0 16px"></div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="page" id="page_notifications">
+      <div class="ph"><div><h2>Уведомления</h2><p>Рассылки</p></div></div>
+      <div class="card">
+        <div class="card-title">📣 Рассылка</div>
+        <div class="field"><label class="fl">ЗАГОЛОВОК</label><input type="text" class="fi" id="bc_title" placeholder="Важное обновление!"></div>
+        <div class="field"><label class="fl">СООБЩЕНИЕ</label><textarea class="ft" id="bc_msg" placeholder="Текст..."></textarea></div>
+        <div class="btn-row"><button class="btn btn-primary btn-full" onclick="sendBroadcast()">📣 Отправить всем</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="bn-item active" data-bnpage="dashboard"><div class="bn-icon">🏠</div><div>ГЛАВНАЯ</div></button>
+    <button class="bn-item" data-bnpage="users"><div class="bn-icon">👥</div><div>ЮЗЕРЫ</div><div class="bn-badge" id="bn_userBadge"></div></button>
+    <button class="bn-item" data-bnpage="withdrawals"><div class="bn-icon">💸</div><div>ВЫВОДЫ</div><div class="bn-badge" id="bn_wdBadge"></div></button>
+    <button class="bn-item" data-bnpage="mining"><div class="bn-icon">⛏️</div><div>МАЙНИНГ</div></button>
+    <button class="bn-item" data-bnpage="buttons"><div class="bn-icon">🔘</div><div>КНОПКИ</div></button>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal-ov" id="modal_addUser" onclick="if(event.target===this)closeModal('addUser')">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-title">👤 Добавить пользователя</div><div class="modal-sub">Создать аккаунт вручную</div>
+    <div class="field"><label class="fl">ИМЯ</label><input type="text" class="fi" id="mu_name" placeholder="Username"></div>
+    <div class="field"><label class="fl">POWER</label><input type="number" class="fi" id="mu_power" value="10"></div>
+    <div class="field"><label class="fl">БАЛАНС (TON)</label><input type="number" class="fi" id="mu_bal" value="0" step="0.001"></div>
+    <div class="btn-row"><button class="btn btn-primary btn-full" onclick="addUser()">✓ Создать</button><button class="btn btn-ghost btn-full" onclick="closeModal('addUser')">Отмена</button></div>
+  </div>
+</div>
+
+<div class="modal-ov" id="modal_addTask" onclick="if(event.target===this)closeModal('addTask')">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-title">📋 Добавить задание</div><div class="modal-sub">Новая миссия</div>
+    <div class="field"><label class="fl">НАЗВАНИЕ</label><input type="text" class="fi" id="mt_name" placeholder="Вступить в канал"></div>
+    <div class="field"><label class="fl">ОПИСАНИЕ</label><input type="text" class="fi" id="mt_desc" placeholder="Краткое описание"></div>
+    <div class="field"><label class="fl">ССЫЛКА</label><input type="text" class="fi" id="mt_url" placeholder="https://t.me/..."></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="field"><label class="fl">НАГРАДА (POWER)</label><input type="number" class="fi" id="mt_reward" value="5"></div>
+      <div class="field"><label class="fl">ИКОНКА</label><input type="text" class="fi" id="mt_icon" value="✈️"></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-primary btn-full" onclick="addTask()">✓ Добавить</button><button class="btn btn-ghost btn-full" onclick="closeModal('addTask')">Отмена</button></div>
+  </div>
+</div>
+
+<div class="modal-ov" id="modal_givePower" onclick="if(event.target===this)closeModal('givePower')">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-title">⚡ Начислить POWER</div><div class="modal-sub" id="gp_sub">Пользователю</div>
+    <div class="field"><label class="fl">КОЛИЧЕСТВО POWER</label><input type="number" class="fi" id="gp_amt" value="10" min="1"></div>
+    <div class="btn-row"><button class="btn btn-gold btn-full" onclick="confirmGivePower()">⚡ Начислить</button><button class="btn btn-ghost btn-full" onclick="closeModal('givePower')">Отмена</button></div>
+  </div>
+</div>
+
+<div class="notif-panel" id="notifPanel"></div>
+
+<script>
+// Firebase конфигурация
+const firebaseConfig = {
+  apiKey: "AIzaSyCT9XQDlC_fV_5T0weoT6xsG9vTUP8ZEHI",
+  authDomain: "jejjen-69c04.firebaseapp.com",
+  projectId: "jejjen-69c04",
+  storageBucket: "jejjen-69c04.firebasestorage.app",
+  messagingSenderId: "806692501225",
+  appId: "1:806692501225:web:8d85d2651a5edbeeeea278",
+  measurementId: "G-WGQFBYKVX3"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Данные
+let users = [];
+let withdrawals = [];
+let tasks = [];
+let currentGiveUserId = null;
+
+// Креды
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'admin123';
+
+// ========== LOGIN ==========
+function doLogin() {
+  const u = document.getElementById('li_user').value.trim();
+  const p = document.getElementById('li_pass').value;
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    initApp();
+  } else {
+    const err = document.getElementById('li_err');
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 2500);
+  }
+}
+
+function doLogout() {
+  closeDrawer();
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('li_pass').value = '';
+}
+
+// ========== DRAWER ==========
+function toggleDrawer() {
+  const d = document.getElementById('drawer');
+  const o = document.getElementById('drawerOv');
+  const b = document.getElementById('menuBtn');
+  if (d.classList.contains('open')) {
+    d.classList.remove('open'); o.classList.remove('open'); b.classList.remove('open');
+  } else {
+    d.classList.add('open'); o.classList.add('open'); b.classList.add('open');
+  }
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOv').classList.remove('open');
+  document.getElementById('menuBtn').classList.remove('open');
+}
+
+// ========== NAVIGATION ==========
+function switchPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(`page_${page}`).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.nav-btn[data-page="${page}"]`)?.classList.add('active');
+  document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.bn-item[data-bnpage="${page}"]`)?.classList.add('active');
+  const titles = { dashboard:'Дашборд', analytics:'Аналитика', users:'Пользователи', withdrawals:'Выводы', tasks:'Задания', mining:'Майнинг', buttons:'Кнопки', notifications:'Уведомления' };
+  document.getElementById('topPageTitle').innerText = titles[page] || page;
+  closeDrawer();
+}
+
+document.querySelectorAll('.nav-btn[data-page]').forEach(btn => {
+  btn.addEventListener('click', () => switchPage(btn.dataset.page));
+});
+document.querySelectorAll('.bn-item[data-bnpage]').forEach(btn => {
+  btn.addEventListener('click', () => switchPage(btn.dataset.bnpage));
+});
+
+// ========== CLOCK ==========
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clockEl').innerText = now.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ========== FIREBASE LOAD ==========
+async function loadUsers() {
+  const snap = await db.collection('players').get();
+  users = [];
+  snap.forEach(doc => {
+    const data = doc.data();
+    users.push({
+      id: doc.id,
+      name: data.playerName || data.name || 'Аноним',
+      power: data.power || 10,
+      balance: data.balance || 0,
+      refs: data.friends || 0,
+      status: data.status || 'active',
+      reg: data.regDate || new Date(data.lastUpdated || Date.now()).toISOString().slice(0,10)
+    });
+  });
+  renderUsers();
+}
+
+async function loadWithdrawals() {
+  const snap = await db.collection('withdrawals').get();
+  withdrawals = [];
+  snap.forEach(doc => {
+    const data = doc.data();
+    withdrawals.push({ id: doc.id, ...data });
+  });
+  renderWithdrawals();
+}
+
+async function loadTasks() {
+  const snap = await db.collection('tasks').get();
+  tasks = [];
+  snap.forEach(doc => {
+    tasks.push({ id: doc.id, ...doc.data() });
+  });
+  if (tasks.length === 0) {
+    tasks = [
+      { id: 'T001', name: 'Вступить в Stars Birds', desc: 'Сообщество Stars Birds', cat: 'social', reward: 5, icon: '✈️', url: 'https://t.me/starsbirds', active: true },
+      { id: 'T002', name: 'Новости TONPulse', desc: 'Telegram-канал новостей', cat: 'social', reward: 5, icon: '📢', url: 'https://t.me/tonpulse_news', active: true },
+      { id: 'T003', name: 'Выплаты TONPulse', desc: 'Канал выплат', cat: 'social', reward: 5, icon: '💸', url: 'https://t.me/tonpulse_payouts', active: true },
+    ];
+  }
+  renderTasks();
+}
+
+// ========== RENDER ==========
+function renderUsers() {
+  const filter = document.getElementById('userFilter')?.value || 'all';
+  const search = document.getElementById('userSearch')?.value.toLowerCase() || '';
+  const filtered = users.filter(u => {
+    if (filter !== 'all' && u.status !== filter) return false;
+    if (search && !u.name.toLowerCase().includes(search) && !u.id.toLowerCase().includes(search)) return false;
+    return true;
+  });
+  document.getElementById('userBadge').innerText = users.length;
+  document.getElementById('bn_userBadge').innerText = users.length;
+  document.getElementById('bn_userBadge').style.display = users.length ? 'flex' : 'none';
+  document.getElementById('usersList').innerHTML = filtered.map(u => `
+    <div class="user-card">
+      <div class="uc-top">
+        <div class="uc-av" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)">${u.name[0].toUpperCase()}</div>
+        <div style="flex:1"><div class="uc-name">${u.name}</div><div class="uc-id">${u.id}</div></div>
+        <span class="badge ${u.status}">${u.status === 'active' ? 'Активен' : 'Заблокирован'}</span>
+      </div>
+      <div class="uc-stats">
+        <div class="uc-stat-box"><div class="uc-stat-val" style="color:var(--gold)">${u.power}</div><div class="uc-stat-lbl">POWER</div></div>
+        <div class="uc-stat-box"><div class="uc-stat-val">${u.balance.toFixed(4)}</div><div class="uc-stat-lbl">TON</div></div>
+        <div class="uc-stat-box"><div class="uc-stat-val">${u.refs}</div><div class="uc-stat-lbl">РЕФ</div></div>
+      </div>
+      <div class="uc-actions">
+        <button class="btn btn-${u.status === 'active' ? 'danger' : 'success'} btn-sm" onclick="toggleUserStatus('${u.id}')">${u.status === 'active' ? '🚫 Блок' : '✓ Разблок'}</button>
+        <button class="btn btn-gold btn-sm" onclick="openGivePower('${u.id}', '${u.name}')">⚡ POWER</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterUsers() { renderUsers(); }
+
+async function toggleUserStatus(id) {
+  const user = users.find(u => u.id === id);
+  if (!user) return;
+  const newStatus = user.status === 'active' ? 'blocked' : 'active';
+  await db.collection('players').doc(id).update({ status: newStatus });
+  user.status = newStatus;
+  renderUsers();
+  notify(`Пользователь ${user.name} ${newStatus === 'active' ? 'разблокирован' : 'заблокирован'}`, 'success');
+}
+
+function openGivePower(id, name) {
+  currentGiveUserId = id;
+  document.getElementById('gp_sub').innerText = `Пользователю: ${name}`;
+  openModal('givePower');
+}
+
+async function confirmGivePower() {
+  const amt = parseInt(document.getElementById('gp_amt').value) || 0;
+  if (amt <= 0) { notify('Введите корректную сумму', 'error'); return; }
+  const user = users.find(u => u.id === currentGiveUserId);
+  if (!user) return;
+  user.power += amt;
+  await db.collection('players').doc(currentGiveUserId).update({ power: user.power });
+  renderUsers();
+  closeModal('givePower');
+  notify(`+${amt} POWER начислено ${user.name}`, 'success');
+}
+
+async function addUser() {
+  const name = document.getElementById('mu_name').value.trim();
+  if (!name) { notify('Введите имя', 'error'); return; }
+  const newId = 'user_' + Date.now();
+  const newUser = {
+    playerName: name,
+    name: name,
+    power: parseInt(document.getElementById('mu_power').value) || 10,
+    balance: parseFloat(document.getElementById('mu_bal').value) || 0,
+    friends: 0,
+    status: 'active',
+    regDate: new Date().toISOString().slice(0,10),
+    pending: 0.000004,
+    claims: 0,
+    totalEarned: 0,
+    tasksDone: []
+  };
+  await db.collection('players').doc(newId).set(newUser);
+  await loadUsers();
+  closeModal('addUser');
+  notify(`Пользователь ${name} создан`, 'success');
+}
+
+function renderWithdrawals() {
+  const pending = withdrawals.filter(w => w.status === 'pending').length;
+  document.getElementById('wdBadge').innerText = pending;
+  document.getElementById('bn_wdBadge').innerText = pending;
+  document.getElementById('bn_wdBadge').style.display = pending ? 'flex' : 'none';
+  document.getElementById('kpi_pend').innerText = pending;
+  document.getElementById('wdList').innerHTML = withdrawals.map(w => `
+    <div class="wd-card">
+      <div class="wdc-row"><div class="wdc-user">${w.userName || w.userId}</div><div class="wdc-amt">${w.amount} TON</div></div>
+      <div class="wdc-wallet">${w.wallet || '—'}</div>
+      <div class="wdc-row"><span class="badge ${w.status}">${w.status === 'pending' ? 'Ожидает' : w.status === 'approved' ? 'Одобрено' : 'Отклонено'}</span><span style="font-size:11px">${w.date || ''}</span></div>
+      ${w.status === 'pending' ? `<div class="wdc-actions"><button class="btn btn-success btn-sm" onclick="approveWithdrawal('${w.id}')">✓ Одобрить</button><button class="btn btn-danger btn-sm" onclick="rejectWithdrawal('${w.id}')">✗ Отклонить</button></div>` : ''}
+    </div>
+  `).join('');
+  document.getElementById('wdHistBody').innerHTML = withdrawals.slice(0,20).map(w => `
+    <tr><td>${w.userName || w.userId}</td><td class="mono" style="color:var(--gold)">${w.amount}</td><td><span class="badge ${w.status}">${w.status}</span></td><td>${w.date || ''}</td></tr>
+  `).join('');
+}
+
+async function approveWithdrawal(id) {
+  const w = withdrawals.find(w => w.id === id);
+  if (!w) return;
+  await db.collection('withdrawals').doc(id).update({ status: 'approved' });
+  w.status = 'approved';
+  renderWithdrawals();
+  notify(`Вывод ${w.amount} TON одобрен`, 'success');
+}
+
+async function rejectWithdrawal(id) {
+  const w = withdrawals.find(w => w.id === id);
+  if (!w) return;
+  await db.collection('withdrawals').doc(id).update({ status: 'rejected' });
+  w.status = 'rejected';
+  renderWithdrawals();
+  notify(`Вывод отклонён`, 'error');
+}
+
+async function approveAll() {
+  for (const w of withdrawals.filter(w => w.status === 'pending')) {
+    await db.collection('withdrawals').doc(w.id).update({ status: 'approved' });
+    w.status = 'approved';
+  }
+  renderWithdrawals();
+  notify('Все заявки одобрены', 'success');
+}
+
+function renderTasks() {
+  document.getElementById('taskList').innerHTML = tasks.map((t, i) => `
+    <div class="task-edit-card">
+      <div class="tec-head"><div class="tec-icon">${t.icon || '📌'}</div><div class="tec-name">${t.name}</div>
+        <label class="toggle"><input type="checkbox" ${t.active !== false ? 'checked' : ''} onchange="toggleTaskActive('${t.id}', this.checked)"><div class="toggle-sl"></div></label>
+        <button class="btn btn-danger btn-sm" onclick="deleteTask('${t.id}')">🗑</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><label class="fl">НАЗВАНИЕ</label><input type="text" class="fi" value="${t.name}" onchange="updateTaskField('${t.id}', 'name', this.value)"></div>
+        <div><label class="fl">ОПИСАНИЕ</label><input type="text" class="fi" value="${t.desc || ''}" onchange="updateTaskField('${t.id}', 'desc', this.value)"></div>
+        <div><label class="fl">REWARD</label><input type="number" class="fi" value="${t.reward}" onchange="updateTaskField('${t.id}', 'reward', parseInt(this.value))"></div>
+        <div><label class="fl">ССЫЛКА</label><input type="text" class="fi" value="${t.url || ''}" onchange="updateTaskField('${t.id}', 'url', this.value)"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function toggleTaskActive(id, active) {
+  await db.collection('tasks').doc(id).update({ active });
+  const task = tasks.find(t => t.id === id);
+  if (task) task.active = active;
+}
+
+async function updateTaskField(id, field, value) {
+  await db.collection('tasks').doc(id).update({ [field]: value });
+  const task = tasks.find(t => t.id === id);
+  if (task) task[field] = value;
+}
+
+async function deleteTask(id) {
+  if (!confirm('Удалить задание?')) return;
+  await db.collection('tasks').doc(id).delete();
+  tasks = tasks.filter(t => t.id !== id);
+  renderTasks();
+  notify('Задание удалено', 'info');
+}
+
+async function addTask() {
+  const newTask = {
+    id: 'T' + Date.now(),
+    name: document.getElementById('mt_name').value || 'Новое задание',
+    desc: document.getElementById('mt_desc').value || '',
+    reward: parseInt(document.getElementById('mt_reward').value) || 5,
+    icon: document.getElementById('mt_icon').value || '⭐',
+    url: document.getElementById('mt_url').value || '',
+    cat: 'social',
+    active: true
+  };
+  await db.collection('tasks').doc(newTask.id).set(newTask);
+  tasks.push(newTask);
+  renderTasks();
+  closeModal('addTask');
+  notify('Задание добавлено', 'success');
+}
+
+async function saveMiningSettings() {
+  const settings = {
+    dailyRate: parseFloat(document.getElementById('cfg_miningRate').value) || 0.14,
+    startPower: parseInt(document.getElementById('cfg_startPower').value) || 10,
+    refBonus: parseInt(document.getElementById('cfg_refBonus').value) || 1
+  };
+  await db.collection('settings').doc('mining').set(settings);
+  notify('Настройки майнинга сохранены', 'success');
+}
+
+function renderButtons() {
+  const buttons = [
+    { id: 'claim', label: 'CLAIM', text: 'ПОЛУЧИТЬ', color: '#3070f0' },
+    { id: 'boost', label: 'БУСТ', text: 'КУПИТЬ', color: '#f5c518' },
+    { id: 'withdraw', label: 'ВЫВОД', text: 'ПОДТВЕРДИТЬ', color: '#3070f0' }
+  ];
+  document.getElementById('btnList').innerHTML = buttons.map(b => `
+    <div class="task-edit-card">
+      <div class="tec-head"><div class="tec-name">${b.label}</div></div>
+      <div class="field"><label class="fl">ТЕКСТ КНОПКИ</label><input type="text" class="fi" value="${b.text}" placeholder="Текст"></div>
+      <div class="field"><label class="fl">ЦВЕТ</label><input type="color" class="fi" style="padding:5px" value="${b.color}"></div>
+    </div>
+  `).join('');
+}
+
+async function sendBroadcast() {
+  const title = document.getElementById('bc_title').value.trim();
+  const msg = document.getElementById('bc_msg').value.trim();
+  if (!title || !msg) { notify('Заполните все поля', 'error'); return; }
+  // Сохраняем уведомление в Firebase
+  await db.collection('broadcasts').add({
+    title, message: msg, type: 'info',
+    date: new Date().toISOString(),
+    usersCount: users.length
+  });
+  notify(`Рассылка "${title}" отправлена ${users.length} пользователям`, 'success');
+  document.getElementById('bc_title').value = '';
+  document.getElementById('bc_msg').value = '';
+}
+
+function refreshDash() {
+  const totalPower = users.reduce((s, u) => s + u.power, 0);
+  const totalWithdrawn = withdrawals.filter(w => w.status === 'approved').reduce((s, w) => s + (w.amount || 0), 0);
+  document.getElementById('kpi_users').innerText = users.length;
+  document.getElementById('kpi_power').innerText = totalPower;
+  document.getElementById('kpi_paid').innerText = totalWithdrawn.toFixed(3);
+  const topUsers = [...users].sort((a,b) => b.power - a.power).slice(0,5);
+  const maxPower = topUsers[0]?.power || 1;
+  document.getElementById('topList').innerHTML = topUsers.map((u, i) => `
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>${['🥇','🥈','🥉'][i] || '·'} ${u.name}</span><span style="color:var(--gold)">${u.power} ⚡</span></div>
+      <div class="prog-mini"><div class="pm-fill" style="width:${u.power/maxPower*100}%;background:${i===0?'var(--gold)':'var(--blue)'}"></div></div>
+    </div>
+  `).join('');
+  
+  const powerDist = { low:0, mid:0, high:0, elite:0 };
+  users.forEach(u => {
+    if (u.power < 50) powerDist.low++;
+    else if (u.power < 200) powerDist.mid++;
+    else if (u.power < 500) powerDist.high++;
+    else powerDist.elite++;
+  });
+  document.getElementById('powerDist').innerHTML = `
+    <div><div class="uc-stat-box" style="margin-bottom:8px"><div class="uc-stat-val">${powerDist.low}</div><div class="uc-stat-lbl">До 50 POWER</div></div></div>
+    <div><div class="uc-stat-box" style="margin-bottom:8px"><div class="uc-stat-val">${powerDist.mid}</div><div class="uc-stat-lbl">50-200 POWER</div></div></div>
+    <div><div class="uc-stat-box" style="margin-bottom:8px"><div class="uc-stat-val">${powerDist.high}</div><div class="uc-stat-lbl">200-500 POWER</div></div></div>
+    <div><div class="uc-stat-box"><div class="uc-stat-val">${powerDist.elite}</div><div class="uc-stat-lbl">500+ POWER</div></div></div>
+  `;
+}
+
+// ========== COMMON ==========
+function openModal(id) { document.getElementById(`modal_${id}`).classList.add('open'); }
+function closeModal(id) { document.getElementById(`modal_${id}`).classList.remove('open'); }
+
+function notify(msg, type = 'info') {
+  const panel = document.getElementById('notifPanel');
+  const n = document.createElement('div');
+  n.className = `notif ${type}`;
+  const icons = { success:'✅', error:'❌', info:'ℹ️', warning:'⚠️' };
+  n.innerHTML = `<div class="notif-icon">${icons[type] || 'ℹ️'}</div><div>${msg}</div>`;
+  panel.appendChild(n);
+  setTimeout(() => { n.classList.add('out'); setTimeout(() => n.remove(), 300); }, 3000);
+}
+
+async function initApp() {
+  await loadUsers();
+  await loadWithdrawals();
+  await loadTasks();
+  refreshDash();
+  renderButtons();
+  notify('Добро пожаловать в админ-панель!', 'success');
+}
+</script>
+</body>
+</html>
