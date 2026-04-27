@@ -323,6 +323,13 @@ input{font-family:inherit;border:none;outline:none}
 
 /* ── Divider ── */
 .divider{height:1px;background:var(--border);margin:16px 0}
+
+
+/* ── Wallet UX upgrade ── */
+.wallet-note{font-size:11px;color:var(--text2);margin:-2px 0 12px;line-height:1.45}
+.wallet-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.wallet-mini-btn{background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:10px;font-size:11px;font-weight:800;color:var(--text2)}
+.wallet-mini-btn.primary{color:var(--blue2);border-color:rgba(59,126,248,.35);background:rgba(59,126,248,.1)}
 </style>
 </head>
 <body>
@@ -449,8 +456,19 @@ input{font-family:inherit;border:none;outline:none}
           <div class="dc-arrow" id="depositArrow">›</div>
         </div>
         <div class="dc-body" id="depositBody" style="display:none">
+          <div id="ton-connect-button"></div>
+          <div class="tc-connected-box" id="walletStateBox" style="display:none">
+            <div class="tc-connected-header">
+              <div class="tc-connected-dot"></div>
+              <span class="tc-connected-label">TON Wallet Connected</span>
+              <button class="tc-disconnect-btn" id="walletDisconnectBtn">Disconnect</button>
+            </div>
+            <div class="tc-addr-box" id="walletAddressEl">...</div>
+            <div class="tc-deposit-info">Можно пополнять баланс и покупать бусты напрямую из кошелька.</div>
+          </div>
+          <p class="wallet-note">Подключи TON-кошелек, выбери сумму и нажми «Пополнить через кошелек».</p>
           <div class="preset-grid" id="presetGrid">
-            <div class="preset" data-ton="1">1</div>
+            <div class="preset sel" data-ton="1">1</div>
             <div class="preset" data-ton="5">5</div>
             <div class="preset" data-ton="10">10</div>
             <div class="preset" data-ton="25">25</div>
@@ -459,6 +477,7 @@ input{font-family:inherit;border:none;outline:none}
             <div class="preset" data-ton="250">250<span class="mult-badge">×2.5</span></div>
             <div class="preset" data-ton="500">500<span class="mult-badge">×3</span></div>
           </div>
+          <button class="boost-btn" id="walletDepositBtn">💎 Пополнить через кошелек</button>
           <button class="boost-btn" id="boostBtn">⚡ <span data-i18n="deposit_boost">КУПИТЬ БУСТ СИЛЫ</span></button>
         </div>
       </div>
@@ -608,6 +627,25 @@ input{font-family:inherit;border:none;outline:none}
         <div class="info-row"><span class="ir-label" data-i18n="min_withdraw">Минимум</span><span class="ir-val">0.08 TON</span></div>
         <div class="info-row"><span class="ir-label" data-i18n="network_fee">Комиссия</span><span class="ir-val">0.005 TON</span></div>
         <div class="info-row"><span class="ir-label" data-i18n="processing">Обработка</span><span class="ir-val" data-i18n="min15">~15 минут</span></div>
+      </div>
+
+      <div class="wd-wallet-section">
+        <div class="wd-wallet-header">
+          <div class="ton-circle"><svg viewBox="0 0 24 24" fill="white"><path d="M12 2L3 7v10l9 5 9-5V7L12 2z"/></svg></div>
+          <div class="wd-wallet-title">Кошелёк для вывода</div>
+        </div>
+        <div class="wd-wallet-body">
+          <div class="wd-connected-box">
+            <div class="wd-connected-row">
+              <div class="wd-connected-dot"></div>
+              <div class="wd-connected-addr" id="wdWalletAddr">Не подключен</div>
+            </div>
+            <div class="wallet-actions">
+              <button class="wallet-mini-btn primary" id="wdConnectBtn">Подключить</button>
+              <button class="wallet-mini-btn" id="wdPasteBtn">Вставить адрес</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="form-section">
@@ -816,13 +854,69 @@ function completeTask(taskId, reward) {
 }
 
 // ══════════════════════════════════════════
-// ОСТАЛЬНАЯ ЛОГИКА (КАК БЫЛА)
+// ГЛАВНАЯ ЛОГИКА И TON CONNECT
 // ══════════════════════════════════════════
 let playerBalance = parseFloat(localStorage.getItem('tonpulse_balance') || '0');
 let playerPower = parseFloat(localStorage.getItem('tonpulse_power') || '10');
 let playerPending = parseFloat(localStorage.getItem('tonpulse_pending') || '0.000004');
 let playerClaims = parseInt(localStorage.getItem('tonpulse_claims') || '0');
 let playerTotalEarned = parseFloat(localStorage.getItem('tonpulse_totalEarned') || '0');
+let historyItems = JSON.parse(localStorage.getItem('tonpulse_history') || '[]');
+let tonConnectUI = null;
+const APP_CONFIG = {
+  treasuryAddress: 'UQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJKZ',
+  minWithdrawTon: 0.08,
+  networkFeeTon: 0.005
+};
+
+function getSelectedDepositTon() {
+  const selected = document.querySelector('.preset.sel');
+  return selected ? parseFloat(selected.dataset.ton || '1') : 1;
+}
+
+function shortAddr(addr) {
+  if (!addr) return 'Не подключен';
+  return `${addr.slice(0, 6)}...${addr.slice(-6)}`;
+}
+
+function isValidTonAddress(addr) {
+  return /^UQ[a-zA-Z0-9_-]{40,80}$/.test(addr) || /^EQ[a-zA-Z0-9_-]{40,80}$/.test(addr);
+}
+
+function addHistoryItem(type, title, amount) {
+  historyItems.unshift({ type, title, amount, ts: Date.now() });
+  historyItems = historyItems.slice(0, 20);
+  localStorage.setItem('tonpulse_history', JSON.stringify(historyItems));
+  renderHistory();
+}
+
+function renderHistory() {
+  const list = document.getElementById('histList');
+  if (!list) return;
+  if (!historyItems.length) {
+    list.innerHTML = `<div class="hist-item"><div class="hi-icon mine">⛏️</div><div><div class="hi-title">История пуста</div><div class="hi-date">Пока нет операций</div></div><div class="hi-amt pos">+0.000000</div></div>`;
+    document.getElementById('histCount').innerText = '0';
+    return;
+  }
+
+  list.innerHTML = historyItems.map(item => {
+    const dt = new Date(item.ts).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    const cls = item.amount < 0 ? 'neg' : item.type === 'deposit' ? 'gold' : 'pos';
+    const icon = item.type === 'withdraw' ? 'with' : item.type === 'deposit' ? 'dep' : item.type === 'claim' ? 'mine' : 'bonus';
+    const sign = item.amount > 0 ? '+' : '';
+    return `<div class="hist-item"><div class="hi-icon ${icon}">${item.type === 'withdraw' ? '💸' : item.type === 'deposit' ? '💰' : item.type === 'claim' ? '⛏️' : '⚡'}</div><div><div class="hi-title">${item.title}</div><div class="hi-date">${dt}</div></div><div class="hi-amt ${cls}">${sign}${item.amount.toFixed(6)}</div></div>`;
+  }).join('');
+  document.getElementById('histCount').innerText = String(historyItems.length);
+}
+
+function updateWalletUi() {
+  const connected = tonConnectUI && tonConnectUI.connected;
+  const addr = connected ? tonConnectUI.account.address : '';
+  document.getElementById('walletStateBox').style.display = connected ? 'block' : 'none';
+  document.getElementById('walletAddressEl').innerText = addr || '';
+  document.getElementById('wdWalletAddr').innerText = connected ? shortAddr(addr) : 'Не подключен';
+  document.getElementById('wdConnectBtn').innerText = connected ? 'Кошелёк подключен' : 'Подключить';
+}
 
 function updateUI() {
   document.getElementById('topBalVal').innerText = playerBalance.toFixed(4);
@@ -835,17 +929,17 @@ function updateUI() {
   document.getElementById('mineStatClaims').innerText = playerClaims;
   document.getElementById('ringAmt').innerText = playerPending.toFixed(6);
   document.getElementById('claimBtnTxt').innerHTML = `CLAIM ${playerPending.toFixed(6)} TON`;
-  
+
   const speed = (playerPower * 0.14 / 100) / 86400;
   document.getElementById('speedDisp').innerHTML = '+' + (speed * 3600).toFixed(6);
-  
+
   const dayEarn = speed * 86400;
   document.getElementById('dailyEarn').innerHTML = `≈${dayEarn.toFixed(6)} TON/д`;
   document.getElementById('projDay').innerHTML = dayEarn.toFixed(6);
   document.getElementById('projWeek').innerHTML = (dayEarn * 7).toFixed(6);
   document.getElementById('projMonth').innerHTML = (dayEarn * 30).toFixed(5);
   document.getElementById('stRate').innerHTML = (playerPower * 0.14 / 100).toFixed(4);
-  
+
   let lvl = 1;
   if (playerPower >= 5000) lvl = 10;
   else if (playerPower >= 2000) lvl = 8;
@@ -855,6 +949,11 @@ function updateUI() {
   else if (playerPower >= 100) lvl = 3;
   else if (playerPower >= 50) lvl = 2;
   document.getElementById('levelBadge').innerHTML = `⚡ LVL ${lvl}`;
+
+  const dash = 710;
+  const offset = dash - dash * Math.min(playerPending / 0.0008, 1) * 0.98;
+  document.getElementById('ringFillEl').style.strokeDashoffset = offset;
+  document.getElementById('ringGlowEl').style.strokeDashoffset = offset + 30;
 }
 
 function saveGame() {
@@ -876,6 +975,43 @@ function copyRef() {
   const url = document.getElementById('refUrlEl').innerText;
   navigator.clipboard.writeText(url);
   toast('🔗 Ссылка скопирована!', 'success');
+}
+
+async function initTonConnect() {
+  const manifestUrl = new URL('tonconnect-manifest.json', window.location.href).toString();
+  tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+    manifestUrl,
+    buttonRootId: 'ton-connect-button'
+  });
+  updateWalletUi();
+  tonConnectUI.onStatusChange(() => updateWalletUi());
+
+  document.getElementById('walletDisconnectBtn').addEventListener('click', async () => {
+    await tonConnectUI.disconnect();
+    updateWalletUi();
+    toast('Кошелёк отключен', 'info');
+  });
+
+  document.getElementById('wdConnectBtn').addEventListener('click', async () => {
+    if (tonConnectUI.connected) {
+      toast('Кошелек уже подключен', 'success');
+      return;
+    }
+    await tonConnectUI.openModal();
+  });
+
+  document.getElementById('wdPasteBtn').addEventListener('click', async () => {
+    const pasted = prompt('Вставь адрес TON для вывода:');
+    if (!pasted) return;
+    const clean = pasted.trim();
+    if (!isValidTonAddress(clean)) {
+      toast('Некорректный TON адрес', 'error');
+      return;
+    }
+    localStorage.setItem('tonpulse_manual_withdraw_wallet', clean);
+    document.getElementById('wdWalletAddr').innerText = shortAddr(clean);
+    toast('Адрес сохранен', 'success');
+  });
 }
 
 // МАЙНИНГ
@@ -902,21 +1038,48 @@ function animateMining(now) {
 // CLAIM
 document.getElementById('claimBtn').addEventListener('click', () => {
   if (playerPending < 0.000001) { toast('Нечего забирать', 'error'); return; }
-  playerBalance += playerPending;
-  playerTotalEarned += playerPending;
+  const claimed = playerPending;
+  playerBalance += claimed;
+  playerTotalEarned += claimed;
   playerClaims++;
   playerPending = 0;
   saveGame();
   updateUI();
-  toast(`✅ Получено ${playerBalance.toFixed(6)} TON`, 'success');
+  addHistoryItem('claim', 'Клейм майнинга', claimed);
+  toast(`✅ Получено ${claimed.toFixed(6)} TON`, 'success');
+});
+
+// DEPOSIT FROM WALLET
+document.getElementById('walletDepositBtn').addEventListener('click', async () => {
+  const selectedTon = getSelectedDepositTon();
+  if (!tonConnectUI || !tonConnectUI.connected) {
+    toast('Сначала подключите кошелёк', 'error');
+    await tonConnectUI.openModal();
+    return;
+  }
+
+  try {
+    await tonConnectUI.sendTransaction({
+      validUntil: Math.floor(Date.now() / 1000) + 360,
+      messages: [{
+        address: APP_CONFIG.treasuryAddress,
+        amount: String(Math.round(selectedTon * 1e9))
+      }]
+    });
+
+    playerBalance += selectedTon;
+    saveGame();
+    updateUI();
+    addHistoryItem('deposit', 'Пополнение с TON Wallet', selectedTon);
+    toast(`💎 Баланс пополнен на ${selectedTon.toFixed(2)} TON`, 'success');
+  } catch (e) {
+    toast('Транзакция отменена или не прошла', 'error');
+  }
 });
 
 // BOOST
 document.getElementById('boostBtn').addEventListener('click', () => {
-  let selectedTon = 1;
-  document.querySelectorAll('.preset').forEach(el => {
-    if (el.classList.contains('sel')) selectedTon = parseInt(el.dataset.ton);
-  });
+  let selectedTon = getSelectedDepositTon();
   if (playerBalance < selectedTon) { toast('❌ Недостаточно TON на балансе!', 'error'); return; }
   let mult = 1;
   if (selectedTon >= 500) mult = 3.0;
@@ -930,6 +1093,7 @@ document.getElementById('boostBtn').addEventListener('click', () => {
   playerPower += gained;
   saveGame();
   updateUI();
+  addHistoryItem('bonus', `Покупка буста ×${mult}`, -selectedTon);
   toast(`⚡ Буст силы активирован! +${gained} POWER`, 'success');
 });
 
@@ -965,12 +1129,30 @@ document.getElementById('topDepositBtn').addEventListener('click', () => {
 document.getElementById('wdBtn').addEventListener('click', () => {
   const amt = parseFloat(document.getElementById('wdAmt').value);
   if (isNaN(amt) || amt <= 0) { toast('Введите корректную сумму', 'error'); return; }
-  if (amt < 0.08) { toast('Минимум 0.08 TON', 'error'); return; }
+  if (amt < APP_CONFIG.minWithdrawTon) { toast(`Минимум ${APP_CONFIG.minWithdrawTon} TON`, 'error'); return; }
   if (amt > playerBalance) { toast('Недостаточно баланса', 'error'); return; }
-  playerBalance -= amt;
+
+  const wallet = tonConnectUI?.connected ? tonConnectUI.account.address : localStorage.getItem('tonpulse_manual_withdraw_wallet');
+  if (!wallet) {
+    toast('Подключите кошелек или вставьте адрес', 'error');
+    return;
+  }
+  if (!isValidTonAddress(wallet)) {
+    toast('Адрес кошелька невалидный', 'error');
+    return;
+  }
+
+  const totalDebit = amt + APP_CONFIG.networkFeeTon;
+  if (totalDebit > playerBalance) {
+    toast(`Нужно ${totalDebit.toFixed(3)} TON с учетом комиссии`, 'error');
+    return;
+  }
+
+  playerBalance -= totalDebit;
   saveGame();
   updateUI();
-  toast(`✅ Вывод ${amt.toFixed(6)} TON отправлен`, 'success');
+  addHistoryItem('withdraw', `Вывод ${amt.toFixed(3)} TON (${shortAddr(wallet)})`, -totalDebit);
+  toast(`✅ Заявка на вывод ${amt.toFixed(6)} TON создана`, 'success');
   document.getElementById('wdAmt').value = '';
 });
 
@@ -1027,25 +1209,25 @@ function buildTicks() {
 }
 
 // INIT
-function init() {
+async function init() {
   buildTicks();
   loadTasksFromFirebase();
+  await initTonConnect();
+  renderHistory();
   updateUI();
   animateMining();
+
   const uid = localStorage.getItem('tonpulse_uid') || 'user_' + Math.random().toString(36).slice(2, 10);
   localStorage.setItem('tonpulse_uid', uid);
   document.getElementById('refUrlEl').innerHTML = `t.me/tonpulse?ref=${uid}`;
   document.getElementById('tmFriends').innerHTML = '1';
   document.getElementById('tmBonus').innerHTML = '1';
   document.getElementById('mineStatFriends').innerHTML = '1';
-  const perf = (playerPower * 0.14 / 100) / 86400;
-  const dash = 710, offset = dash - dash * Math.min(playerPending / 0.0008, 1) * 0.98;
-  document.getElementById('ringFillEl').style.strokeDashoffset = offset;
-  document.getElementById('ringGlowEl').style.strokeDashoffset = offset + 30;
 }
 
 init();
 setInterval(() => saveGame(), 30000);
+
 </script>
 </body>
 </html>
