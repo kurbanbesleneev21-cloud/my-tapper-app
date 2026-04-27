@@ -330,10 +330,6 @@ input{font-family:inherit;border:none;outline:none}
 .wallet-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 .wallet-mini-btn{background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:10px;font-size:11px;font-weight:800;color:var(--text2)}
 .wallet-mini-btn.primary{color:var(--blue2);border-color:rgba(59,126,248,.35);background:rgba(59,126,248,.1)}
-.quick-amounts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
-.quick-amount{background:var(--s1);border:1px solid var(--border);border-radius:9px;padding:8px 0;text-align:center;color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer}
-.quick-amount.active{border-color:rgba(59,126,248,.45);color:var(--blue2);background:rgba(59,126,248,.08)}
-
 </style>
 </head>
 <body>
@@ -867,7 +863,11 @@ let playerClaims = parseInt(localStorage.getItem('tonpulse_claims') || '0');
 let playerTotalEarned = parseFloat(localStorage.getItem('tonpulse_totalEarned') || '0');
 let historyItems = JSON.parse(localStorage.getItem('tonpulse_history') || '[]');
 let tonConnectUI = null;
-const TREASURY_ADDRESS = 'UQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJKZ';
+const APP_CONFIG = {
+  treasuryAddress: 'UQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJKZ',
+  minWithdrawTon: 0.08,
+  networkFeeTon: 0.005
+};
 
 function getSelectedDepositTon() {
   const selected = document.querySelector('.preset.sel');
@@ -877,6 +877,10 @@ function getSelectedDepositTon() {
 function shortAddr(addr) {
   if (!addr) return 'Не подключен';
   return `${addr.slice(0, 6)}...${addr.slice(-6)}`;
+}
+
+function isValidTonAddress(addr) {
+  return /^UQ[a-zA-Z0-9_-]{40,80}$/.test(addr) || /^EQ[a-zA-Z0-9_-]{40,80}$/.test(addr);
 }
 
 function addHistoryItem(type, title, amount) {
@@ -974,8 +978,9 @@ function copyRef() {
 }
 
 async function initTonConnect() {
+  const manifestUrl = new URL('tonconnect-manifest.json', window.location.href).toString();
   tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-    manifestUrl: `${window.location.origin}/tonconnect-manifest.json`,
+    manifestUrl,
     buttonRootId: 'ton-connect-button'
   });
   updateWalletUi();
@@ -998,8 +1003,13 @@ async function initTonConnect() {
   document.getElementById('wdPasteBtn').addEventListener('click', async () => {
     const pasted = prompt('Вставь адрес TON для вывода:');
     if (!pasted) return;
-    localStorage.setItem('tonpulse_manual_withdraw_wallet', pasted.trim());
-    document.getElementById('wdWalletAddr').innerText = shortAddr(pasted.trim());
+    const clean = pasted.trim();
+    if (!isValidTonAddress(clean)) {
+      toast('Некорректный TON адрес', 'error');
+      return;
+    }
+    localStorage.setItem('tonpulse_manual_withdraw_wallet', clean);
+    document.getElementById('wdWalletAddr').innerText = shortAddr(clean);
     toast('Адрес сохранен', 'success');
   });
 }
@@ -1052,7 +1062,7 @@ document.getElementById('walletDepositBtn').addEventListener('click', async () =
     await tonConnectUI.sendTransaction({
       validUntil: Math.floor(Date.now() / 1000) + 360,
       messages: [{
-        address: TREASURY_ADDRESS,
+        address: APP_CONFIG.treasuryAddress,
         amount: String(Math.round(selectedTon * 1e9))
       }]
     });
@@ -1119,7 +1129,7 @@ document.getElementById('topDepositBtn').addEventListener('click', () => {
 document.getElementById('wdBtn').addEventListener('click', () => {
   const amt = parseFloat(document.getElementById('wdAmt').value);
   if (isNaN(amt) || amt <= 0) { toast('Введите корректную сумму', 'error'); return; }
-  if (amt < 0.08) { toast('Минимум 0.08 TON', 'error'); return; }
+  if (amt < APP_CONFIG.minWithdrawTon) { toast(`Минимум ${APP_CONFIG.minWithdrawTon} TON`, 'error'); return; }
   if (amt > playerBalance) { toast('Недостаточно баланса', 'error'); return; }
 
   const wallet = tonConnectUI?.connected ? tonConnectUI.account.address : localStorage.getItem('tonpulse_manual_withdraw_wallet');
@@ -1127,11 +1137,21 @@ document.getElementById('wdBtn').addEventListener('click', () => {
     toast('Подключите кошелек или вставьте адрес', 'error');
     return;
   }
+  if (!isValidTonAddress(wallet)) {
+    toast('Адрес кошелька невалидный', 'error');
+    return;
+  }
 
-  playerBalance -= amt;
+  const totalDebit = amt + APP_CONFIG.networkFeeTon;
+  if (totalDebit > playerBalance) {
+    toast(`Нужно ${totalDebit.toFixed(3)} TON с учетом комиссии`, 'error');
+    return;
+  }
+
+  playerBalance -= totalDebit;
   saveGame();
   updateUI();
-  addHistoryItem('withdraw', `Заявка на вывод (${shortAddr(wallet)})`, -amt);
+  addHistoryItem('withdraw', `Вывод ${amt.toFixed(3)} TON (${shortAddr(wallet)})`, -totalDebit);
   toast(`✅ Заявка на вывод ${amt.toFixed(6)} TON создана`, 'success');
   document.getElementById('wdAmt').value = '';
 });
