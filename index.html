@@ -4,7 +4,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>TONPulse Miner — уникальное имя игрока</title>
+<title>TONPulse Miner — Telegram Name</title>
+
+<!-- Telegram WebApp SDK -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -348,9 +351,9 @@ input{font-family:inherit;border:none;outline:none}
   <!-- TOP BAR -->
   <div class="topbar">
     <div class="user-block">
-      <div class="avatar" id="avatarEl">K</div>
+      <div class="avatar" id="avatarEl">👤</div>
       <div class="user-meta">
-        <div class="user-name" id="userNameEl">Игрок</div>
+        <div class="user-name" id="userNameEl">Загрузка...</div>
         <div class="user-status">
           <svg viewBox="0 0 10 10" fill="currentColor" width="8" height="8"><circle cx="5" cy="5" r="4"/></svg>
           <span data-i18n="mining_active">Майнинг активен</span>
@@ -688,42 +691,76 @@ input{font-family:inherit;border:none;outline:none}
 
 <script>
 // ============================================================
-// ГЕНЕРАТОР УНИКАЛЬНОГО ИМЕНИ ИГРОКА (сохраняем в localStorage)
+// ПОЛУЧЕНИЕ ИМЕНИ ИЗ TELEGRAM (WebApp)
 // ============================================================
+let tg = null;
+let tgUser = null;
+
+try {
+  // Инициализируем Telegram WebApp
+  tg = window.Telegram?.WebApp;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+    tgUser = tg.initDataUnsafe?.user;
+  }
+} catch(e) {
+  console.warn("Telegram WebApp не доступен:", e);
+}
+
+// Функция для получения имени игрока (сначала Telegram, потом localStorage, потом fallback)
 function getPlayerName() {
+  // 1. Пробуем получить из Telegram
+  if (tgUser) {
+    let firstName = tgUser.first_name || '';
+    let lastName = tgUser.last_name || '';
+    let username = tgUser.username || '';
+    
+    // Формируем красивое отображаемое имя
+    if (firstName && lastName) {
+      return `${firstName} ${lastName}`;
+    } else if (firstName) {
+      return firstName;
+    } else if (username) {
+      return `@${username}`;
+    }
+  }
+  
+  // 2. Проверяем сохранённое в localStorage (на случай если уже было установлено)
   let savedName = localStorage.getItem('tonpulse_player_name');
-  if (savedName && savedName.trim() !== '') {
+  if (savedName && savedName.trim() !== '' && savedName !== 'Загрузка...') {
     return savedName;
   }
   
-  // Списки для генерации эпичных имён
-  const prefixes = [
-    'KURBAN', 'CRYPTO', 'TON', 'MINER', 'GHOST', 'NINJA', 'DRAGON',
-    'WIZARD', 'PHANTOM', 'VIPER', 'PHOENIX', 'TITAN', 'NOVA', 'COSMOS',
-    'STAR', 'PULSE', 'SHADOW', 'THUNDER', 'ROCKET', 'QUANTUM', 'FUSION'
-  ];
-  
-  const suffixes = [
-    'X', 'Z', 'ER', 'EX', 'PRO', 'MAX', 'KING', 'LORD', 'MASTER',
-    'HUNTER', 'SEEKER', 'BREAKER', 'STRIKER', 'RIDER', 'WALKER',
-    'BRINGER', 'MAKER', 'FIGHTER', 'COMMANDER', 'LEGEND'
-  ];
-  
+  // 3. Fallback — генерируем случайное имя (как запасной вариант)
+  const prefixes = ['CRYPTO', 'TON', 'MINER', 'GHOST', 'DRAGON', 'WIZARD', 'PHANTOM', 'VIPER', 'PHOENIX', 'TITAN', 'NOVA', 'COSMOS', 'STAR', 'PULSE', 'SHADOW'];
+  const suffixes = ['X', 'Z', 'ER', 'EX', 'PRO', 'MAX', 'KING', 'LORD', 'MASTER', 'HUNTER', 'SEEKER'];
   const randomNum = Math.floor(Math.random() * 1000);
   const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
   const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
-  
-  // Формируем имя: например "CRYPTO_MASTER_742" или "STAR_LEGEND_15"
   const generatedName = `${prefix}_${suffix}_${randomNum}`;
   
-  localStorage.setItem('tonpulse_player_name', generatedName);
   return generatedName;
 }
 
-// Отображаем имя игрока и первую букву для аватара
+// Устанавливаем имя игрока во все нужные места
 const playerName = getPlayerName();
+localStorage.setItem('tonpulse_player_name', playerName);
+
 document.getElementById('userNameEl').innerText = playerName;
-document.getElementById('avatarEl').innerText = playerName.charAt(0).toUpperCase();
+
+// Устанавливаем первую букву имени в аватар
+let firstLetter = playerName.charAt(0).toUpperCase();
+if (firstLetter === '@' && playerName.length > 1) {
+  firstLetter = playerName.charAt(1).toUpperCase();
+}
+document.getElementById('avatarEl').innerText = firstLetter;
+
+// Также отправляем данные в Telegram (если есть)
+if (tg) {
+  tg.setHeaderColor('bg_color');
+  tg.setBackgroundColor('#060912');
+}
 
 // ============================================================
 // FIREBASE (ТВОЙ КОНФИГ)
