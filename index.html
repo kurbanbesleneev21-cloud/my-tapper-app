@@ -1,9 +1,12 @@
+Вот HTML-код, в котором у каждого игрока теперь есть своё уникальное имя, а сама структура страницы осталась нетронутой. Имя генерируется случайным образом при первом запуске и сохраняется.
+
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>TONPulse Miner</title>
+<title>TONPulse Miner — уникальное имя игрока</title>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -349,7 +352,7 @@ input{font-family:inherit;border:none;outline:none}
     <div class="user-block">
       <div class="avatar" id="avatarEl">K</div>
       <div class="user-meta">
-        <div class="user-name" id="userNameEl">KURBAN</div>
+        <div class="user-name" id="userNameEl">Игрок</div>
         <div class="user-status">
           <svg viewBox="0 0 10 10" fill="currentColor" width="8" height="8"><circle cx="5" cy="5" r="4"/></svg>
           <span data-i18n="mining_active">Майнинг активен</span>
@@ -686,9 +689,47 @@ input{font-family:inherit;border:none;outline:none}
 <div class="toast" id="toastEl"></div>
 
 <script>
-// ══════════════════════════════════════════
+// ============================================================
+// ГЕНЕРАТОР УНИКАЛЬНОГО ИМЕНИ ИГРОКА (сохраняем в localStorage)
+// ============================================================
+function getPlayerName() {
+  let savedName = localStorage.getItem('tonpulse_player_name');
+  if (savedName && savedName.trim() !== '') {
+    return savedName;
+  }
+  
+  // Списки для генерации эпичных имён
+  const prefixes = [
+    'KURBAN', 'CRYPTO', 'TON', 'MINER', 'GHOST', 'NINJA', 'DRAGON',
+    'WIZARD', 'PHANTOM', 'VIPER', 'PHOENIX', 'TITAN', 'NOVA', 'COSMOS',
+    'STAR', 'PULSE', 'SHADOW', 'THUNDER', 'ROCKET', 'QUANTUM', 'FUSION'
+  ];
+  
+  const suffixes = [
+    'X', 'Z', 'ER', 'EX', 'PRO', 'MAX', 'KING', 'LORD', 'MASTER',
+    'HUNTER', 'SEEKER', 'BREAKER', 'STRIKER', 'RIDER', 'WALKER',
+    'BRINGER', 'MAKER', 'FIGHTER', 'COMMANDER', 'LEGEND'
+  ];
+  
+  const randomNum = Math.floor(Math.random() * 1000);
+  const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+  const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+  
+  // Формируем имя: например "CRYPTO_MASTER_742" или "STAR_LEGEND_15"
+  const generatedName = `${prefix}_${suffix}_${randomNum}`;
+  
+  localStorage.setItem('tonpulse_player_name', generatedName);
+  return generatedName;
+}
+
+// Отображаем имя игрока и первую букву для аватара
+const playerName = getPlayerName();
+document.getElementById('userNameEl').innerText = playerName;
+document.getElementById('avatarEl').innerText = playerName.charAt(0).toUpperCase();
+
+// ============================================================
 // FIREBASE (ТВОЙ КОНФИГ)
-// ══════════════════════════════════════════
+// ============================================================
 const firebaseConfig = {
   apiKey: "AIzaSyCT9XQDlC_fV_5T0weoT6xsG9vTUP8ZEHI",
   authDomain: "jejjen-69c04.firebaseapp.com",
@@ -702,9 +743,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// ══════════════════════════════════════════
+// ============================================================
 // ЗАГРУЗКА ЗАДАНИЙ ИЗ FIREBASE (АДМИНКИ)
-// ══════════════════════════════════════════
+// ============================================================
 let userTasksDone = new Set();
 let firebaseTasks = [];
 
@@ -850,9 +891,9 @@ function completeTask(taskId, reward) {
   toast(`⚡ +${reward} POWER! Задание выполнено`, 'success');
 }
 
-// ══════════════════════════════════════════
+// ============================================================
 // ГЛАВНАЯ ЛОГИКА И TON CONNECT
-// ══════════════════════════════════════════
+// ============================================================
 let playerBalance = parseFloat(localStorage.getItem('tonpulse_balance') || '0');
 let playerPower = parseFloat(localStorage.getItem('tonpulse_power') || '10');
 let playerPending = parseFloat(localStorage.getItem('tonpulse_pending') || '0.000004');
@@ -1230,7 +1271,7 @@ async function init() {
 
 init();
 setInterval(() => saveGame(), 30000);
-
 </script>
 </body>
 </html>
+```
