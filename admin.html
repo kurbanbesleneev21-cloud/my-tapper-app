@@ -220,7 +220,7 @@ input:focus, select:focus, textarea:focus { border-color:rgba(48,112,240,.5); bo
 .uc-stat-box { background:var(--s3); border-radius:9px; padding:8px; text-align:center; }
 .uc-stat-val { font-family:var(--mono); font-size:14px; font-weight:700; }
 .uc-stat-lbl { font-size:9px; color:var(--text3); margin-top:2px; }
-.uc-actions { display:flex; gap:7px; }
+.uc-actions { display:flex; gap:7px; flex-wrap:wrap; }
 
 .badge { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:700; }
 .badge.active { background:var(--green-g); color:var(--green); }
@@ -353,7 +353,7 @@ td { padding:11px 12px; font-size:12px; color:var(--text2); border-bottom:1px so
     <button class="menu-btn" id="menuBtn" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
     <div class="topbar-logo">
       <div class="tl-icon">⚡</div>
-      <div><div class="tl-name" id="topPageTitle">Дашборд</div><div class="tl-ver">ADMIN v3.0</div></div>
+      <div><div class="tl-name" id="topPageTitle">Дашборд</div><div class="tl-ver">ADMIN v4.0</div></div>
     </div>
     <div class="topbar-spacer"></div>
     <div class="clock-chip" id="clockEl">00:00</div>
@@ -375,6 +375,7 @@ td { padding:11px 12px; font-size:12px; color:var(--text2); border-bottom:1px so
       <button class="nav-btn" data-page="tasks"><div class="nb-icon">📋</div><span>Задания</span></button>
       <div class="drawer-section-label">НАСТРОЙКИ</div>
       <button class="nav-btn" data-page="mining"><div class="nb-icon">⛏️</div><span>Майнинг</span></button>
+      <button class="nav-btn" data-page="global"><div class="nb-icon">🌍</div><span>Глобальные</span></button>
       <button class="nav-btn" data-page="notifications"><div class="nb-icon">🔔</div><span>Уведомления</span></button>
     </div>
     <div class="drawer-footer">
@@ -427,15 +428,51 @@ td { padding:11px 12px; font-size:12px; color:var(--text2); border-bottom:1px so
       <div id="taskList" style="padding:0 16px"></div>
     </div>
 
-    <!-- Mining -->
+    <!-- Mining (индивидуальные настройки игроков) -->
     <div class="page" id="page_mining">
-      <div class="ph"><div><h2>Майнинг</h2><p>Скорость и начисления</p></div></div>
+      <div class="ph"><div><h2>Управление майнингом</h2><p>Изменить скорость майнинга для игрока</p></div></div>
       <div class="card">
-        <div class="card-title">⚡ Скорость майнинга</div>
+        <div class="card-title">⚡ Настройка скорости майнинга для игрока</div>
+        <div class="field"><label class="fl">ВЫБЕРИТЕ ИГРОКА</label>
+          <select class="fs" id="miningUserSelect" onchange="onMiningUserSelect()">
+            <option value="">-- Выберите игрока --</option>
+          </select>
+        </div>
+        <div class="field"><label class="fl">ТЕКУЩАЯ СКОРОСТЬ (POWER)</label>
+          <input type="text" class="fi" id="miningCurrentPower" readonly placeholder="Выберите игрока">
+        </div>
+        <div class="field"><label class="fl">НОВОЕ ЗНАЧЕНИЕ POWER</label>
+          <input type="number" class="fi" id="miningNewPower" placeholder="Введите новое значение POWER" step="1">
+        </div>
+        <div class="btn-row"><button class="btn btn-primary btn-full" onclick="changePlayerPower()">⚡ Изменить POWER</button></div>
+      </div>
+      <div class="card">
+        <div class="card-title">⏱️ Изменить накопленный pending (незабранный TON)</div>
+        <div class="field"><label class="fl">ТЕКУЩИЙ PENDING (TON)</label>
+          <input type="text" class="fi" id="miningCurrentPending" readonly placeholder="Выберите игрока">
+        </div>
+        <div class="field"><label class="fl">НОВОЕ ЗНАЧЕНИЕ PENDING (TON)</label>
+          <input type="number" class="fi" id="miningNewPending" placeholder="Введите новое значение" step="0.000001">
+        </div>
+        <div class="btn-row"><button class="btn btn-gold btn-full" onclick="changePlayerPending()">⏱️ Изменить PENDING</button></div>
+      </div>
+    </div>
+
+    <!-- Global settings -->
+    <div class="page" id="page_global">
+      <div class="ph"><div><h2>Глобальные настройки</h2><p>Общие параметры игры</p></div></div>
+      <div class="card">
+        <div class="card-title">⚡ Общая скорость майнинга</div>
         <div class="field"><label class="fl">ДНЕВНОЙ ПРОЦЕНТ (%)</label><input type="number" class="fi" id="cfg_miningRate" value="0.14" step="0.01"></div>
         <div class="field"><label class="fl">СТАРТОВЫЙ POWER</label><input type="number" class="fi" id="cfg_startPower" value="10"></div>
         <div class="field"><label class="fl">БОНУС ЗА РЕФЕРАЛА (POWER)</label><input type="number" class="fi" id="cfg_refBonus" value="1"></div>
-        <div class="btn-row"><button class="btn btn-primary btn-full" onclick="saveMiningSettings()">💾 Сохранить</button></div>
+        <div class="btn-row"><button class="btn btn-primary btn-full" onclick="saveMiningSettings()">💾 Сохранить глобальные настройки</button></div>
+      </div>
+      <div class="card">
+        <div class="card-title">💰 Настройки вывода средств</div>
+        <div class="field"><label class="fl">МИНИМУМ ВЫВОДА (TON)</label><input type="number" class="fi" id="cfg_minWithdraw" value="0.08" step="0.01"></div>
+        <div class="field"><label class="fl">КОМИССИЯ (TON)</label><input type="number" class="fi" id="cfg_fee" value="0.005" step="0.001"></div>
+        <div class="btn-row"><button class="btn btn-primary btn-full" onclick="saveWithdrawSettings()">💾 Сохранить настройки вывода</button></div>
       </div>
     </div>
 
@@ -482,10 +519,24 @@ td { padding:11px 12px; font-size:12px; color:var(--text2); border-bottom:1px so
   </div>
 </div>
 
+<div class="modal-ov" id="modal_changeBalance" onclick="if(event.target===this)closeModal('changeBalance')">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-title">💰 Изменить баланс</div><div class="modal-sub" id="cb_sub">Пользователю</div>
+    <div class="field"><label class="fl">СУММА (TON)</label><input type="number" class="fi" id="cb_amt" value="0" step="0.01"></div>
+    <div class="field"><label class="fl">ДЕЙСТВИЕ</label>
+      <select class="fs" id="cb_action">
+        <option value="add">➕ Добавить</option>
+        <option value="remove">➖ Вычесть</option>
+        <option value="set">📌 Установить точное значение</option>
+      </select>
+    </div>
+    <div class="btn-row"><button class="btn btn-primary btn-full" onclick="confirmChangeBalance()">💾 Применить</button><button class="btn btn-ghost btn-full" onclick="closeModal('changeBalance')">Отмена</button></div>
+  </div>
+</div>
+
 <div class="notif-panel" id="notifPanel"></div>
 
 <script>
-// Firebase конфигурация (такая же как в основном сайте)
+// Firebase конфигурация
 const firebaseConfig = {
   apiKey: "AIzaSyCT9XQDlC_fV_5T0weoT6xsG9vTUP8ZEHI",
   authDomain: "jejjen-69c04.firebaseapp.com",
@@ -504,6 +555,7 @@ let users = [];
 let withdrawals = [];
 let tasks = [];
 let currentGiveUserId = null;
+let currentBalanceUserId = null;
 
 // Креды для входа
 const ADMIN_USER = 'admin';
@@ -554,9 +606,10 @@ function switchPage(page) {
   document.getElementById(`page_${page}`).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.nav-btn[data-page="${page}"]`)?.classList.add('active');
-  const titles = { dashboard:'Дашборд', analytics:'Аналитика', users:'Пользователи', withdrawals:'Выводы', tasks:'Задания', mining:'Майнинг', notifications:'Уведомления' };
+  const titles = { dashboard:'Дашборд', analytics:'Аналитика', users:'Пользователи', withdrawals:'Выводы', tasks:'Задания', mining:'Управление майнингом', global:'Глобальные настройки', notifications:'Уведомления' };
   document.getElementById('topPageTitle').innerText = titles[page] || page;
   closeDrawer();
+  if (page === 'mining') updateMiningUserSelect();
 }
 
 document.querySelectorAll('.nav-btn[data-page]').forEach(btn => {
@@ -583,6 +636,7 @@ async function loadUsers() {
         name: data.playerName || data.name || 'Аноним',
         power: data.power || 10,
         balance: data.balance || 0,
+        pending: data.pending || 0,
         refs: data.friends || 0,
         status: data.status || 'active',
         regDate: data.regDate || new Date(data.lastUpdated || Date.now()).toISOString().slice(0,10)
@@ -590,6 +644,7 @@ async function loadUsers() {
     });
     renderUsers();
     refreshDash();
+    updateMiningUserSelect();
   } catch(e) { console.error('loadUsers error:', e); }
 }
 
@@ -628,7 +683,18 @@ async function loadMiningSettings() {
   } catch(e) { console.error('loadMiningSettings error:', e); }
 }
 
-// ========== RENDER ==========
+async function loadWithdrawSettings() {
+  try {
+    const doc = await db.collection('settings').doc('withdraw').get();
+    if (doc.exists) {
+      const data = doc.data();
+      document.getElementById('cfg_minWithdraw').value = data.minWithdraw || 0.08;
+      document.getElementById('cfg_fee').value = data.fee || 0.005;
+    }
+  } catch(e) { console.error('loadWithdrawSettings error:', e); }
+}
+
+// ========== RENDER USERS ==========
 function renderUsers() {
   const filter = document.getElementById('userFilter')?.value || 'all';
   const search = document.getElementById('userSearch')?.value.toLowerCase() || '';
@@ -641,18 +707,20 @@ function renderUsers() {
   document.getElementById('usersList').innerHTML = filtered.map(u => `
     <div class="user-card">
       <div class="uc-top">
-        <div class="uc-av" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)">${u.name.charAt(0).toUpperCase()}</div>
+        <div class="uc-av" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)">${escapeHtml(u.name.charAt(0).toUpperCase())}</div>
         <div style="flex:1"><div class="uc-name">${escapeHtml(u.name)}</div><div class="uc-id">${u.id}</div></div>
         <span class="badge ${u.status}">${u.status === 'active' ? 'Активен' : 'Заблокирован'}</span>
       </div>
       <div class="uc-stats">
         <div class="uc-stat-box"><div class="uc-stat-val" style="color:var(--gold)">${u.power}</div><div class="uc-stat-lbl">POWER</div></div>
-        <div class="uc-stat-box"><div class="uc-stat-val">${u.balance.toFixed(4)}</div><div class="uc-stat-lbl">TON</div></div>
+        <div class="uc-stat-box"><div class="uc-stat-val" style="color:var(--green)">${u.balance.toFixed(4)}</div><div class="uc-stat-lbl">TON</div></div>
         <div class="uc-stat-box"><div class="uc-stat-val">${u.refs}</div><div class="uc-stat-lbl">РЕФ</div></div>
       </div>
       <div class="uc-actions">
         <button class="btn btn-${u.status === 'active' ? 'danger' : 'success'} btn-sm" onclick="toggleUserStatus('${u.id}')">${u.status === 'active' ? '🚫 Блок' : '✓ Разблок'}</button>
         <button class="btn btn-gold btn-sm" onclick="openGivePower('${u.id}', '${escapeHtml(u.name).replace(/'/g, "\\'")}')">⚡ POWER</button>
+        <button class="btn btn-primary btn-sm" onclick="openChangeBalance('${u.id}', '${escapeHtml(u.name).replace(/'/g, "\\'")}')">💰 Баланс</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}', '${escapeHtml(u.name).replace(/'/g, "\\'")}')">🗑 Удалить</button>
       </div>
     </div>
   `).join('');
@@ -670,6 +738,7 @@ function escapeHtml(str) {
 
 function filterUsers() { renderUsers(); }
 
+// ========== УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ ==========
 async function toggleUserStatus(id) {
   const user = users.find(u => u.id === id);
   if (!user) return;
@@ -678,6 +747,27 @@ async function toggleUserStatus(id) {
   user.status = newStatus;
   renderUsers();
   notify(`Пользователь ${user.name} ${newStatus === 'active' ? 'разблокирован' : 'заблокирован'}`, 'success');
+}
+
+async function deleteUser(id, name) {
+  if (!confirm(`Вы уверены, что хотите УДАЛИТЬ пользователя "${name}"? Это действие необратимо!`)) return;
+  if (!confirm(`ПОДТВЕРЖДАЕТЕ? Все данные пользователя будут безвозвратно удалены!`)) return;
+  
+  try {
+    // Удаляем заявки на вывод пользователя
+    const userWithdrawals = withdrawals.filter(w => w.userId === id);
+    for (const w of userWithdrawals) {
+      await db.collection('withdrawals').doc(w.id).delete();
+    }
+    // Удаляем самого пользователя
+    await db.collection('players').doc(id).delete();
+    await loadUsers();
+    await loadWithdrawals();
+    notify(`Пользователь ${name} удалён`, 'success');
+  } catch(e) {
+    notify('Ошибка при удалении', 'error');
+    console.error(e);
+  }
 }
 
 function openGivePower(id, name) {
@@ -696,13 +786,41 @@ async function confirmGivePower() {
   renderUsers();
   closeModal('givePower');
   notify(`+${amt} POWER начислено ${user.name}`, 'success');
+  document.getElementById('gp_amt').value = '10';
+}
+
+function openChangeBalance(id, name) {
+  currentBalanceUserId = id;
+  document.getElementById('cb_sub').innerHTML = `Пользователю: ${name}`;
+  document.getElementById('cb_amt').value = '0';
+  document.getElementById('cb_action').value = 'add';
+  openModal('changeBalance');
+}
+
+async function confirmChangeBalance() {
+  const amt = parseFloat(document.getElementById('cb_amt').value) || 0;
+  const action = document.getElementById('cb_action').value;
+  const user = users.find(u => u.id === currentBalanceUserId);
+  if (!user) return;
+  
+  let newBalance = user.balance;
+  if (action === 'add') newBalance += amt;
+  else if (action === 'remove') newBalance -= amt;
+  else if (action === 'set') newBalance = amt;
+  
+  if (newBalance < 0) newBalance = 0;
+  
+  user.balance = newBalance;
+  await db.collection('players').doc(currentBalanceUserId).update({ balance: newBalance });
+  renderUsers();
+  closeModal('changeBalance');
+  notify(`Баланс ${user.name} изменён на ${newBalance.toFixed(4)} TON`, 'success');
 }
 
 async function addUser() {
   const name = document.getElementById('mu_name').value.trim();
   if (!name) { notify('Введите имя', 'error'); return; }
   
-  // Проверяем уникальность имени
   const snapshot = await db.collection('players').where('playerNameLower', '==', name.toLowerCase()).get();
   if (!snapshot.empty) {
     notify('Это имя уже занято!', 'error');
@@ -729,6 +847,62 @@ async function addUser() {
   notify(`Пользователь ${name} создан`, 'success');
 }
 
+// ========== УПРАВЛЕНИЕ МАЙНИНГОМ (ИНДИВИДУАЛЬНО) ==========
+function updateMiningUserSelect() {
+  const select = document.getElementById('miningUserSelect');
+  if (!select) return;
+  select.innerHTML = '<option value="">-- Выберите игрока --</option>' + 
+    users.map(u => `<option value="${u.id}">${escapeHtml(u.name)} (POWER: ${u.power}, PENDING: ${u.pending?.toFixed(6) || 0})</option>`).join('');
+}
+
+function onMiningUserSelect() {
+  const userId = document.getElementById('miningUserSelect').value;
+  if (!userId) {
+    document.getElementById('miningCurrentPower').value = '';
+    document.getElementById('miningCurrentPending').value = '';
+    return;
+  }
+  const user = users.find(u => u.id === userId);
+  if (user) {
+    document.getElementById('miningCurrentPower').value = user.power;
+    document.getElementById('miningCurrentPending').value = user.pending?.toFixed(6) || '0.000000';
+  }
+}
+
+async function changePlayerPower() {
+  const userId = document.getElementById('miningUserSelect').value;
+  const newPower = parseInt(document.getElementById('miningNewPower').value);
+  if (!userId) { notify('Выберите игрока', 'error'); return; }
+  if (isNaN(newPower) || newPower < 0) { notify('Введите корректное значение POWER', 'error'); return; }
+  
+  const user = users.find(u => u.id === userId);
+  if (!user) return;
+  
+  user.power = newPower;
+  await db.collection('players').doc(userId).update({ power: newPower });
+  renderUsers();
+  updateMiningUserSelect();
+  notify(`POWER для ${user.name} изменён на ${newPower}`, 'success');
+  document.getElementById('miningNewPower').value = '';
+}
+
+async function changePlayerPending() {
+  const userId = document.getElementById('miningUserSelect').value;
+  const newPending = parseFloat(document.getElementById('miningNewPending').value);
+  if (!userId) { notify('Выберите игрока', 'error'); return; }
+  if (isNaN(newPending) || newPending < 0) { notify('Введите корректное значение PENDING', 'error'); return; }
+  
+  const user = users.find(u => u.id === userId);
+  if (!user) return;
+  
+  user.pending = newPending;
+  await db.collection('players').doc(userId).update({ pending: newPending });
+  updateMiningUserSelect();
+  notify(`PENDING для ${user.name} изменён на ${newPending.toFixed(6)} TON`, 'success');
+  document.getElementById('miningNewPending').value = '';
+}
+
+// ========== ВЫВОДЫ ==========
 function renderWithdrawals() {
   const pending = withdrawals.filter(w => w.status === 'pending').length;
   document.getElementById('wdBadge').innerText = pending;
@@ -743,7 +917,12 @@ function renderWithdrawals() {
   `).join('');
   
   document.getElementById('wdHistBody').innerHTML = withdrawals.slice(0,20).map(w => `
-    <tr><td>${escapeHtml(w.userName || w.userId)}</td><td class="mono" style="color:var(--gold)">${w.amount}</td><td><span class="badge ${w.status}">${w.status}</span></td><td>${w.date ? new Date(w.date).toLocaleString() : ''}</td></tr>
+    <tr>
+      <td>${escapeHtml(w.userName || w.userId)}</td>
+      <td class="mono" style="color:var(--gold)">${w.amount}</td>
+      <td><span class="badge ${w.status}">${w.status}</span></td>
+      <td>${w.date ? new Date(w.date).toLocaleString() : ''}</td>
+    </tr>
   `).join('');
 }
 
@@ -774,6 +953,7 @@ async function approveAll() {
   notify('Все заявки одобрены', 'success');
 }
 
+// ========== ЗАДАНИЯ ==========
 function renderTasks() {
   document.getElementById('taskList').innerHTML = tasks.map(t => `
     <div class="task-edit-card">
@@ -832,6 +1012,7 @@ async function addTask() {
   notify('Задание добавлено', 'success');
 }
 
+// ========== НАСТРОЙКИ ==========
 async function saveMiningSettings() {
   const settings = {
     dailyRate: parseFloat(document.getElementById('cfg_miningRate').value) || 0.14,
@@ -839,9 +1020,19 @@ async function saveMiningSettings() {
     refBonus: parseInt(document.getElementById('cfg_refBonus').value) || 1
   };
   await db.collection('settings').doc('mining').set(settings);
-  notify('Настройки майнинга сохранены', 'success');
+  notify('Глобальные настройки майнинга сохранены', 'success');
 }
 
+async function saveWithdrawSettings() {
+  const settings = {
+    minWithdraw: parseFloat(document.getElementById('cfg_minWithdraw').value) || 0.08,
+    fee: parseFloat(document.getElementById('cfg_fee').value) || 0.005
+  };
+  await db.collection('settings').doc('withdraw').set(settings);
+  notify('Настройки вывода сохранены', 'success');
+}
+
+// ========== УВЕДОМЛЕНИЯ ==========
 async function sendBroadcast() {
   const title = document.getElementById('bc_title').value.trim();
   const msg = document.getElementById('bc_msg').value.trim();
@@ -856,6 +1047,7 @@ async function sendBroadcast() {
   document.getElementById('bc_msg').value = '';
 }
 
+// ========== ДАШБОРД ==========
 function refreshDash() {
   const totalPower = users.reduce((s, u) => s + u.power, 0);
   const totalWithdrawn = withdrawals.filter(w => w.status === 'approved').reduce((s, w) => s + (w.amount || 0), 0);
@@ -907,14 +1099,15 @@ async function initApp() {
   await loadWithdrawals();
   await loadTasks();
   await loadMiningSettings();
+  await loadWithdrawSettings();
   refreshDash();
   notify('Добро пожаловать в админ-панель!', 'success');
 }
 
-// Реальные подписчики на изменения из Firebase (для автообновления)
+// Реальные подписчики на изменения из Firebase
 db.collection('players').onSnapshot(() => { loadUsers(); });
 db.collection('withdrawals').onSnapshot(() => { loadWithdrawals(); });
 db.collection('tasks').onSnapshot(() => { loadTasks(); });
 </script>
 </body>
-</html>
+                                 </html>
