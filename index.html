@@ -415,6 +415,28 @@ input{font-family:inherit;border:none;outline:none}
   margin-right:8px;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* Кнопка поддержки */
+.support-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #1a4abf, #2a65f0);
+  border: 1px solid rgba(59,126,248,.3);
+  border-radius: 30px;
+  padding: 5px 12px 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: all .15s;
+  box-shadow: 0 2px 8px rgba(59,126,248,.25);
+  white-space: nowrap;
+}
+.support-btn:hover { background: linear-gradient(135deg, #2a5adf, #3b7ef8); box-shadow: 0 2px 12px rgba(59,126,248,.4); }
+.support-btn:active { transform: scale(.96); }
+.support-btn svg { width: 14px; height: 14px; }
 </style>
 </head>
 <body>
@@ -446,6 +468,12 @@ input{font-family:inherit;border:none;outline:none}
       </div>
     </div>
     <div class="topbar-right">
+      <!-- Кнопка поддержки Telegram -->
+      <a href="https://t.me/U444AS_95" target="_blank" class="support-btn" title="Поддержка">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        <span>Поддержка</span>
+      </a>
+
       <div class="bal-chip">
         <div class="ton-circle"><svg viewBox="0 0 24 24" fill="white"><path d="M12 2L3 7v10l9 5 9-5V7L12 2z"/></svg></div>
         <div class="bal-info">
